@@ -49,8 +49,7 @@ public class Attribute {
 	}
 	
 	/**
-	 * Indicates whether an <code>attribute</code> represents a query. This is true if and only if attribute name starts with an
-	 * ampersand.
+	 * Indicates whether an <code>attribute</code> represents a query. This is true if and only if the attribute's name starts with an ampersand.
 	 * 
 	 * @param attribute the attribute to check
 	 * @return whether the <code>attribute</code> represents a query
@@ -69,8 +68,8 @@ public class Attribute {
 	}
 	
 	/**
-	 * Returns a hash code value for this attribute. For a proper behavior when using <code>Attribute</code> objects in
-	 * <code>HashMap</code>, <code>HashSet</code> etc. this is the hash code of a string representing attribute name.
+	 * Returns a hash code value for this attribute. For proper behavior when using <code>Attribute</code> objects in
+	 * <code>HashMap</code>, <code>HashSet</code> etc. this is the hash code of a string representing the attribute's name.
 	 * 
 	 * @return hash code for this attribute
 	 */
@@ -84,7 +83,7 @@ public class Attribute {
 	 * 
 	 * @param object the object to check
 	 * @return true if and only if the <code>object</code> is an instance of <code>Attribute</code> class and has
-	 * identical name
+     * an identical name
 	 */
 	@Override
 	public boolean equals(Object object) {
