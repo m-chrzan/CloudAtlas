@@ -232,8 +232,8 @@ public abstract class Value {
     }
 
     /**
-     * Returns a default value (such as uninitialized variable). This may be <code>0</code> for integer types,
-     * <code>false</code> for boolean, <code>null</code> for complex types etc.
+     * Returns a default value (such as an uninitialized variable). This may be <code>0</code> for integer types,
+     * <code>false</code> for boolean, <code>null</code> for complex types, etc.
      *
      * @return a default value of this type
      */
