@@ -40,8 +40,8 @@ import pl.edu.mimuw.cloudatlas.model.ValueList;
 /**
  * A value representing a list of values of the specified type. Implements <code>List</code> interface.
  * <p>
- * All constructors expect type of elements stored in this list. This type is checked when adding elements to the list
- * and an <code>IllegalArgumentException</code> is thrown in case of error.
+ * All constructors take a type of elements stored in this list. This type is checked when adding elements to the list
+ * and an <code>IllegalArgumentException</code> is thrown in case of a mismatch.
  *
  * @see java.util.List
  */
@@ -110,9 +110,9 @@ public class ValueList extends ValueSimple<List<Value>> implements List<Value> {
                 if(this.type.getElementType().isCompatible(((TypeCollection)type).getElementType())) {
                     if(this.isNull())
                         return new ValueSet(null, this.type.getElementType());
-                    Set<Value> l = new HashSet<Value>();
-                    l.addAll(this);
-                    return new ValueSet(l, this.type.getElementType());
+                    Set<Value> set = new HashSet<Value>();
+                    set.addAll(this);
+                    return new ValueSet(set, this.type.getElementType());
                 }
                 throw new UnsupportedConversionException(getType(), type);
             case STRING:
@@ -147,7 +147,7 @@ public class ValueList extends ValueSimple<List<Value>> implements List<Value> {
             throw new IllegalArgumentException("If you want to use null, create an object containing null instead.");
         if(!type.getElementType().isCompatible(element.getType()))
             throw new IllegalArgumentException("This list contains elements of type "
-                    + type.getElementType().toString() + " only. Not compatibile with elements of type: "
+                    + type.getElementType().toString() + " only. Incompatible with elements of type: "
                     + element.getType().toString());
     }
 
