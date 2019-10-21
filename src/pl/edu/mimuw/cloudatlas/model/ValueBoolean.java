@@ -67,7 +67,7 @@ public class ValueBoolean extends ValueSimple<Boolean> {
     }
 
     @Override
-    public ValueBoolean or(Value value) { // -
+    public ValueBoolean or(Value value) {
         sameTypesOrThrow(value, Operation.OR);
         if(isNull() || value.isNull())
             return new ValueBoolean(null);
@@ -75,7 +75,7 @@ public class ValueBoolean extends ValueSimple<Boolean> {
     }
 
     @Override
-    public ValueBoolean negate() { // !
+    public ValueBoolean negate() {
         return new ValueBoolean(isNull()? null : !getValue());
     }
 
