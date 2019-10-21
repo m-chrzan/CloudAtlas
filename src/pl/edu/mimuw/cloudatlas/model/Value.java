@@ -38,7 +38,7 @@ public abstract class Value {
 	}
 	
 	/**
-	 * Gets type of this value.
+	 * Gets the type of this value.
 	 * 
 	 * @return type of this value
 	 */
@@ -96,7 +96,7 @@ public abstract class Value {
 	/**
 	 * Returns a new value created by adding argument to this value (operator +).
 	 * 
-	 * @param the right side of the operator
+	 * @param value the right side of the operator
 	 * @return a sum of two values
 	 * @throws UnsupportedValueOperationException if this operator is unsupported for these values (for example
 	 * incompatible or non-numeric types)
@@ -109,7 +109,7 @@ public abstract class Value {
 	/**
 	 * Returns a new value created by subtracting argument from this value (operator -).
 	 * 
-	 * @param the right side of the operator
+	 * @param value the right side of the operator
 	 * @return a difference of two values
 	 * @throws UnsupportedValueOperationException if this operator is unsupported for these values (for example
 	 * incompatible or non-numeric types)
@@ -121,7 +121,7 @@ public abstract class Value {
 	/**
 	 * Returns a new value created by multiplying this value by an argument (operator *).
 	 * 
-	 * @param the right side of the operator
+	 * @param value the right side of the operator
 	 * @return a product of two values
 	 * @throws UnsupportedValueOperationException if this operator is unsupported for these values (for example
 	 * incompatible or non-numeric types)
@@ -133,7 +133,7 @@ public abstract class Value {
 	/**
 	 * Returns a new value created by dividing this value by an argument (operator /).
 	 * 
-	 * @param the right side of the operator
+	 * @param value the right side of the operator
 	 * @return a quotient of two values
 	 * @throws UnsupportedValueOperationException if this operator is unsupported for these values (for example
 	 * incompatible or non-numeric types)
@@ -143,9 +143,9 @@ public abstract class Value {
 	}
 	
 	/**
-	 * Returns a remainder of a division of this value by an argument (operator %).
+	 * Returns the remainder of division of this value by an argument (operator %).
 	 * 
-	 * @param the right side of the operator
+	 * @param value the right side of the operator
 	 * @return a remainder
 	 * @throws UnsupportedValueOperationException if this operator is unsupported for these values (for example
 	 * incompatible or non-numeric types)
@@ -155,10 +155,10 @@ public abstract class Value {
 	}
 	
 	/**
-	 * Returns a result of a logical and (operator &&).
+	 * Returns the result of a logical AND (operator &&).
 	 * 
 	 * @param value the right side of the operator
-	 * @return a conjunction of two values
+	 * @return a conjunction of the two values
 	 * @throws UnsupportedValueOperationException if this operator is unsupported for these values (for example
 	 * non-boolean types)
 	 */
@@ -167,7 +167,7 @@ public abstract class Value {
 	}
 	
 	/**
-	 * Returns a result of a logical or (operator ||).
+	 * Returns the result of a logical OR (operator ||).
 	 * 
 	 * @param value the right side of the operator
 	 * @return an alternative of two values
@@ -179,9 +179,9 @@ public abstract class Value {
 	}
 	
 	/**
-	 * Returns a result of applying to this value a regular expression specified as an argument..
+	 * Returns a result of trying to match to this value with a regular expression specified as an argument.
 	 * 
-	 * @param value the regular expression
+	 * @param value the regular expression to match against
 	 * @return a <code>ValueBoolean</code> representing true if and only if this value matches provided regular
 	 * expression
 	 * @throws UnsupportedValueOperationException if this operator is unsupported for these values
@@ -191,9 +191,9 @@ public abstract class Value {
 	}
 	
 	/**
-	 * Returns a negation (numeric or logical) of this value. This may refer to operator - or !, depending on type.
+	 * Returns the negation (numeric or logical) of this value. This may refer to operator - or !, depending on type.
 	 * 
-	 * @return a value that is negation of this value
+	 * @return a value that is the negation of this value
 	 * @throws UnsupportedValueOperationException if this operator is unsupported for this value
 	 */
 	public Value negate() { // !, -
@@ -201,7 +201,7 @@ public abstract class Value {
 	}
 	
 	/**
-	 * Returns a size of this value. Semantic depends on type.
+	 * Returns the size of this value. Semantics depend on type.
 	 * 
 	 * @return a size of this value
 	 * @throws UnsupportedValueOperationException if this operation is unsupported for this value
