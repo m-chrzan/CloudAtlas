@@ -25,7 +25,7 @@
 package pl.edu.mimuw.cloudatlas.model;
 
 /**
- * Convenient class for wrapping Java types into <code>Value</code> objects.
+ * Class for wrapping Java types into <code>Value</code> objects.
  * <p>
  * This class is immutable.
  *
