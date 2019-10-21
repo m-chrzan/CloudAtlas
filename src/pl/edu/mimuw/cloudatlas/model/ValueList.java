@@ -81,7 +81,7 @@ public class ValueList extends ValueSimple<List<Value>> implements List<Value> {
     }
 
     /**
-     * Gets a <code>List</code> containing all the objects stored in this value. Modifying a return value will cause an
+     * Gets a <code>List</code> containing all the objects stored in this value. Modifying the returned list will cause an
      * exception.
      */
     @Override

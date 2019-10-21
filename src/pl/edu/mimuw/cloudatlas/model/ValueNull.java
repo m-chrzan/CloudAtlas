@@ -28,7 +28,7 @@ import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueNull;
 
 /**
- * A special null value of an unknown type introduced to deal with nulls. This class is a singleton.
+ * A special null value of an unknown type. This class is a singleton.
  *
  * @see TypePrimitve#NULL
  * @see Type#isCompatible(Value)
@@ -39,7 +39,7 @@ public class ValueNull extends Value {
     private ValueNull() {}
 
     /**
-     * Gets a singleton instance of a <code>ValueNull</code> class. Every call to this method returns the same
+     * Gets a singleton instance of the <code>ValueNull</code> class. Every call to this method returns the same
      * reference.
      *
      * @return an instance of <code>ValueNull</code>
