@@ -31,81 +31,81 @@ import pl.edu.mimuw.cloudatlas.model.ValueDouble;
  * A class that wraps a Java <code>Double</code> object.
  */
 public class ValueDouble extends ValueSimple<Double> {
-	/**
-	 * Constructs a new <code>ValueDouble</code> object wrapping the specified <code>value</code>.
-	 * 
-	 * @param value the value to wrap
-	 */
-	public ValueDouble(Double value) {
-		super(value);
-	}
-	
-	@Override
-	public Type getType() {
-		return TypePrimitive.DOUBLE;
-	}
-	
-	@Override
-	public Value getDefaultValue() {
-		return new ValueDouble(0.0);
-	}
-	
-	@Override
-	public ValueBoolean isLowerThan(Value value) {
-		sameTypesOrThrow(value, Operation.COMPARE);
-		if(isNull() || value.isNull())
-			return new ValueBoolean(null);
-		return new ValueBoolean(getValue() < ((ValueDouble)value).getValue());
-	}
-	
-	@Override
-	public ValueDouble addValue(Value value) {
-		sameTypesOrThrow(value, Operation.ADD);
-		if(isNull() || value.isNull())
-			return new ValueDouble(null);
-		return new ValueDouble(getValue() + ((ValueDouble)value).getValue());
-	}
-	
-	@Override
-	public ValueDouble subtract(Value value) {
-		sameTypesOrThrow(value, Operation.SUBTRACT);
-		if(isNull() || value.isNull())
-			return new ValueDouble(null);
-		return new ValueDouble(getValue() - ((ValueDouble)value).getValue());
-	}
-	
-	@Override
-	public ValueDouble multiply(Value value) {
-		sameTypesOrThrow(value, Operation.MULTIPLY);
-		if(isNull() || value.isNull())
-			return new ValueDouble(null);
-		return new ValueDouble(getValue() * ((ValueDouble)value).getValue());
-	}
-	
-	@Override
-	public ValueDouble divide(Value value) {
-		sameTypesOrThrow(value, Operation.DIVIDE);
-		if(isNull() || value.isNull())
-			return new ValueDouble(null);
-		return new ValueDouble(getValue() / ((ValueDouble)value).getValue());
-	}
-	
-	@Override
-	public ValueDouble negate() {
-		return new ValueDouble(isNull()? null : -getValue());
-	}
-	
-	@Override
-	public Value convertTo(Type type) {
-		switch(type.getPrimaryType()) {
-			case DOUBLE:
-				return this;
-			case INT:
-				return new ValueInt(getValue() == null? null : getValue().longValue());
-			case STRING:
-				return getValue() == null? ValueString.NULL_STRING : new ValueString(getValue().toString());
-			default:
-				throw new UnsupportedConversionException(getType(), type);
-		}
-	}
+    /**
+     * Constructs a new <code>ValueDouble</code> object wrapping the specified <code>value</code>.
+     *
+     * @param value the value to wrap
+     */
+    public ValueDouble(Double value) {
+        super(value);
+    }
+
+    @Override
+    public Type getType() {
+        return TypePrimitive.DOUBLE;
+    }
+
+    @Override
+    public Value getDefaultValue() {
+        return new ValueDouble(0.0);
+    }
+
+    @Override
+    public ValueBoolean isLowerThan(Value value) {
+        sameTypesOrThrow(value, Operation.COMPARE);
+        if(isNull() || value.isNull())
+            return new ValueBoolean(null);
+        return new ValueBoolean(getValue() < ((ValueDouble)value).getValue());
+    }
+
+    @Override
+    public ValueDouble addValue(Value value) {
+        sameTypesOrThrow(value, Operation.ADD);
+        if(isNull() || value.isNull())
+            return new ValueDouble(null);
+        return new ValueDouble(getValue() + ((ValueDouble)value).getValue());
+    }
+
+    @Override
+    public ValueDouble subtract(Value value) {
+        sameTypesOrThrow(value, Operation.SUBTRACT);
+        if(isNull() || value.isNull())
+            return new ValueDouble(null);
+        return new ValueDouble(getValue() - ((ValueDouble)value).getValue());
+    }
+
+    @Override
+    public ValueDouble multiply(Value value) {
+        sameTypesOrThrow(value, Operation.MULTIPLY);
+        if(isNull() || value.isNull())
+            return new ValueDouble(null);
+        return new ValueDouble(getValue() * ((ValueDouble)value).getValue());
+    }
+
+    @Override
+    public ValueDouble divide(Value value) {
+        sameTypesOrThrow(value, Operation.DIVIDE);
+        if(isNull() || value.isNull())
+            return new ValueDouble(null);
+        return new ValueDouble(getValue() / ((ValueDouble)value).getValue());
+    }
+
+    @Override
+    public ValueDouble negate() {
+        return new ValueDouble(isNull()? null : -getValue());
+    }
+
+    @Override
+    public Value convertTo(Type type) {
+        switch(type.getPrimaryType()) {
+            case DOUBLE:
+                return this;
+            case INT:
+                return new ValueInt(getValue() == null? null : getValue().longValue());
+            case STRING:
+                return getValue() == null? ValueString.NULL_STRING : new ValueString(getValue().toString());
+            default:
+                throw new UnsupportedConversionException(getType(), type);
+        }
+    }
 }

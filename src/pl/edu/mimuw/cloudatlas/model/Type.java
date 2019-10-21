@@ -28,54 +28,54 @@ package pl.edu.mimuw.cloudatlas.model;
  * A type of a value that may be stored as an attribute.
  */
 public abstract class Type {
-	/**
-	 * A primary type. This is a characteristic that every type has. It can be extended: for instance a collection may
-	 * be parameterized with a type of stored values.
-	 */
-	public static enum PrimaryType {
-		BOOLEAN, CONTACT, DOUBLE, DURATION, INT, LIST, NULL, SET, STRING, TIME,
-	}
-	
-	private final PrimaryType primaryType;
-	
-	/**
-	 * Creates a <code>Type</code> object with a given primary type.
-	 * 
-	 * @param primaryType a primary type for this type
-	 */
-	public Type(PrimaryType primaryType) {
-		this.primaryType = primaryType;
-	}
-	
-	/**
-	 * Returns a primary type of this type.
-	 * 
-	 * @return a primary type
-	 */
-	public PrimaryType getPrimaryType() {
-		return primaryType;
-	}
-	
-	/**
-	 * Indicates whether this type can be implicitly "cast" to given one and vice verse. This is introduced to deal with
-	 * null values. In practice, two types are compatible either if they are the same or if one them is a special
-	 * "null type".
-	 * 
-	 * @param type a type to check
-	 * @return whether two types are compatible with each other
-	 * @see TypePrimitive#NULL
-	 * @see ValueNull
-	 */
-	public boolean isCompatible(Type type) {
-		return getPrimaryType() == PrimaryType.NULL || type.getPrimaryType() == PrimaryType.NULL;
-	}
-	
-	/**
-	 * Indicates whether this type represents a collection.
-	 * 
-	 * @return true for collections, false otherwise
-	 */
-	public boolean isCollection() {
-		return false;
-	}
+    /**
+     * A primary type. This is a characteristic that every type has. It can be extended: for instance a collection may
+     * be parameterized with a type of stored values.
+     */
+    public static enum PrimaryType {
+        BOOLEAN, CONTACT, DOUBLE, DURATION, INT, LIST, NULL, SET, STRING, TIME,
+    }
+
+    private final PrimaryType primaryType;
+
+    /**
+     * Creates a <code>Type</code> object with a given primary type.
+     *
+     * @param primaryType a primary type for this type
+     */
+    public Type(PrimaryType primaryType) {
+        this.primaryType = primaryType;
+    }
+
+    /**
+     * Returns a primary type of this type.
+     *
+     * @return a primary type
+     */
+    public PrimaryType getPrimaryType() {
+        return primaryType;
+    }
+
+    /**
+     * Indicates whether this type can be implicitly "cast" to given one and vice verse. This is introduced to deal with
+     * null values. In practice, two types are compatible either if they are the same or if one them is a special
+     * "null type".
+     *
+     * @param type a type to check
+     * @return whether two types are compatible with each other
+     * @see TypePrimitive#NULL
+     * @see ValueNull
+     */
+    public boolean isCompatible(Type type) {
+        return getPrimaryType() == PrimaryType.NULL || type.getPrimaryType() == PrimaryType.NULL;
+    }
+
+    /**
+     * Indicates whether this type represents a collection.
+     *
+     * @return true for collections, false otherwise
+     */
+    public boolean isCollection() {
+        return false;
+    }
 }

@@ -28,62 +28,62 @@ package pl.edu.mimuw.cloudatlas.model;
  * Convenient class for wrapping Java types into <code>Value</code> objects.
  * <p>
  * This class is immutable.
- * 
+ *
  * @param <T> a wrapped type
  */
 abstract class ValueSimple<T> extends Value {
-	private T value;
-	
-	/**
-	 * Constructs a new <code>Value</code> wrapping the specified <code>value</code>.
-	 * 
-	 * @param value the value to wrap
-	 */
-	public ValueSimple(T value) {
-		setValue(value);
-	}
-	
-	/**
-	 * Returns a hash code value for this object. This is a hash code of underlying wrapped object.
-	 * 
-	 * @return the hash code for this value
-	 */
-	@Override
-	public int hashCode() {
-		return getValue().hashCode();
-	}
-	
-	/**
-	 * Gets a wrapped object.
-	 * 
-	 * @return the wrapped value
-	 */
-	public T getValue() {
-		return value;
-	}
-	
-	/**
-	 * Sets a wrapped value. This method is not public to ensure that the underlying value cannot be changed.
-	 * 
-	 * @param value the value to set
-	 */
-	void setValue(T value) {
-		this.value = value;
-	}
-	
-	@Override
-	public boolean isNull() {
-		return value == null;
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public Value isEqual(Value v) {
-		sameTypesOrThrow(v, Operation.EQUAL);
-		if(isNull() && v.isNull())
-			return new ValueBoolean(true);
-		else if(isNull() || v.isNull())
-			return new ValueBoolean(false);
-		return new ValueBoolean(value.equals(((ValueSimple<T>)v).getValue()));
-	}
+    private T value;
+
+    /**
+     * Constructs a new <code>Value</code> wrapping the specified <code>value</code>.
+     *
+     * @param value the value to wrap
+     */
+    public ValueSimple(T value) {
+        setValue(value);
+    }
+
+    /**
+     * Returns a hash code value for this object. This is a hash code of underlying wrapped object.
+     *
+     * @return the hash code for this value
+     */
+    @Override
+    public int hashCode() {
+        return getValue().hashCode();
+    }
+
+    /**
+     * Gets a wrapped object.
+     *
+     * @return the wrapped value
+     */
+    public T getValue() {
+        return value;
+    }
+
+    /**
+     * Sets a wrapped value. This method is not public to ensure that the underlying value cannot be changed.
+     *
+     * @param value the value to set
+     */
+    void setValue(T value) {
+        this.value = value;
+    }
+
+    @Override
+    public boolean isNull() {
+        return value == null;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Value isEqual(Value v) {
+        sameTypesOrThrow(v, Operation.EQUAL);
+        if(isNull() && v.isNull())
+            return new ValueBoolean(true);
+        else if(isNull() || v.isNull())
+            return new ValueBoolean(false);
+        return new ValueBoolean(value.equals(((ValueSimple<T>)v).getValue()));
+    }
 }

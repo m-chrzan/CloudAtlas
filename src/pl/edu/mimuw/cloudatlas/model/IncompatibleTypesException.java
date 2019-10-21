@@ -28,54 +28,54 @@ import pl.edu.mimuw.cloudatlas.model.Value.Operation;
 
 /**
  * An exception thrown when an unsupported binary operation on values is requested.
- * 
+ *
  * @see UnsupportedValueOperationException
  * @see UnsupportedConversionException
  */
 @SuppressWarnings("serial")
 public class IncompatibleTypesException extends UnsupportedOperationException {
-	private final Type left;
-	private final Type right;
-	private final Operation operation;
-	
-	/**
-	 * Creates a new object representing this exception.
-	 * 
-	 * @param left type of a left operand
-	 * @param right type of a right operand
-	 * @param operation an operation that caused this exception
-	 */
-	protected IncompatibleTypesException(Type left, Type right, Operation operation) {
-		super("Incompatible types: " + left + " and " + right + " in operation " + operation + ".");
-		this.left = left;
-		this.right = right;
-		this.operation = operation;
-	}
-	
-	/**
-	 * Gets a type of a left operand in an operation that caused this exception.
-	 * 
-	 * @return the type of the left operand
-	 */
-	public Type getLeft() {
-		return left;
-	}
-	
-	/**
-	 * Gets a type of a right operand in an operation that caused this exception.
-	 * 
-	 * @return the type of the right operand
-	 */
-	public Type getRight() {
-		return right;
-	}
-	
-	/**
-	 * Gets an object representing an operation that caused this exception.
-	 * 
-	 * @return an operation that caused this exception
-	 */
-	public Operation getOperation() {
-		return operation;
-	}
+    private final Type left;
+    private final Type right;
+    private final Operation operation;
+
+    /**
+     * Creates a new object representing this exception.
+     *
+     * @param left type of a left operand
+     * @param right type of a right operand
+     * @param operation an operation that caused this exception
+     */
+    protected IncompatibleTypesException(Type left, Type right, Operation operation) {
+        super("Incompatible types: " + left + " and " + right + " in operation " + operation + ".");
+        this.left = left;
+        this.right = right;
+        this.operation = operation;
+    }
+
+    /**
+     * Gets a type of a left operand in an operation that caused this exception.
+     *
+     * @return the type of the left operand
+     */
+    public Type getLeft() {
+        return left;
+    }
+
+    /**
+     * Gets a type of a right operand in an operation that caused this exception.
+     *
+     * @return the type of the right operand
+     */
+    public Type getRight() {
+        return right;
+    }
+
+    /**
+     * Gets an object representing an operation that caused this exception.
+     *
+     * @return an operation that caused this exception
+     */
+    public Operation getOperation() {
+        return operation;
+    }
 }

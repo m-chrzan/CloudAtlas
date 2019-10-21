@@ -26,83 +26,83 @@ package pl.edu.mimuw.cloudatlas.model;
 
 /**
  * Convenient class for types that just wrap ordinary Java types.
- * 
+ *
  * @see TypeCollection
  */
 public class TypePrimitive extends Type {
-	/**
-	 * Boolean type.
-	 */
-	public static final TypePrimitive BOOLEAN = new TypePrimitive(PrimaryType.BOOLEAN);
-	
-	/**
-	 * Contact type.
-	 */
-	public static final TypePrimitive CONTACT = new TypePrimitive(PrimaryType.CONTACT);
-	
-	/**
-	 * Double type.
-	 */
-	public static final TypePrimitive DOUBLE = new TypePrimitive(PrimaryType.DOUBLE);
-	
-	/**
-	 * Duration type.
-	 */
-	public static final TypePrimitive DURATION = new TypePrimitive(PrimaryType.DURATION);
-	
-	/**
-	 * Integer type.
-	 */
-	public static final TypePrimitive INTEGER = new TypePrimitive(PrimaryType.INT);
-	
-	/**
-	 * A special "null type" that represents null value of an unknown type. It can be converted to any other type.
-	 * 
-	 * @see Type#isCompatible(Type)
-	 * @see ValueNull
-	 */
-	public static final TypePrimitive NULL = new TypePrimitive(PrimaryType.NULL);
-	
-	/**
-	 * String type.
-	 */
-	public static final TypePrimitive STRING = new TypePrimitive(PrimaryType.STRING);
-	
-	/**
-	 * Time type.
-	 */
-	public static final TypePrimitive TIME = new TypePrimitive(PrimaryType.TIME);
-	
-	private TypePrimitive(PrimaryType primaryType) {
-		super(primaryType);
-		switch(primaryType) {
-			case BOOLEAN:
-			case CONTACT:
-			case DOUBLE:
-			case DURATION:
-			case INT:
-			case NULL:
-			case STRING:
-			case TIME:
-				break;
-			default:
-				throw new IllegalArgumentException(
-						"This class can represent a primitive type only (boolean, int etc.).");
-		}
-	}
-	
-	/**
-	 * Gets a textual representation of this type.
-	 * 
-	 * @return a string representing this type
-	 */
-	@Override
-	public String toString() {
-		return getPrimaryType().toString();
-	}
-	
-	@Override
-	public boolean isCompatible(Type type) {
-		return super.isCompatible(type) || getPrimaryType() == type.getPrimaryType();
-	}
+    /**
+     * Boolean type.
+     */
+    public static final TypePrimitive BOOLEAN = new TypePrimitive(PrimaryType.BOOLEAN);
+
+    /**
+     * Contact type.
+     */
+    public static final TypePrimitive CONTACT = new TypePrimitive(PrimaryType.CONTACT);
+
+    /**
+     * Double type.
+     */
+    public static final TypePrimitive DOUBLE = new TypePrimitive(PrimaryType.DOUBLE);
+
+    /**
+     * Duration type.
+     */
+    public static final TypePrimitive DURATION = new TypePrimitive(PrimaryType.DURATION);
+
+    /**
+     * Integer type.
+     */
+    public static final TypePrimitive INTEGER = new TypePrimitive(PrimaryType.INT);
+
+    /**
+     * A special "null type" that represents null value of an unknown type. It can be converted to any other type.
+     *
+     * @see Type#isCompatible(Type)
+     * @see ValueNull
+     */
+    public static final TypePrimitive NULL = new TypePrimitive(PrimaryType.NULL);
+
+    /**
+     * String type.
+     */
+    public static final TypePrimitive STRING = new TypePrimitive(PrimaryType.STRING);
+
+    /**
+     * Time type.
+     */
+    public static final TypePrimitive TIME = new TypePrimitive(PrimaryType.TIME);
+
+    private TypePrimitive(PrimaryType primaryType) {
+        super(primaryType);
+        switch(primaryType) {
+            case BOOLEAN:
+            case CONTACT:
+            case DOUBLE:
+            case DURATION:
+            case INT:
+            case NULL:
+            case STRING:
+            case TIME:
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        "This class can represent a primitive type only (boolean, int etc.).");
+        }
+    }
+
+    /**
+     * Gets a textual representation of this type.
+     *
+     * @return a string representing this type
+     */
+    @Override
+    public String toString() {
+        return getPrimaryType().toString();
+    }
+
+    @Override
+    public boolean isCompatible(Type type) {
+        return super.isCompatible(type) || getPrimaryType() == type.getPrimaryType();
+    }
 }

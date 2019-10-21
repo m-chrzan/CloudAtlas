@@ -26,42 +26,42 @@ package pl.edu.mimuw.cloudatlas.model;
 
 /**
  * An exception describing unsupported conversion of a value to another type.
- * 
+ *
  * @see IncompatibleTypesException
  * @see UnsupportedValueOperationException
  */
 @SuppressWarnings("serial")
 public class UnsupportedConversionException extends UnsupportedOperationException {
-	private final Type from;
-	private final Type to;
-	
-	/**
-	 * Creates a new instance of this this exception.
-	 * 
-	 * @param from source type of an unsupported conversion
-	 * @param to destination type of an unsupported conversion
-	 */
-	protected UnsupportedConversionException(Type from, Type to) {
-		super("Type " + from + " cannot be converted to " + to + ".");
-		this.from = from;
-		this.to = to;
-	}
-	
-	/**
-	 * Gets a source type of an unsupported conversion that caused this exception.
-	 * 
-	 * @return source type
-	 */
-	public Type getFrom() {
-		return from;
-	}
-	
-	/**
-	 * Gets a destination type of an unsupported conversion that caused this exception.
-	 * 
-	 * @return destination type
-	 */
-	public Type getTo() {
-		return to;
-	}
+    private final Type from;
+    private final Type to;
+
+    /**
+     * Creates a new instance of this this exception.
+     *
+     * @param from source type of an unsupported conversion
+     * @param to destination type of an unsupported conversion
+     */
+    protected UnsupportedConversionException(Type from, Type to) {
+        super("Type " + from + " cannot be converted to " + to + ".");
+        this.from = from;
+        this.to = to;
+    }
+
+    /**
+     * Gets a source type of an unsupported conversion that caused this exception.
+     *
+     * @return source type
+     */
+    public Type getFrom() {
+        return from;
+    }
+
+    /**
+     * Gets a destination type of an unsupported conversion that caused this exception.
+     *
+     * @return destination type
+     */
+    public Type getTo() {
+        return to;
+    }
 }

@@ -35,132 +35,132 @@ import java.util.Map.Entry;
  * references to its father and sons in the tree.
  */
 public class ZMI implements Cloneable {
-	private final AttributesMap attributes = new AttributesMap();
-	
-	private final List<ZMI> sons = new ArrayList<ZMI>();
-	private ZMI father;
-	
-	/**
-	 * Creates a new ZMI with no father (the root zone) and empty sons list.
-	 */
-	public ZMI() {
-		this(null);
-	}
-	
-	/**
-	 * Creates a new ZMI with the specified node as a father and empty sons list. This method does not perform any
-	 * operation on the <code>father</code>. Especially, setting this object as a <code>father</code>'s son must be done
-	 * separately.
-	 * 
-	 * @param father a father of this ZMI
-	 * @see #addSon(ZMI)
-	 */
-	public ZMI(ZMI father) {
-		this.father = father;
-	}
-	
-	/**
-	 * Gets a father of this ZMI in a tree.
-	 * 
-	 * @return a father of this ZMI or <code>null</code> if this is the root zone
-	 */
-	public ZMI getFather() {
-		return father;
-	}
-	
-	/**
-	 * Sets or changes a father of this ZMI in a tree. This method does not perform any operation on the
-	 * <code>father</code>. Especially, setting this object as a <code>father</code>'s son must be done separately.
-	 * 
-	 * @param father a new father for this ZMI
-	 * @see #addSon(ZMI)
-	 */
-	public void setFather(ZMI father) {
-		this.father = father;
-	}
-	
-	/**
-	 * Gets a list of sons of this ZMI in a tree. Modifying a return value will cause an exception.
-	 * 
-	 * @return
-	 */
-	public List<ZMI> getSons() {
-		return Collections.unmodifiableList(sons);
-	}
-	
-	/**
-	 * Adds the specified ZMI to the list of sons of this ZMI. This method does not perform any operation on a
-	 * <code>son</code>. Especially, setting this object as a <code>son</code>'s father must be done separately.
-	 * 
-	 * @param son
-	 * @see #ZMI(ZMI)
-	 * @see #setFather(ZMI)
-	 */
-	public void addSon(ZMI son) {
-		sons.add(son);
-	}
-	
-	/**
-	 * Removes the specified ZMI from the list of sons of this ZMI. This method does not perform any operation on a
-	 * <code>son</code>. Especially, its father remains unchanged.
-	 * 
-	 * @param son
-	 * @see #setFather(ZMI)
-	 */
-	public void removeSon(ZMI son) {
-		sons.remove(son);
-	}
-	
-	/**
-	 * Gets a map of all the attributes stored in this ZMI.
-	 * 
-	 * @return map of attributes
-	 */
-	public AttributesMap getAttributes() {
-		return attributes;
-	}
-	
-	/**
-	 * Prints recursively in a prefix order (starting from this ZMI) a whole tree with all the attributes.
-	 * 
-	 * @param stream a destination stream
-	 * @see #toString()
-	 */
-	public void printAttributes(PrintStream stream) {
-		for(Entry<Attribute, Value> entry : attributes)
-			stream.println(entry.getKey() + " : " + entry.getValue().getType() + " = " + entry.getValue());
-		System.out.println();
-		for(ZMI son : sons)
-			son.printAttributes(stream);
-	}
-	
-	/**
-	 * Creates an independent copy of a whole hierarchy. A returned ZMI has the same reference as a father (but the
-	 * father does not have a reference to it as a son). For the root zone, the copy is completely independent, since
-	 * its father is <code>null</code>.
-	 * 
-	 * @return a deep copy of this ZMI
-	 */
-	@Override
-	public ZMI clone() {
-		ZMI result = new ZMI(father);
-		result.attributes.add(attributes.clone());
-		for(ZMI son : sons) {
-			ZMI sonClone = son.clone();
-			result.sons.add(sonClone);
-			sonClone.father = result;
-		}
-		return result;
-	}
-	
-	/**
-	 * Prints a textual representation of this ZMI. It contains only attributes of this node.
-	 * 
-	 * @return a textual representation of this object
-	 * @see #printAttributes(PrintStream)
-	 */
-	@Override
-	public String toString() {
-		return attributes.toString();
-	}
+    private final AttributesMap attributes = new AttributesMap();
+
+    private final List<ZMI> sons = new ArrayList<ZMI>();
+    private ZMI father;
+
+    /**
+     * Creates a new ZMI with no father (the root zone) and empty sons list.
+     */
+    public ZMI() {
+        this(null);
+    }
+
+    /**
+     * Creates a new ZMI with the specified node as a father and empty sons list. This method does not perform any
+     * operation on the <code>father</code>. Especially, setting this object as a <code>father</code>'s son must be done
+     * separately.
+     *
+     * @param father a father of this ZMI
+     * @see #addSon(ZMI)
+     */
+    public ZMI(ZMI father) {
+        this.father = father;
+    }
+
+    /**
+     * Gets a father of this ZMI in a tree.
+     *
+     * @return a father of this ZMI or <code>null</code> if this is the root zone
+     */
+    public ZMI getFather() {
+        return father;
+    }
+
+    /**
+     * Sets or changes a father of this ZMI in a tree. This method does not perform any operation on the
+     * <code>father</code>. Especially, setting this object as a <code>father</code>'s son must be done separately.
+     *
+     * @param father a new father for this ZMI
+     * @see #addSon(ZMI)
+     */
+    public void setFather(ZMI father) {
+        this.father = father;
+    }
+
+    /**
+     * Gets a list of sons of this ZMI in a tree. Modifying a return value will cause an exception.
+     *
+     * @return
+     */
+    public List<ZMI> getSons() {
+        return Collections.unmodifiableList(sons);
+    }
+
+    /**
+     * Adds the specified ZMI to the list of sons of this ZMI. This method does not perform any operation on a
+     * <code>son</code>. Especially, setting this object as a <code>son</code>'s father must be done separately.
+     *
+     * @param son
+     * @see #ZMI(ZMI)
+     * @see #setFather(ZMI)
+     */
+    public void addSon(ZMI son) {
+        sons.add(son);
+    }
+
+    /**
+     * Removes the specified ZMI from the list of sons of this ZMI. This method does not perform any operation on a
+     * <code>son</code>. Especially, its father remains unchanged.
+     *
+     * @param son
+     * @see #setFather(ZMI)
+     */
+    public void removeSon(ZMI son) {
+        sons.remove(son);
+    }
+
+    /**
+     * Gets a map of all the attributes stored in this ZMI.
+     *
+     * @return map of attributes
+     */
+    public AttributesMap getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * Prints recursively in a prefix order (starting from this ZMI) a whole tree with all the attributes.
+     *
+     * @param stream a destination stream
+     * @see #toString()
+     */
+    public void printAttributes(PrintStream stream) {
+        for(Entry<Attribute, Value> entry : attributes)
+            stream.println(entry.getKey() + " : " + entry.getValue().getType() + " = " + entry.getValue());
+        System.out.println();
+        for(ZMI son : sons)
+            son.printAttributes(stream);
+    }
+
+    /**
+     * Creates an independent copy of a whole hierarchy. A returned ZMI has the same reference as a father (but the
+     * father does not have a reference to it as a son). For the root zone, the copy is completely independent, since
+     * its father is <code>null</code>.
+     *
+     * @return a deep copy of this ZMI
+     */
+    @Override
+    public ZMI clone() {
+        ZMI result = new ZMI(father);
+        result.attributes.add(attributes.clone());
+        for(ZMI son : sons) {
+            ZMI sonClone = son.clone();
+            result.sons.add(sonClone);
+            sonClone.father = result;
+        }
+        return result;
+    }
+
+    /**
+     * Prints a textual representation of this ZMI. It contains only attributes of this node.
+     *
+     * @return a textual representation of this object
+     * @see #printAttributes(PrintStream)
+     */
+    @Override
+    public String toString() {
+        return attributes.toString();
+    }
 }

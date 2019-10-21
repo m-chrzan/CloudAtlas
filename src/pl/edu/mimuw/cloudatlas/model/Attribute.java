@@ -33,74 +33,74 @@ package pl.edu.mimuw.cloudatlas.model;
  * This class is immutable.
  */
 public class Attribute {
-	private final String name;
-	
-	/**
-	 * Creates a new <code>Attribute</code> object with the specified <code>name</code>.
-	 * 
-	 * @param name the name of the attribute
-	 * @throws IllegalArgumentException if the <code>name</code> does not meet the rules
-	 */
-	public Attribute(String name) {
-		if(!name.matches("^&?[a-zA-Z]{1}[a-zA-z0-9_]*$"))
-			throw new IllegalArgumentException("Invalid name: may contain only letters, digits, underscores, "
-					+ "must start with a letter and may optionally have an ampersand at the beginning.");
-		this.name = name;
-	}
-	
-	/**
-	 * Indicates whether an <code>attribute</code> represents a query. This is true if and only if the attribute's name starts with an ampersand.
-	 * 
-	 * @param attribute the attribute to check
-	 * @return whether the <code>attribute</code> represents a query
-	 */
-	public static boolean isQuery(Attribute attribute) {
-		return attribute.getName().startsWith("&");
-	}
-	
-	/**
-	 * Gets the name of this attribute.
-	 * 
-	 * @return string representing name
-	 */
-	public String getName() {
-		return name;
-	}
-	
-	/**
-	 * Returns a hash code value for this attribute. For proper behavior when using <code>Attribute</code> objects in
-	 * <code>HashMap</code>, <code>HashSet</code> etc. this is the hash code of a string representing the attribute's name.
-	 * 
-	 * @return hash code for this attribute
-	 */
-	@Override
-	public int hashCode() {
-		return name.hashCode();
-	}
-	
-	/**
-	 * Indicates whether another object is equal to this attribute.
-	 * 
-	 * @param object the object to check
-	 * @return true if and only if the <code>object</code> is an instance of <code>Attribute</code> class and has
+    private final String name;
+
+    /**
+     * Creates a new <code>Attribute</code> object with the specified <code>name</code>.
+     *
+     * @param name the name of the attribute
+     * @throws IllegalArgumentException if the <code>name</code> does not meet the rules
+     */
+    public Attribute(String name) {
+        if(!name.matches("^&?[a-zA-Z]{1}[a-zA-z0-9_]*$"))
+            throw new IllegalArgumentException("Invalid name: may contain only letters, digits, underscores, "
+                    + "must start with a letter and may optionally have an ampersand at the beginning.");
+        this.name = name;
+    }
+
+    /**
+     * Indicates whether an <code>attribute</code> represents a query. This is true if and only if the attribute's name starts with an ampersand.
+     *
+     * @param attribute the attribute to check
+     * @return whether the <code>attribute</code> represents a query
+     */
+    public static boolean isQuery(Attribute attribute) {
+        return attribute.getName().startsWith("&");
+    }
+
+    /**
+     * Gets the name of this attribute.
+     *
+     * @return string representing name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns a hash code value for this attribute. For proper behavior when using <code>Attribute</code> objects in
+     * <code>HashMap</code>, <code>HashSet</code> etc. this is the hash code of a string representing the attribute's name.
+     *
+     * @return hash code for this attribute
+     */
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    /**
+     * Indicates whether another object is equal to this attribute.
+     *
+     * @param object the object to check
+     * @return true if and only if the <code>object</code> is an instance of <code>Attribute</code> class and has
      * an identical name
-	 */
-	@Override
-	public boolean equals(Object object) {
-		if(object == null)
-			return false;
-		if(getClass() != object.getClass())
-			return false;
-		return name.equals(((Attribute)object).name);
-	}
-	
-	/**
-	 * Returns a textual representation of this attribute.
-	 * 
-	 * @return the name of this attribute
-	 */
-	@Override
-	public String toString() {
-		return name;
-	}
+     */
+    @Override
+    public boolean equals(Object object) {
+        if(object == null)
+            return false;
+        if(getClass() != object.getClass())
+            return false;
+        return name.equals(((Attribute)object).name);
+    }
+
+    /**
+     * Returns a textual representation of this attribute.
+     *
+     * @return the name of this attribute
+     */
+    @Override
+    public String toString() {
+        return name;
+    }
 }

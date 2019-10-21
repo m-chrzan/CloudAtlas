@@ -28,42 +28,42 @@ import pl.edu.mimuw.cloudatlas.model.Value.Operation;
 
 /**
  * An exception caused by calling an unsupported unary operation on value.
- * 
+ *
  * @see IncompatibleTypesException
  * @see UnsupportedConversionException
  */
 @SuppressWarnings("serial")
 public class UnsupportedValueOperationException extends UnsupportedOperationException {
-	private final Type left;
-	private final Operation operation;
-	
-	/**
-	 * Creates a new object representing this exception.
-	 * 
-	 * @param left type of a value that was an argument of an operation that caused this exception
-	 * @param operation the operation that caused this exception
-	 */
-	protected UnsupportedValueOperationException(Type left, Operation operation) {
-		super("Type: " + left + " does not provide operation " + operation + ".");
-		this.left = left;
-		this.operation = operation;
-	}
-	
-	/**
-	 * Gets a type of value that was an argument to an operation that caused this exception.
-	 * 
-	 * @return first argument of the operation
-	 */
-	public Type getLeft() {
-		return left;
-	}
-	
-	/**
-	 * Gets an operation that caused this exception.
-	 * 
-	 * @return the operation
-	 */
-	public Operation getOperation() {
-		return operation;
-	}
+    private final Type left;
+    private final Operation operation;
+
+    /**
+     * Creates a new object representing this exception.
+     *
+     * @param left type of a value that was an argument of an operation that caused this exception
+     * @param operation the operation that caused this exception
+     */
+    protected UnsupportedValueOperationException(Type left, Operation operation) {
+        super("Type: " + left + " does not provide operation " + operation + ".");
+        this.left = left;
+        this.operation = operation;
+    }
+
+    /**
+     * Gets a type of value that was an argument to an operation that caused this exception.
+     *
+     * @return first argument of the operation
+     */
+    public Type getLeft() {
+        return left;
+    }
+
+    /**
+     * Gets an operation that caused this exception.
+     *
+     * @return the operation
+     */
+    public Operation getOperation() {
+        return operation;
+    }
 }

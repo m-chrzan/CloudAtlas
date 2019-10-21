@@ -33,84 +33,84 @@ import pl.edu.mimuw.cloudatlas.model.ValueNull;
 
 /**
  * Represents a collection type with specified element type.
- * 
+ *
  * @see TypePrimitve
  */
 public class TypeCollection extends Type {
-	private final Type elementType;
-	
-	/**
-	 * Creates a new collection type.
-	 * 
-	 * @param primaryType a type of this collection (set, list etc.)
-	 * @param elementType a type of an element of this collection; may be a complex type (for instance
-	 * <code>TypeCollection</code>)
-	 */
-	public TypeCollection(PrimaryType primaryType, Type elementType) {
-		super(primaryType);
-		switch(primaryType) {
-			case LIST:
-			case SET:
-				break;
-			default:
-				throw new IllegalArgumentException("This class can represent a collection only (list, set etc.).");
-		}
-		this.elementType = elementType;
-	}
-	
-	/**
-	 * Gets a type of elements stored in this collection.
-	 * 
-	 * @return type of element in this collection
-	 */
-	public Type getElementType() {
-		return elementType;
-	}
-	
-	/**
-	 * Returns a friendly textual representation of this collection, for instance: "SET of (STRING)".
-	 * 
-	 * @return a textual representation of this type
-	 */
-	@Override
-	public String toString() {
-		return getPrimaryType().toString() + " of (" + elementType.toString() + ")";
-	}
-	
-	@Override
-	public boolean isCompatible(Type type) {
-		return super.isCompatible(type)
-				|| (getPrimaryType() == type.getPrimaryType() && elementType
-						.isCompatible(((TypeCollection)type).elementType));
-	}
-	
-	@Override
-	public boolean isCollection() {
-		return true;
-	}
-	
-	/**
-	 * Returns a type of all elements in the specified collection. If the collection is empty, this method returns
-	 * {@link TypePrimitive#NULL}. If the collection contains at least two elements of distinct types that are not nulls,
-	 * an exception is thrown.
-	 * 
-	 * @param collection a collection of values to check
-	 * @return type of elements in this collection
-	 * @throws IllegalArgumentException if the collection contains non-null elements of different types
-	 */
-	public static Type computeElementType(Collection<Value> collection) {
-		Type mainType = null;
-		
-		for(Value v : collection) {
-			if(v.isNull())
-				v = ValueNull.getInstance();
-			if(mainType == null) {
-				if(v.getType().getPrimaryType() != Type.PrimaryType.NULL)
-					mainType = v.getType();
-			} else if(!mainType.isCompatible(v.getType()))
-				throw new IllegalArgumentException("Collection has non-null elements of different types.");
-		}
-		
-		return mainType == null? TypePrimitive.NULL : mainType;
-	}
+    private final Type elementType;
+
+    /**
+     * Creates a new collection type.
+     *
+     * @param primaryType a type of this collection (set, list etc.)
+     * @param elementType a type of an element of this collection; may be a complex type (for instance
+     * <code>TypeCollection</code>)
+     */
+    public TypeCollection(PrimaryType primaryType, Type elementType) {
+        super(primaryType);
+        switch(primaryType) {
+            case LIST:
+            case SET:
+                break;
+            default:
+                throw new IllegalArgumentException("This class can represent a collection only (list, set etc.).");
+        }
+        this.elementType = elementType;
+    }
+
+    /**
+     * Gets a type of elements stored in this collection.
+     *
+     * @return type of element in this collection
+     */
+    public Type getElementType() {
+        return elementType;
+    }
+
+    /**
+     * Returns a friendly textual representation of this collection, for instance: "SET of (STRING)".
+     *
+     * @return a textual representation of this type
+     */
+    @Override
+    public String toString() {
+        return getPrimaryType().toString() + " of (" + elementType.toString() + ")";
+    }
+
+    @Override
+    public boolean isCompatible(Type type) {
+        return super.isCompatible(type)
+                || (getPrimaryType() == type.getPrimaryType() && elementType
+                        .isCompatible(((TypeCollection)type).elementType));
+    }
+
+    @Override
+    public boolean isCollection() {
+        return true;
+    }
+
+    /**
+     * Returns a type of all elements in the specified collection. If the collection is empty, this method returns
+     * {@link TypePrimitive#NULL}. If the collection contains at least two elements of distinct types that are not nulls,
+     * an exception is thrown.
+     *
+     * @param collection a collection of values to check
+     * @return type of elements in this collection
+     * @throws IllegalArgumentException if the collection contains non-null elements of different types
+     */
+    public static Type computeElementType(Collection<Value> collection) {
+        Type mainType = null;
+
+        for(Value v : collection) {
+            if(v.isNull())
+                v = ValueNull.getInstance();
+            if(mainType == null) {
+                if(v.getType().getPrimaryType() != Type.PrimaryType.NULL)
+                    mainType = v.getType();
+            } else if(!mainType.isCompatible(v.getType()))
+                throw new IllegalArgumentException("Collection has non-null elements of different types.");
+        }
+
+        return mainType == null? TypePrimitive.NULL : mainType;
+    }
 }

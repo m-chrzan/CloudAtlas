@@ -31,63 +31,63 @@ import pl.edu.mimuw.cloudatlas.model.ValueBoolean;
  * A class that wraps a Java <code>Boolean</code> object.
  */
 public class ValueBoolean extends ValueSimple<Boolean> {
-	/**
-	 * Constructs a new <code>ValueBoolean</code> object wrapping the specified <code>value</code>.
-	 * 
-	 * @param value the value to wrap
-	 */
-	public ValueBoolean(Boolean value) {
-		super(value);
-	}
-	
-	@Override
-	public Type getType() {
-		return TypePrimitive.BOOLEAN;
-	}
-	
-	@Override
-	public Value getDefaultValue() {
-		return new ValueBoolean(false);
-	}
-	
-	@Override
-	public ValueBoolean isLowerThan(Value value) {
-		sameTypesOrThrow(value, Operation.COMPARE);
-		if(isNull() || value.isNull())
-			return new ValueBoolean(null);
-		return new ValueBoolean(!getValue() && ((ValueBoolean)value).getValue());
-	}
-	
-	@Override
-	public ValueBoolean and(Value value) {
-		sameTypesOrThrow(value, Operation.AND);
-		if(isNull() || value.isNull())
-			return new ValueBoolean(null);
-		return new ValueBoolean(getValue() && ((ValueBoolean)value).getValue());
-	}
-	
-	@Override
-	public ValueBoolean or(Value value) { // -
-		sameTypesOrThrow(value, Operation.OR);
-		if(isNull() || value.isNull())
-			return new ValueBoolean(null);
-		return new ValueBoolean(getValue() || ((ValueBoolean)value).getValue());
-	}
-	
-	@Override
-	public ValueBoolean negate() { // !
-		return new ValueBoolean(isNull()? null : !getValue());
-	}
-	
-	@Override
-	public Value convertTo(Type type) {
-		switch(type.getPrimaryType()) {
-			case BOOLEAN:
-				return this;
-			case STRING:
-				return getValue() == null? ValueString.NULL_STRING : new ValueString(getValue().toString());
-			default:
-				throw new UnsupportedConversionException(getType(), type);
-		}
-	}
+    /**
+     * Constructs a new <code>ValueBoolean</code> object wrapping the specified <code>value</code>.
+     *
+     * @param value the value to wrap
+     */
+    public ValueBoolean(Boolean value) {
+        super(value);
+    }
+
+    @Override
+    public Type getType() {
+        return TypePrimitive.BOOLEAN;
+    }
+
+    @Override
+    public Value getDefaultValue() {
+        return new ValueBoolean(false);
+    }
+
+    @Override
+    public ValueBoolean isLowerThan(Value value) {
+        sameTypesOrThrow(value, Operation.COMPARE);
+        if(isNull() || value.isNull())
+            return new ValueBoolean(null);
+        return new ValueBoolean(!getValue() && ((ValueBoolean)value).getValue());
+    }
+
+    @Override
+    public ValueBoolean and(Value value) {
+        sameTypesOrThrow(value, Operation.AND);
+        if(isNull() || value.isNull())
+            return new ValueBoolean(null);
+        return new ValueBoolean(getValue() && ((ValueBoolean)value).getValue());
+    }
+
+    @Override
+    public ValueBoolean or(Value value) { // -
+        sameTypesOrThrow(value, Operation.OR);
+        if(isNull() || value.isNull())
+            return new ValueBoolean(null);
+        return new ValueBoolean(getValue() || ((ValueBoolean)value).getValue());
+    }
+
+    @Override
+    public ValueBoolean negate() { // !
+        return new ValueBoolean(isNull()? null : !getValue());
+    }
+
+    @Override
+    public Value convertTo(Type type) {
+        switch(type.getPrimaryType()) {
+            case BOOLEAN:
+                return this;
+            case STRING:
+                return getValue() == null? ValueString.NULL_STRING : new ValueString(getValue().toString());
+            default:
+                throw new UnsupportedConversionException(getType(), type);
+        }
+    }
 }

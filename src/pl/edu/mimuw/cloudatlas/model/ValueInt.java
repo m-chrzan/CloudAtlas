@@ -32,102 +32,102 @@ import pl.edu.mimuw.cloudatlas.model.ValueInt;
  * A class that wraps a Java <code>Long</code> object.
  */
 public class ValueInt extends ValueSimple<Long> {
-	/**
-	 * Constructs a new <code>ValueInt</code> object wrapping the specified <code>value</code>.
-	 * 
-	 * @param value the value to wrap
-	 */
-	public ValueInt(Long value) {
-		super(value);
-	}
-	
-	@Override
-	public Type getType() {
-		return TypePrimitive.INTEGER;
-	}
-	
-	@Override
-	public Value getDefaultValue() {
-		return new ValueInt(0l);
-	}
-	
-	@Override
-	public ValueBoolean isLowerThan(Value value) {
-		sameTypesOrThrow(value, Operation.COMPARE);
-		if(isNull() || value.isNull())
-			return new ValueBoolean(null);
-		return new ValueBoolean(getValue() < ((ValueInt)value).getValue());
-	}
-	
-	@Override
-	public ValueInt addValue(Value value) {
-		sameTypesOrThrow(value, Operation.ADD);
-		if(isNull() || value.isNull())
-			return new ValueInt(null);
-		return new ValueInt(getValue() + ((ValueInt)value).getValue());
-	}
-	
-	@Override
-	public ValueInt subtract(Value value) {
-		sameTypesOrThrow(value, Operation.SUBTRACT);
-		if(isNull() || value.isNull())
-			return new ValueInt(null);
-		return new ValueInt(getValue() - ((ValueInt)value).getValue());
-	}
-	
-	@Override
-	public Value multiply(Value value) {
-		if(value.getType().getPrimaryType() == PrimaryType.DURATION)
-			return value.multiply(this);
-		sameTypesOrThrow(value, Operation.MULTIPLY);
-		if(isNull() || value.isNull())
-			return new ValueInt(null);
-		return new ValueInt(getValue() * ((ValueInt)value).getValue());
-	}
-	
-	@Override
-	public ValueDouble divide(Value value) {
-		sameTypesOrThrow(value, Operation.DIVIDE);
-		if(value.isNull())
-			return new ValueDouble(null);
-		if(((ValueInt)value).getValue() == 0l)
-			throw new ArithmeticException("Division by zero.");
-		if(isNull())
-			return new ValueDouble(null);
-		return new ValueDouble((double)getValue() / ((ValueInt)value).getValue());
-	}
-	
-	@Override
-	public ValueInt modulo(Value value) {
-		sameTypesOrThrow(value, Operation.MODULO);
-		if(value.isNull())
-			return new ValueInt(null);
-		if(((ValueInt)value).getValue() == 0l)
-			throw new ArithmeticException("Division by zero.");
-		if(isNull())
-			return new ValueInt(null);
-		return new ValueInt(getValue() % ((ValueInt)value).getValue());
-	}
-	
-	@Override
-	public ValueInt negate() {
-		return new ValueInt(isNull()? null : -getValue());
-	}
-	
-	@Override
-	public Value convertTo(Type type) {
-		switch(type.getPrimaryType()) {
-			case DOUBLE:
-				return new ValueDouble(getValue() == null? null : getValue().doubleValue());
-			case DURATION:
-				return new ValueDuration(getValue());
-			case INT:
-				return this;
-			case STRING:
-				return getValue() == null? ValueString.NULL_STRING : new ValueString(Long.toString(getValue()
-						.longValue()));
-			default:
-				throw new UnsupportedConversionException(getType(), type);
-		}
-	}
+    /**
+     * Constructs a new <code>ValueInt</code> object wrapping the specified <code>value</code>.
+     *
+     * @param value the value to wrap
+     */
+    public ValueInt(Long value) {
+        super(value);
+    }
+
+    @Override
+    public Type getType() {
+        return TypePrimitive.INTEGER;
+    }
+
+    @Override
+    public Value getDefaultValue() {
+        return new ValueInt(0l);
+    }
+
+    @Override
+    public ValueBoolean isLowerThan(Value value) {
+        sameTypesOrThrow(value, Operation.COMPARE);
+        if(isNull() || value.isNull())
+            return new ValueBoolean(null);
+        return new ValueBoolean(getValue() < ((ValueInt)value).getValue());
+    }
+
+    @Override
+    public ValueInt addValue(Value value) {
+        sameTypesOrThrow(value, Operation.ADD);
+        if(isNull() || value.isNull())
+            return new ValueInt(null);
+        return new ValueInt(getValue() + ((ValueInt)value).getValue());
+    }
+
+    @Override
+    public ValueInt subtract(Value value) {
+        sameTypesOrThrow(value, Operation.SUBTRACT);
+        if(isNull() || value.isNull())
+            return new ValueInt(null);
+        return new ValueInt(getValue() - ((ValueInt)value).getValue());
+    }
+
+    @Override
+    public Value multiply(Value value) {
+        if(value.getType().getPrimaryType() == PrimaryType.DURATION)
+            return value.multiply(this);
+        sameTypesOrThrow(value, Operation.MULTIPLY);
+        if(isNull() || value.isNull())
+            return new ValueInt(null);
+        return new ValueInt(getValue() * ((ValueInt)value).getValue());
+    }
+
+    @Override
+    public ValueDouble divide(Value value) {
+        sameTypesOrThrow(value, Operation.DIVIDE);
+        if(value.isNull())
+            return new ValueDouble(null);
+        if(((ValueInt)value).getValue() == 0l)
+            throw new ArithmeticException("Division by zero.");
+        if(isNull())
+            return new ValueDouble(null);
+        return new ValueDouble((double)getValue() / ((ValueInt)value).getValue());
+    }
+
+    @Override
+    public ValueInt modulo(Value value) {
+        sameTypesOrThrow(value, Operation.MODULO);
+        if(value.isNull())
+            return new ValueInt(null);
+        if(((ValueInt)value).getValue() == 0l)
+            throw new ArithmeticException("Division by zero.");
+        if(isNull())
+            return new ValueInt(null);
+        return new ValueInt(getValue() % ((ValueInt)value).getValue());
+    }
+
+    @Override
+    public ValueInt negate() {
+        return new ValueInt(isNull()? null : -getValue());
+    }
+
+    @Override
+    public Value convertTo(Type type) {
+        switch(type.getPrimaryType()) {
+            case DOUBLE:
+                return new ValueDouble(getValue() == null? null : getValue().doubleValue());
+            case DURATION:
+                return new ValueDuration(getValue());
+            case INT:
+                return this;
+            case STRING:
+                return getValue() == null? ValueString.NULL_STRING : new ValueString(Long.toString(getValue()
+                        .longValue()));
+            default:
+                throw new UnsupportedConversionException(getType(), type);
+        }
+    }
 }

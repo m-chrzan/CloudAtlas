@@ -29,127 +29,127 @@ import pl.edu.mimuw.cloudatlas.model.ValueNull;
 
 /**
  * A special null value of an unknown type introduced to deal with nulls. This class is a singleton.
- * 
+ *
  * @see TypePrimitve#NULL
  * @see Type#isCompatible(Value)
  */
 public class ValueNull extends Value {
-	private static ValueNull instance = null;
-	
-	private ValueNull() {}
-	
-	/**
-	 * Gets a singleton instance of a <code>ValueNull</code> class. Every call to this method returns the same
-	 * reference.
-	 * 
-	 * @return an instance of <code>ValueNull</code>
-	 */
-	public static ValueNull getInstance() {
-		if(instance == null)
-			instance = new ValueNull();
-		return instance;
-	}
-	
-	@Override
-	public Value getDefaultValue() {
-		return instance;
-	}
-	
-	@Override
-	public Value convertTo(Type type) {
-		switch(type.getPrimaryType()) {
-			case STRING:
-				return ValueString.NULL_STRING;
-			default:
-				return this;
-		}
-	}
-	
-	@Override
-	public Type getType() {
-		return TypePrimitive.NULL;
-	}
-	
-	@Override
-	public boolean isNull() {
-		return true;
-	}
-	
-	@Override
-	public Value isEqual(Value value) {
-		return new ValueBoolean(isNull() && value.isNull());
-	}
-	
-	@Override
-	public Value isLowerThan(Value value) {
-		if(value == getInstance())
-			return this;
-		return value.isLowerThan(this);
-	}
-	
-	@Override
-	public Value addValue(Value value) {
-		if(value == getInstance())
-			return this;
-		return value.addValue(this);
-	}
-	
-	@Override
-	public Value subtract(Value value) {
-		if(value == getInstance())
-			return this;
-		return value.subtract(this);
-	}
-	
-	@Override
-	public Value multiply(Value value) {
-		if(value == getInstance())
-			return this;
-		return value.multiply(this);
-	}
-	
-	@Override
-	public Value divide(Value value) {
-		if(value == getInstance())
-			return this;
-		return value.divide(this);
-	}
-	
-	@Override
-	public Value modulo(Value value) {
-		if(value == getInstance())
-			return this;
-		return value.modulo(this);
-	}
-	
-	@Override
-	public Value and(Value value) {
-		if(value == getInstance())
-			return this;
-		return value.and(this);
-	}
-	
-	@Override
-	public Value or(Value value) {
-		if(value == getInstance())
-			return this;
-		return value.or(this);
-	}
-	
-	@Override
-	public Value regExpr(Value value) {
-		if(value == getInstance())
-			return this;
-		return value.regExpr(this);
-	}
-	
-	@Override
-	public Value negate() {
-		return this;
-	}
-	
-	@Override
-	public Value valueSize() {
-		return this;
-	}
+    private static ValueNull instance = null;
+
+    private ValueNull() {}
+
+    /**
+     * Gets a singleton instance of a <code>ValueNull</code> class. Every call to this method returns the same
+     * reference.
+     *
+     * @return an instance of <code>ValueNull</code>
+     */
+    public static ValueNull getInstance() {
+        if(instance == null)
+            instance = new ValueNull();
+        return instance;
+    }
+
+    @Override
+    public Value getDefaultValue() {
+        return instance;
+    }
+
+    @Override
+    public Value convertTo(Type type) {
+        switch(type.getPrimaryType()) {
+            case STRING:
+                return ValueString.NULL_STRING;
+            default:
+                return this;
+        }
+    }
+
+    @Override
+    public Type getType() {
+        return TypePrimitive.NULL;
+    }
+
+    @Override
+    public boolean isNull() {
+        return true;
+    }
+
+    @Override
+    public Value isEqual(Value value) {
+        return new ValueBoolean(isNull() && value.isNull());
+    }
+
+    @Override
+    public Value isLowerThan(Value value) {
+        if(value == getInstance())
+            return this;
+        return value.isLowerThan(this);
+    }
+
+    @Override
+    public Value addValue(Value value) {
+        if(value == getInstance())
+            return this;
+        return value.addValue(this);
+    }
+
+    @Override
+    public Value subtract(Value value) {
+        if(value == getInstance())
+            return this;
+        return value.subtract(this);
+    }
+
+    @Override
+    public Value multiply(Value value) {
+        if(value == getInstance())
+            return this;
+        return value.multiply(this);
+    }
+
+    @Override
+    public Value divide(Value value) {
+        if(value == getInstance())
+            return this;
+        return value.divide(this);
+    }
+
+    @Override
+    public Value modulo(Value value) {
+        if(value == getInstance())
+            return this;
+        return value.modulo(this);
+    }
+
+    @Override
+    public Value and(Value value) {
+        if(value == getInstance())
+            return this;
+        return value.and(this);
+    }
+
+    @Override
+    public Value or(Value value) {
+        if(value == getInstance())
+            return this;
+        return value.or(this);
+    }
+
+    @Override
+    public Value regExpr(Value value) {
+        if(value == getInstance())
+            return this;
+        return value.regExpr(this);
+    }
+
+    @Override
+    public Value negate() {
+        return this;
+    }
+
+    @Override
+    public Value valueSize() {
+        return this;
+    }
 }
