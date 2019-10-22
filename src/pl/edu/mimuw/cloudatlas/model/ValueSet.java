@@ -39,8 +39,8 @@ import pl.edu.mimuw.cloudatlas.model.ValueSet;
 /**
  * A value representing a set of values of the specified type. Implements <code>Set</code> interface.
  * <p>
- * All constructors expect type of elements stored in this set. This type is checked when adding elements to the set and
- * an <code>IllegalArgumentException</code> is thrown in case of error.
+ * All constructors take a type of elements stored in this set. This type is checked when adding elements to the set and
+ * an <code>IllegalArgumentException</code> is thrown in case of a mismatch.
  *
  * @see java.util.Set
  */
@@ -80,7 +80,7 @@ public class ValueSet extends ValueSimple<Set<Value>> implements Set<Value> {
     }
 
     /**
-     * Gets a <code>Set</code> containing all the objects stored in this value. Modifying a return value will cause an
+     * Gets a <code>Set</code> containing all the objects stored in this value. Modifying the returned list will cause an
      * exception.
      */
     @Override
@@ -123,7 +123,7 @@ public class ValueSet extends ValueSimple<Set<Value>> implements Set<Value> {
             throw new IllegalArgumentException("If you want to use null, create an object containing null instead.");
         if(!type.getElementType().isCompatible(element.getType()))
             throw new IllegalArgumentException("This set contains elements of type " + type.getElementType().toString()
-                    + " only. Not compatibile with elements of type: " + element.getType().toString());
+                    + " only. Incompatible with elements of type: " + element.getType().toString());
     }
 
     @Override
@@ -205,9 +205,9 @@ public class ValueSet extends ValueSimple<Set<Value>> implements Set<Value> {
                 if(this.type.getElementType().isCompatible(((TypeCollection)type).getElementType())) {
                     if(this.isNull())
                         return new ValueList(null, this.type.getElementType());
-                    List<Value> l = new ArrayList<Value>();
-                    l.addAll(this);
-                    return new ValueList(l, this.type.getElementType());
+                    List<Value> list = new ArrayList<Value>();
+                    list.addAll(this);
+                    return new ValueList(list, this.type.getElementType());
                 }
                 throw new UnsupportedConversionException(getType(), type);
             case STRING:
