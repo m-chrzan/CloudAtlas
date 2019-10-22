@@ -34,7 +34,7 @@ import pl.edu.mimuw.cloudatlas.model.ValueString;
  */
 public class ValueString extends ValueSimple<String> {
     /**
-     * A result of conversion values representing null to <code>ValueString</code>.
+     * Result of converting values representing null to <code>ValueString</code>.
      */
     protected static final ValueString NULL_STRING = new ValueString("NULL");
 
