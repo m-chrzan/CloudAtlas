@@ -31,11 +31,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Represent a fully qualified name of a zone, also known as a global name or a path name. This class is immutable.
+ * Represent a fully qualified name of a zone, also known as a global name or a path name. Objects of this class are immutable.
  */
 public class PathName {
     /**
-     * The object representing a name of the root zone (/).
+     * Object representing the name of the root zone (/).
      */
     public static final PathName ROOT = new PathName("/");
 
@@ -45,7 +45,7 @@ public class PathName {
     /**
      * Creates a <code>PathName</code> object representing the specified path. For the root zone, there are three
      * accepted forms: <code>null</code> reference, empty string or slash. Any other zone is represented by a string
-     * starting with slash and containing names of zones at each level of hierarchy, separated by slashes. Zone name
+     * starting with slash and containing names of zones at each level of the hierarchy, separated by slashes. Zone names
      * must contain only letters and digits.
      *
      * @param name path name of a zone, for instance: <code>/warsaw/uw/violet07</code>
@@ -61,10 +61,10 @@ public class PathName {
     }
 
     /**
-     * Creates a <code>PathName</code> object from a collection of zones names. Every zone name must contain only
+     * Creates a <code>PathName</code> object from a collection of zone names. Every zone name must contain only
      * letters and digits.
      *
-     * @param components a collection of zones names at subsequent levels of hierarchy (starting from root); empty
+     * @param components a collection of zone names at subsequent levels of hierarchy (starting from root); an empty
      * collection represents the root zone
      * @throws IllegalArgumentException if any zone name is incorrect
      */
@@ -84,8 +84,8 @@ public class PathName {
     }
 
     /**
-     * Gets zones names at subsequent levels of hierarchy, starting from root. For the root zone, this method returns an
-     * empty collection. Modifying returned list will throw an exception.
+     * Gets zone names at subsequent levels of hierarchy, starting from the root. For the root zone, this method returns an
+     * empty collection. Modifying the returned list will throw an exception.
      *
      * @return a collection of zones names
      */
@@ -104,7 +104,7 @@ public class PathName {
     }
 
     /**
-     * Gets a name one level up in a hierarchy. For the root zone, this method returns a new instance of the same zone.
+     * Gets a name one level up in the hierarchy. For the root zone, this method returns a new instance of the same zone.
      *
      * @return a new <code>PathName</code> object representing a zone one level up in the hierarchy
      */
@@ -140,7 +140,7 @@ public class PathName {
     }
 
     /**
-     * Returns a hash code value for this object. This method returns a hash code of a string representing full path
+     * Returns a hash code value for this object. This method returns a hash code of a string representing the full path
      * name.
      *
      * @return a hash code for this object
@@ -152,10 +152,10 @@ public class PathName {
 
     /**
      * Indicates whether this object is equal to another. A <code>PathName</code> object is equal to other objects of
-     * the same class representing identical path name.
+     * the same class representing identical path names.
      *
-     * @object the object to check
-     * @return whether the <code>object</code> is equal to this name
+     * @param object the object to check
+     * @return whether <code>object</code>'s name is equal to this one's
      */
     @Override
     public boolean equals(Object object) {
@@ -168,7 +168,7 @@ public class PathName {
 
     /**
      * Returns a textual representation for this <code>PathName</code>. For the root zone, unlike {@link #getName()},
-     * this method returns slash.
+     * this method returns a slash.
      *
      * @return a path name for this object
      * @see #getName()
