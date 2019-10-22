@@ -50,7 +50,7 @@ public class UnsupportedValueOperationException extends UnsupportedOperationExce
     }
 
     /**
-     * Gets a type of value that was an argument to an operation that caused this exception.
+     * Gets the type of value that was the argument to the operation that caused this exception.
      *
      * @return first argument of the operation
      */
@@ -59,7 +59,7 @@ public class UnsupportedValueOperationException extends UnsupportedOperationExce
     }
 
     /**
-     * Gets an operation that caused this exception.
+     * Gets the operation that caused this exception.
      *
      * @return the operation
      */
