@@ -44,12 +44,12 @@ public class AttributesMap implements Iterable<Entry<Attribute, Value>>, Cloneab
     }
 
     /**
-     * Adds to this map a new <code>attribute</code> mapping to the specified <code>value</code>. The
-     * <code>attribute</code> cannot already exist in the map. To overwrite an existing attribute, use method
+     * Adds a new <code>attribute</code>-<code>value</code> mapping. The
+     * <code>attribute</code> cannot already exist in the map. To overwrite an existing attribute, use
      * {@link #addOrChange(Attribute, Value)} instead.
      *
      * @param attribute the attribute to add
-     * @param value the value for the <code>attribute</code>
+     * @param value the value for <code>attribute</code>
      * @throws IllegalArgumentException if the <code>attribute</code> already exists in this map
      * @throws NullPointerException if either the <code>attribute</code> or the <code>value</code> is <code>null</code>;
      * for null value, create a <code>Value</code> object containing <code>null</code>
@@ -122,7 +122,7 @@ public class AttributesMap implements Iterable<Entry<Attribute, Value>>, Cloneab
     }
 
     /**
-     * Adds a new attribute< mapping to the specified <code>value</code> or overwrites an existing one. Convenient
+     * Adds a new attribute mapping to the specified <code>value</code> or overwrites an existing one. Convenient
      * version of {@link #addOrChange(Attribute, Value)}.
      *
      * @param name the attribute name
@@ -165,13 +165,13 @@ public class AttributesMap implements Iterable<Entry<Attribute, Value>>, Cloneab
     }
 
     /**
-     * Gets the value mapped to the specified <code>attribute</code>. If such mapping does not exist, this method throws
-     * an exception. If this is not an expected behavior, use method {@link #getOrNull(Attribute)} instead.
+     * Gets the value mapped to the specified <code>attribute</code>. If such a mapping does not exist, this method throws
+     * an exception. If this is not an expected behavior, use {@link #getOrNull(Attribute)} instead.
      *
      * @param attribute the attribute to obtain
-     * @return the value mapped to the <code>attribute</code>
-     * @throws IllegalArgumentException if no value is mapped to the <code>attribute</code>
-     * @throws NullPointerException if the <code>attribute</code> is <code>null</code>
+     * @return the value mapped to <code>attribute</code>
+     * @throws IllegalArgumentException if no value is mapped to <code>attribute</code>
+     * @throws NullPointerException if <code>attribute</code> is <code>null</code>
      * @see #getOrNull(Attribute)
      * @see #get(String)
      */
@@ -200,7 +200,7 @@ public class AttributesMap implements Iterable<Entry<Attribute, Value>>, Cloneab
      * returns <code>null</code> if the requested mapping does not exist.
      *
      * @param attribute the attribute to obtain
-     * @return the value mapped to the <code>attribute</code> or <code>null</code> if it does not exist
+     * @return the value mapped to <code>attribute</code> or <code>null</code> if it does not exist
      * @throws NullPointerException if the <code>attribute</code> is <code>null</code>
      * @see #get(Attribute)
      * @see #getOrNull(String)
@@ -223,11 +223,11 @@ public class AttributesMap implements Iterable<Entry<Attribute, Value>>, Cloneab
     }
 
     /**
-     * Removes the specified <code>attribute</code> and its value from this map. If the <code>attribute</code> does not
-     * exist, this method performs nothing.
+     * Removes the specified <code>attribute</code> and its value from this map. If <code>attribute</code> does not
+     * exist, this method doesn't do anything.
      *
      * @param attribute the attribute to remove
-     * @throws NullPointerException if the <code>attribute</code> is <code>null</code>
+     * @throws NullPointerException if <code>attribute</code> is <code>null</code>
      * @see #remove(String)
      */
     public void remove(Attribute attribute) {

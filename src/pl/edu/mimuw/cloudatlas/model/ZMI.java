@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 /**
- * A zone management information. This object is a single node in a zone hierarchy. It stores zone attributes as well as
+ * A zone management information object. This object is a single node in a zone hierarchy. It stores zone attributes as well as
  * references to its father and sons in the tree.
  */
 public class ZMI implements Cloneable {
@@ -49,10 +49,10 @@ public class ZMI implements Cloneable {
 
     /**
      * Creates a new ZMI with the specified node as a father and empty sons list. This method does not perform any
-     * operation on the <code>father</code>. Especially, setting this object as a <code>father</code>'s son must be done
+     * operation on <code>father</code>. In particular, setting this object <code>father</code>'s son must be done
      * separately.
      *
-     * @param father a father of this ZMI
+     * @param father the father of this ZMI
      * @see #addSon(ZMI)
      */
     public ZMI(ZMI father) {
@@ -60,17 +60,17 @@ public class ZMI implements Cloneable {
     }
 
     /**
-     * Gets a father of this ZMI in a tree.
+     * Gets the father of this ZMI.
      *
-     * @return a father of this ZMI or <code>null</code> if this is the root zone
+     * @return the father of this ZMI or <code>null</code> if this is the root zone
      */
     public ZMI getFather() {
         return father;
     }
 
     /**
-     * Sets or changes a father of this ZMI in a tree. This method does not perform any operation on the
-     * <code>father</code>. Especially, setting this object as a <code>father</code>'s son must be done separately.
+     * Sets or changes the father of this ZMI in the tree. This method does not perform any operation on
+     * <code>father</code>. In particular, setting this object as <code>father</code>'s son must be done separately.
      *
      * @param father a new father for this ZMI
      * @see #addSon(ZMI)
@@ -80,17 +80,17 @@ public class ZMI implements Cloneable {
     }
 
     /**
-     * Gets a list of sons of this ZMI in a tree. Modifying a return value will cause an exception.
+     * Gets the list of sons of this ZMI. Modifying a value in the returned list will cause an exception.
      *
-     * @return
+     * @return the list of sons
      */
     public List<ZMI> getSons() {
         return Collections.unmodifiableList(sons);
     }
 
     /**
-     * Adds the specified ZMI to the list of sons of this ZMI. This method does not perform any operation on a
-     * <code>son</code>. Especially, setting this object as a <code>son</code>'s father must be done separately.
+     * Adds the specified ZMI to the list of sons of this ZMI. This method does not perform any operation on
+     * <code>son</code>. In particular, setting this object as <code>son</code>'s father must be done separately.
      *
      * @param son
      * @see #ZMI(ZMI)
@@ -101,8 +101,8 @@ public class ZMI implements Cloneable {
     }
 
     /**
-     * Removes the specified ZMI from the list of sons of this ZMI. This method does not perform any operation on a
-     * <code>son</code>. Especially, its father remains unchanged.
+     * Removes the specified ZMI from the list of sons of this ZMI. This method does not perform any operation on
+     * <code>son</code>. In particular, its father remains unchanged.
      *
      * @param son
      * @see #setFather(ZMI)
@@ -135,7 +135,7 @@ public class ZMI implements Cloneable {
     }
 
     /**
-     * Creates an independent copy of a whole hierarchy. A returned ZMI has the same reference as a father (but the
+     * Creates an independent copy of a whole hierarchy. A returned ZMI has the same reference as father (but the
      * father does not have a reference to it as a son). For the root zone, the copy is completely independent, since
      * its father is <code>null</code>.
      *
