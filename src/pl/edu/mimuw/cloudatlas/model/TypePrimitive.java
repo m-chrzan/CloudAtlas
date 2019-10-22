@@ -56,7 +56,7 @@ public class TypePrimitive extends Type {
     public static final TypePrimitive INTEGER = new TypePrimitive(PrimaryType.INT);
 
     /**
-     * A special "null type" that represents null value of an unknown type. It can be converted to any other type.
+     * A special null type that represents null values of an unknown type. It can be converted to any other type.
      *
      * @see Type#isCompatible(Type)
      * @see ValueNull
