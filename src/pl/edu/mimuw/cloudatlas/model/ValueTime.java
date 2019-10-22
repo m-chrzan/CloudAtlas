@@ -32,12 +32,11 @@ import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 
 /**
- * A class representing the POSIX time in milliseconds. This is a simple wrapper of a Java <code>Long</code> object.
+ * A class representing a POSIX time in milliseconds. This is a simple wrapper of a Java <code>Long</code> object.
  */
 public class ValueTime extends ValueSimple<Long> {
     /**
-     * A format of string representing <code>ValueTime</code> when constructing from or converting to a
-     * <code>String</code> object.
+     * A format string for constructing from or converting to a <code>String</code> object.
      */
     public static final DateFormat TIME_FORMAT = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
 
