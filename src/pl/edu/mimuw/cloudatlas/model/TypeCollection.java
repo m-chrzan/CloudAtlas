@@ -32,7 +32,7 @@ import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueNull;
 
 /**
- * Represents a collection type with specified element type.
+ * Represents a collection type with a specified element type.
  *
  * @see TypePrimitve
  */
@@ -43,8 +43,8 @@ public class TypeCollection extends Type {
      * Creates a new collection type.
      *
      * @param primaryType a type of this collection (set, list etc.)
-     * @param elementType a type of an element of this collection; may be a complex type (for instance
-     * <code>TypeCollection</code>)
+     * @param elementType a type of elements of this collection; may be a complex type (for instance
+     * another <code>TypeCollection</code>)
      */
     public TypeCollection(PrimaryType primaryType, Type elementType) {
         super(primaryType);
@@ -68,7 +68,7 @@ public class TypeCollection extends Type {
     }
 
     /**
-     * Returns a friendly textual representation of this collection, for instance: "SET of (STRING)".
+     * Returns a textual representation of this collection, for instance: "SET of (STRING)".
      *
      * @return a textual representation of this type
      */
