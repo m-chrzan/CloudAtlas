@@ -25,7 +25,7 @@
 package pl.edu.mimuw.cloudatlas.model;
 
 /**
- * An exception describing unsupported conversion of a value to another type.
+ * An exception describing an unsupported conversion of a value to another type.
  *
  * @see IncompatibleTypesException
  * @see UnsupportedValueOperationException
@@ -48,7 +48,7 @@ public class UnsupportedConversionException extends UnsupportedOperationExceptio
     }
 
     /**
-     * Gets a source type of an unsupported conversion that caused this exception.
+     * Gets the source type of the unsupported conversion that caused this exception.
      *
      * @return source type
      */
@@ -57,7 +57,7 @@ public class UnsupportedConversionException extends UnsupportedOperationExceptio
     }
 
     /**
-     * Gets a destination type of an unsupported conversion that caused this exception.
+     * Gets the destination type of the unsupported conversion that caused this exception.
      *
      * @return destination type
      */
