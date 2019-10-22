@@ -48,7 +48,7 @@ public abstract class Type {
     }
 
     /**
-     * Returns a primary type of this type.
+     * Returns the primary type of this type.
      *
      * @return a primary type
      */
@@ -57,7 +57,7 @@ public abstract class Type {
     }
 
     /**
-     * Indicates whether this type can be implicitly "cast" to given one and vice verse. This is introduced to deal with
+     * Indicates whether this type can be implicitly "cast" to the given one and vice versa. This is introduced to deal with
      * null values. In practice, two types are compatible either if they are the same or if one them is a special
      * "null type".
      *
