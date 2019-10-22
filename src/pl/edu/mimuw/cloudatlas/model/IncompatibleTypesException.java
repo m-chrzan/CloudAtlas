@@ -53,7 +53,7 @@ public class IncompatibleTypesException extends UnsupportedOperationException {
     }
 
     /**
-     * Gets a type of a left operand in an operation that caused this exception.
+     * Gets the type of the left operand in the operation that caused this exception.
      *
      * @return the type of the left operand
      */
@@ -62,7 +62,7 @@ public class IncompatibleTypesException extends UnsupportedOperationException {
     }
 
     /**
-     * Gets a type of a right operand in an operation that caused this exception.
+     * Gets the type of the right operand in the operation that caused this exception.
      *
      * @return the type of the right operand
      */
@@ -71,9 +71,9 @@ public class IncompatibleTypesException extends UnsupportedOperationException {
     }
 
     /**
-     * Gets an object representing an operation that caused this exception.
+     * Gets an object representing the operation that caused this exception.
      *
-     * @return an operation that caused this exception
+     * @return the operation that caused this exception
      */
     public Operation getOperation() {
         return operation;
