@@ -152,6 +152,12 @@ public class ValueDuration extends ValueSimple<Long> {
         return result;
     }
 
+    /**
+     * @param matcher A regex matcher
+     * @param group The name of a group matched by <code>matcher</code> that
+     * should have captured a number.
+     * @return The parsed number.
+     */
     private static long parseLongGroup(Matcher matcher, String group) {
         return Long.parseLong(matcher.group(group));
     }
