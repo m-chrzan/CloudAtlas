@@ -48,6 +48,11 @@ public class Attribute {
         this.name = name;
     }
 
+    /* Kryo needs a no-args constructor */
+    private Attribute() {
+        this.name = "";
+    }
+
     /**
      * Indicates whether an <code>attribute</code> represents a query. This is true if and only if the attribute's name starts with an ampersand.
      *

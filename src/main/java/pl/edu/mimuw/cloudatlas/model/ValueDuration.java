@@ -55,6 +55,10 @@ public class ValueDuration extends ValueSimple<Long> {
         super(value);
     }
 
+    /* Kryo needs a no-args constructor */
+    private ValueDuration() {
+    }
+
     @Override
     public Type getType() {
         return TypePrimitive.DURATION;

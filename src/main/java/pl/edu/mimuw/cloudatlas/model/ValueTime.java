@@ -49,6 +49,10 @@ public class ValueTime extends ValueSimple<Long> {
         super(value);
     }
 
+    /* Kryo needs a no-args constructor */
+    private ValueTime() {
+    }
+
     @Override
     public Type getType() {
         return TypePrimitive.TIME;

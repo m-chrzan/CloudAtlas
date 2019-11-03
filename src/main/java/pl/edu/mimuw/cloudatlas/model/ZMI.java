@@ -24,11 +24,17 @@
 
 package pl.edu.mimuw.cloudatlas.model;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 
 /**
  * A zone management information object. This object is a single node in a zone hierarchy. It stores zone attributes as well as
@@ -162,5 +168,19 @@ public class ZMI implements Cloneable {
     @Override
     public String toString() {
         return attributes.toString();
+    }
+
+    public static ZMI deserialize(InputStream in) {
+        Kryo kryo = new Kryo();
+        Input kryoInput = new Input(in);
+        ZMI zmi = kryo.readObject(kryoInput, ZMI.class);
+        return zmi;
+    }
+
+    public void serialize(OutputStream out) {
+        Kryo kryo = new Kryo();
+        Output kryoOut = new Output(out);
+        kryo.writeObject(kryoOut, this);
+        kryoOut.flush();
     }
 }

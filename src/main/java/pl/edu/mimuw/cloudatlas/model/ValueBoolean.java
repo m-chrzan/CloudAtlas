@@ -40,6 +40,10 @@ public class ValueBoolean extends ValueSimple<Boolean> {
         super(value);
     }
 
+    /* Kryo needs a no-args constructor */
+    private ValueBoolean() {
+    }
+
     @Override
     public Type getType() {
         return TypePrimitive.BOOLEAN;

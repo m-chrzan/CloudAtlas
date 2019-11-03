@@ -43,6 +43,10 @@ abstract class ValueSimple<T> extends Value {
         setValue(value);
     }
 
+    /* Kryo needs a no-args constructor */
+    protected ValueSimple() {
+    }
+
     /**
      * Returns a hash code value for this object. This is a hash code of underlying wrapped object.
      *

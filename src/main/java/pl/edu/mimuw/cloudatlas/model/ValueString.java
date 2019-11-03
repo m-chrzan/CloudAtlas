@@ -47,6 +47,10 @@ public class ValueString extends ValueSimple<String> {
         super(value);
     }
 
+    /* Kryo needs a no-args constructor */
+    private ValueString() {
+    }
+
     @Override
     public Type getType() {
         return TypePrimitive.STRING;

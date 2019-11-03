@@ -60,6 +60,10 @@ public class ValueList extends ValueSimple<List<Value>> implements List<Value> {
             setValue(value);
     }
 
+    /* Kryo needs a no-args constructor */
+    private ValueList() {
+    }
+
     /**
      * Creates an empty list.
      *

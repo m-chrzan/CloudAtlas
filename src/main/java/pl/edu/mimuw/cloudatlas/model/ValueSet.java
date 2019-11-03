@@ -59,6 +59,10 @@ public class ValueSet extends ValueSimple<Set<Value>> implements Set<Value> {
             setValue(value);
     }
 
+    /* Kryo needs a no-args constructor */
+    private ValueSet() {
+    }
+
     /**
      * Creates an empty set.
      *

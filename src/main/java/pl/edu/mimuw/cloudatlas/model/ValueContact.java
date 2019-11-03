@@ -25,6 +25,7 @@
 package pl.edu.mimuw.cloudatlas.model;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueContact;
@@ -48,6 +49,12 @@ public class ValueContact extends Value {
     public ValueContact(PathName name, InetAddress address) {
         this.name = name;
         this.address = address;
+    }
+
+    /* Kryo needs a no-args constructor */
+    private ValueContact() throws UnknownHostException {
+        name = new PathName("");
+        address = InetAddress.getByAddress(new byte[] {0, 0, 0, 0});
     }
 
     @Override

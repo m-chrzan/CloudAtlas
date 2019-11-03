@@ -40,6 +40,10 @@ public class ValueDouble extends ValueSimple<Double> {
         super(value);
     }
 
+    /* Kryo needs a no-args constructor */
+    private ValueDouble() {
+    }
+
     @Override
     public Type getType() {
         return TypePrimitive.DOUBLE;

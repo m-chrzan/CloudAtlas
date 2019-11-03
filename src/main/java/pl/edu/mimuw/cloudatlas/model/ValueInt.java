@@ -41,6 +41,10 @@ public class ValueInt extends ValueSimple<Long> {
         super(value);
     }
 
+    /* Kryo needs a no-args constructor */
+    private ValueInt() {
+    }
+
     @Override
     public Type getType() {
         return TypePrimitive.INTEGER;
