@@ -24,12 +24,28 @@
 
 package pl.edu.mimuw.cloudatlas.model;
 
+import java.lang.IllegalArgumentException;
+import java.text.ParseException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A class representing duration in milliseconds. The duration can be negative. This is a simple wrapper of a Java
  * <code>Long</code> object.
  */
 public class ValueDuration extends ValueSimple<Long> {
+    public static class InvalidFormatException extends IllegalArgumentException {
+    }
+
+    /**
+     * Regex pattern for duration strings.
+     */
+    private static final Pattern DURATION_PATTERN = Pattern.compile(
+        "(?<sign>[+-])(?<days>\\d+) " +
+        "(?<hours>[0-1][0-9]|2[0-3]):(?<minutes>[0-5][0-9]):(?<seconds>[0-5][0-9])." +
+        "(?<milliseconds>[0-9]{3})"
+    );
+
     /**
      * Constructs a new <code>ValueDuration</code> object wrapping the specified <code>value</code>.
      *
@@ -41,14 +57,12 @@ public class ValueDuration extends ValueSimple<Long> {
 
     @Override
     public Type getType() {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        return TypePrimitive.DURATION;
     }
 
     @Override
     public Value getDefaultValue() {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new ValueDuration(0l);
     }
 
     /**
@@ -119,55 +133,140 @@ public class ValueDuration extends ValueSimple<Long> {
     }
 
     private static long parseDuration(String value) {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        Matcher matcher = DURATION_PATTERN.matcher(value);
+        if (!matcher.matches()) {
+            throw new InvalidFormatException();
+        }
+
+        long result = parseLongGroup(matcher, "days");
+        result *= 24;
+        result += parseLongGroup(matcher, "hours");
+        result *= 60;
+        result += parseLongGroup(matcher, "minutes");
+        result *= 60;
+        result += parseLongGroup(matcher, "seconds");
+        result *= 1000;
+        result += parseLongGroup(matcher, "milliseconds");
+        result *= matcher.group("sign").equals("+") ? 1 : -1;
+
+        return result;
+    }
+
+    private static long parseLongGroup(Matcher matcher, String group) {
+        return Long.parseLong(matcher.group(group));
     }
 
     @Override
     public ValueBoolean isLowerThan(Value value) {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        sameTypesOrThrow(value, Operation.COMPARE);
+        if(isNull() || value.isNull())
+            return new ValueBoolean(null);
+        return new ValueBoolean(getValue() < ((ValueDuration)value).getValue());
     }
 
     @Override
     public ValueDuration addValue(Value value) {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        sameTypesOrThrow(value, Operation.ADD);
+        if (isNull() || value.isNull()) {
+            return new ValueDuration((Long) null);
+        }
+
+        return new ValueDuration(getValue() + ((ValueDuration)value).getValue());
     }
 
     @Override
     public ValueDuration subtract(Value value) {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        sameTypesOrThrow(value, Operation.SUBTRACT);
+        if (isNull() || value.isNull())
+            return new ValueDuration((Long) null);
+        return new ValueDuration(getValue() - ((ValueDuration)value).getValue());
     }
 
     @Override
     public ValueDuration multiply(Value value) {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        if (!value.getType().isCompatible(TypePrimitive.INTEGER)) {
+            throw new IncompatibleTypesException(getType(), value.getType(), Operation.MULTIPLY);
+        }
+
+        if (isNull() || value.isNull()) {
+            return new ValueDuration((Long) null);
+        }
+
+        return new ValueDuration(getValue() * ((ValueInt)value).getValue());
     }
 
     @Override
     public Value divide(Value value) {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        if (!value.getType().isCompatible(TypePrimitive.INTEGER)) {
+            throw new IncompatibleTypesException(getType(), value.getType(), Operation.MULTIPLY);
+        }
+
+        if (isNull() || value.isNull()) {
+            return new ValueDuration((Long) null);
+        }
+
+        if (((ValueInt)value).getValue() == 0l) {
+            throw new ArithmeticException("Division by zero.");
+        }
+
+        return new ValueDuration(getValue() / ((ValueInt)value).getValue());
     }
 
     @Override
     public ValueDuration modulo(Value value) {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        if (!value.getType().isCompatible(TypePrimitive.INTEGER)) {
+            throw new IncompatibleTypesException(getType(), value.getType(), Operation.MULTIPLY);
+        }
+
+        if (isNull() || value.isNull()) {
+            return new ValueDuration((Long) null);
+        }
+
+        if (((ValueInt)value).getValue() == 0l) {
+            throw new ArithmeticException("Division by zero.");
+        }
+
+        return new ValueDuration(getValue() % ((ValueInt)value).getValue());
     }
 
     @Override
     public ValueDuration negate() {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        if(isNull()) {
+            return new ValueDuration((Long) null);
+        }
+
+        return new ValueDuration(-getValue());
+    }
+
+    public String toString() {
+        long remainingUnits = getValue();
+        boolean positive = remainingUnits >= 0;
+        remainingUnits = positive ? remainingUnits : -remainingUnits;
+
+        long milliseconds = remainingUnits % 1000;
+        remainingUnits /= 1000;
+        long seconds = remainingUnits % 60;
+        remainingUnits /= 60;
+        long minutes = remainingUnits % 60;
+        remainingUnits /= 60;
+        long hours = remainingUnits % 24;
+        remainingUnits /= 24;
+        long days = remainingUnits;
+
+        return (positive ? "+" : "-") + Long.toString(days) + " " + Long.toString(hours)
+            + ":" + Long.toString(minutes) + ":" + Long.toString(seconds) + "." +
+            Long.toString(milliseconds);
     }
 
     @Override
     public Value convertTo(Type type) {
-        // TODO
-        throw new UnsupportedOperationException("Not yet implemented");
+        switch(type.getPrimaryType()) {
+            case STRING:
+                return getValue() == null? ValueString.NULL_STRING : new ValueString(toString());
+            case DURATION:
+                return this;
+            default:
+                throw new UnsupportedConversionException(getType(), type);
+        }
     }
 }
