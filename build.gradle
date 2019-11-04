@@ -28,6 +28,10 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 
     implementation 'com.esotericsoftware:kryo:4.0.2'
+
+    // For query language parser
+    implementation files('./lib/JLex.jar')
+    implementation files('./lib/cup.jar')
 }
 
 application {
