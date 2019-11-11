@@ -11,47 +11,47 @@ import org.junit.Test;
 
 public class InterpreterTests {
     @Test
-    public void fileTest1() throws Exception {
+    public void fileTest01() throws Exception {
         runFileTest(1);
     }
 
     @Test
-    public void fileTest2() throws Exception {
+    public void fileTest02() throws Exception {
         runFileTest(2);
     }
 
     @Test
-    public void fileTest3() throws Exception {
+    public void fileTest03() throws Exception {
         runFileTest(3);
     }
 
     @Test
-    public void fileTest4() throws Exception {
+    public void fileTest04() throws Exception {
         runFileTest(4);
     }
 
     @Test
-    public void fileTest5() throws Exception {
+    public void fileTest05() throws Exception {
         runFileTest(5);
     }
 
     @Test
-    public void fileTest6() throws Exception {
+    public void fileTest06() throws Exception {
         runFileTest(6);
     }
 
     @Test
-    public void fileTest7() throws Exception {
+    public void fileTest07() throws Exception {
         runFileTest(7);
     }
 
     @Test
-    public void fileTest8() throws Exception {
+    public void fileTest08() throws Exception {
         runFileTest(8);
     }
 
     @Test
-    public void fileTest9() throws Exception {
+    public void fileTest09() throws Exception {
         runFileTest(9);
     }
 
