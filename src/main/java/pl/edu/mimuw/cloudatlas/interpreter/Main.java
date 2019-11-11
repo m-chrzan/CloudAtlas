@@ -25,6 +25,8 @@
 package pl.edu.mimuw.cloudatlas.interpreter;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.ParseException;
@@ -53,30 +55,35 @@ public class Main {
 	private static ZMI root;
 	
 	public static void main(String[] args) throws Exception {
-		root = createTestHierarchy();
-		Scanner scanner = new Scanner(System.in);
-		scanner.useDelimiter("\\n");
-		while(scanner.hasNext())
-			executeQueries(root, scanner.next());
-		scanner.close();
+        runTest(System.in, System.out);
 	}
+
+    public static void runTest(InputStream in, PrintStream out) throws Exception {
+		root = createTestHierarchy();
+		Scanner scanner = new Scanner(in);
+		scanner.useDelimiter("\\n");
+		while(scanner.hasNext()) {
+			executeQueries(root, scanner.next(), out);
+        }
+		scanner.close();
+    }
 	
 	private static PathName getPathName(ZMI zmi) {
 		String name = ((ValueString)zmi.getAttributes().get("name")).getValue();
 		return zmi.getFather() == null? PathName.ROOT : getPathName(zmi.getFather()).levelDown(name);
 	}
 	
-	private static void executeQueries(ZMI zmi, String query) throws Exception {
+	private static void executeQueries(ZMI zmi, String query, PrintStream out) throws Exception {
 		if(!zmi.getSons().isEmpty()) {
 			for(ZMI son : zmi.getSons())
-				executeQueries(son, query);
+				executeQueries(son, query, out);
 			Interpreter interpreter = new Interpreter(zmi);
 			Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
 			try {
 				List<QueryResult> result = interpreter.interpretProgram((new parser(lex)).pProgram());
 				PathName zone = getPathName(zmi);
 				for(QueryResult r : result) {
-					System.out.println(zone + ": " + r);
+					out.println(zone + ": " + r);
 					zmi.getAttributes().addOrChange(r.getName(), r.getValue());
 				}
 			} catch(InterpreterException exception) {}

@@ -36,5 +36,9 @@ dependencies {
 
 application {
     // Define the main class for the application
-    mainClassName = 'pl.edu.mimuw.cloudatlas.App'
+    mainClassName = 'pl.edu.mimuw.cloudatlas.interpreter.Main'
+}
+
+run {
+    standardInput = System.in
 }
