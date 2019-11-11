@@ -368,8 +368,13 @@ public class Interpreter {
 		}
 
 		public Result visit(BasicExprMulC expr, Environment env) {
-			// TODO
-			throw new UnsupportedOperationException("Not yet implemented");
+			try {
+				Result left = expr.basicexpr_1.accept(new BasicExprInterpreter(), env);
+				Result right = expr.basicexpr_2.accept(new BasicExprInterpreter(), env);
+				return left.multiply(right);
+			} catch(Exception exception) {
+				throw new InsideQueryException(PrettyPrinter.print(expr), exception);
+			}
 		}
 
 		public Result visit(BasicExprDivC expr, Environment env) {
