@@ -151,12 +151,12 @@ abstract class Result {
 
 	public ResultSingle aggregationOperation(AggregationOperation operation) {
 		// TODO
-		throw new UnsupportedOperationException("Not yet implemented");
+		throw new UnsupportedOperationException("aggregation Not yet implemented");
 	}
 
 	public Result transformOperation(TransformOperation operation) {
 		// TODO
-		throw new UnsupportedOperationException("Not yet implemented");
+		throw new UnsupportedOperationException("transforation Not yet implemented");
 	}
 
 	public Result isEqual(Result right) {

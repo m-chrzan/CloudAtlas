@@ -78,7 +78,7 @@ class Functions {
 		@Override
 		public Value perform(Value v) {
 			// TODO
-			throw new UnsupportedOperationException("Not yet implemented");
+			throw new UnsupportedOperationException("CEIL Not yet implemented");
 		}
 	};
 
@@ -97,7 +97,7 @@ class Functions {
 		@Override
 		public Value perform(ValueList values) {
 			// TODO
-			throw new UnsupportedOperationException("Not yet implemented");
+			throw new UnsupportedOperationException("SUM Not yet implemented");
 		}
 	};
 
@@ -152,7 +152,7 @@ class Functions {
 		@Override
 		public ValueBoolean perform(ValueList values) { // lazy
 			// TODO
-			throw new UnsupportedOperationException("Not yet implemented");
+			throw new UnsupportedOperationException("OR Not yet implemented");
 		}
 	};
 
