@@ -115,7 +115,7 @@ abstract class Result {
 	private static final BinaryOperation REG_EXPR = new BinaryOperation() {
 		@Override
 		public Value perform(Value v1, Value v2) {
-			return v1.regExpr(v2);
+			return v2.regExpr(v1);
 		}
 	};
 
@@ -134,6 +134,7 @@ abstract class Result {
 	};
 
 	protected abstract Result binaryOperationTyped(BinaryOperation operation, ResultSingle right);
+	protected abstract Result binaryOperationTyped(BinaryOperation operation, ResultColumn right);
 
 	public Result binaryOperation(BinaryOperation operation, Result right) {
 		return right.callMe(operation, this);
@@ -156,7 +157,7 @@ abstract class Result {
 
 	public Result transformOperation(TransformOperation operation) {
 		// TODO
-		throw new UnsupportedOperationException("transforation Not yet implemented");
+		throw new UnsupportedOperationException("transformation Not yet implemented");
 	}
 
 	public Result isEqual(Result right) {

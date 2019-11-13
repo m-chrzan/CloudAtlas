@@ -24,6 +24,9 @@
 
 package pl.edu.mimuw.cloudatlas.interpreter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import pl.edu.mimuw.cloudatlas.model.Type;
 import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueBoolean;
@@ -40,6 +43,17 @@ class ResultSingle extends Result {
 	protected ResultSingle binaryOperationTyped(BinaryOperation operation, ResultSingle right) {
 		return new ResultSingle(operation.perform(value, right.value));
 	}
+
+    @Override
+    protected ResultColumn binaryOperationTyped(BinaryOperation operation, ResultColumn right) {
+        List<Value> results = new ArrayList<Value>();
+
+        for (Value value : right.getColumn()) {
+            results.add(operation.perform(this.value, value));
+        }
+
+		return new ResultColumn(results);
+    }
 
 	@Override
 	public ResultSingle unaryOperation(UnaryOperation operation) {
