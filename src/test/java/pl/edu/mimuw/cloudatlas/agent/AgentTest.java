@@ -23,15 +23,19 @@ public class AgentTest {
     @BeforeClass
     public static void bindApi() throws Exception {
         registryProcess = Runtime.getRuntime().exec("./scripts/registry");
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         agentProcess = Runtime.getRuntime().exec("./gradlew runAgent");
-        Thread.sleep(1000);
+        Thread.sleep(5000);
     }
 
     @AfterClass
     public static void killProcesses() throws Exception {
-        registryProcess.destroy();
-        agentProcess.destroy();
+        try {
+            registryProcess.destroy();
+            agentProcess.destroy();
+        } catch (Exception e) {
+            System.out.println("Caught exception: " + e);
+        }
     }
 
     @Test
