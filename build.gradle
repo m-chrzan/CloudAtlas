@@ -42,3 +42,8 @@ application {
 run {
     standardInput = System.in
 }
+
+task runAgent(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'pl.edu.mimuw.cloudatlas.agent.Agent'
+}

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd build/classes/java/main
+rmiregistry -J-Djava.rmi.server.codebase="http://localhost:1099/"
