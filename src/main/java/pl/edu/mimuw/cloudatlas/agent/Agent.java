@@ -5,6 +5,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import pl.edu.mimuw.cloudatlas.api.Api;
+
 public class Agent {
     public static void main(String[] args) {
 		try {

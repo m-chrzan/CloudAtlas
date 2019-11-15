@@ -11,10 +11,14 @@ import java.lang.Thread;
 
 import java.io.InputStream;
 
+import java.util.Set;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.math.BigDecimal;
+
+import pl.edu.mimuw.cloudatlas.api.Api;
 
 public class AgentTest {
     private static Process registryProcess;
@@ -39,14 +43,13 @@ public class AgentTest {
     }
 
     @Test
-    public void testPing() {
+    public void testGetZoneSet() {
 		try {
 			Registry registry = LocateRegistry.getRegistry("localhost");
 			Api api = (Api) registry.lookup("Api");
-			int res = api.ping(10);
-            assertEquals(11, res);
+			Set<String> set = api.getZoneSet();
+            assertEquals(null, set);
 		} catch (Exception e) {
-			System.err.println("FibonacciClient exception:");
 			e.printStackTrace();
             assertTrue(false);
 		}

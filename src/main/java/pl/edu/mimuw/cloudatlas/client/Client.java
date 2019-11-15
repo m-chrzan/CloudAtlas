@@ -1,6 +1,6 @@
 package pl.edu.mimuw.cloudatlas.client;
 
-import pl.edu.mimuw.cloudatlas.agent.Api;
+import pl.edu.mimuw.cloudatlas.api.Api;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
