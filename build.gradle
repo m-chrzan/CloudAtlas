@@ -35,6 +35,8 @@ dependencies {
     // For query language parser
     implementation files('./lib/JLex.jar')
     implementation files('./lib/cup.jar')
+
+    implementation 'com.google.code.gson:gson:2.8.6'
 }
 
 application {
@@ -54,4 +56,9 @@ task runAgent(type: JavaExec) {
 task runClient(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.client.Client'
+}
+
+task runFetcher(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'pl.edu.mimuw.cloudatlas.fetcher.Fetcher'
 }
