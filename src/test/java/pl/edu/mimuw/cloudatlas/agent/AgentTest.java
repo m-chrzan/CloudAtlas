@@ -27,9 +27,9 @@ public class AgentTest {
     @BeforeClass
     public static void bindApi() throws Exception {
         registryProcess = Runtime.getRuntime().exec("./scripts/registry");
-        Thread.sleep(2000);
+        Thread.sleep(10000);
         agentProcess = Runtime.getRuntime().exec("./gradlew runAgent");
-        Thread.sleep(5000);
+        Thread.sleep(10000);
     }
 
     @AfterClass
