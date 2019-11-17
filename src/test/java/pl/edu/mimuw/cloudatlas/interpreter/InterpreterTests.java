@@ -2,14 +2,37 @@ package pl.edu.mimuw.cloudatlas.interpreter;
 
 import java.io.PrintStream;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import pl.edu.mimuw.cloudatlas.model.AttributesMap;
+import pl.edu.mimuw.cloudatlas.model.ValueTime;
+import pl.edu.mimuw.cloudatlas.model.ZMI;
+
 public class InterpreterTests {
+    @Test
+    public void modifiesZmi() throws Exception {
+        ZMI root = Main.createTestHierarchy();
+        InputStream in = new ByteArrayInputStream("SELECT epoch() AS timestamp".getBytes("UTF-8"));
+        ByteArrayOutputStream outByteArray = new ByteArrayOutputStream();
+        PrintStream outPrint = new PrintStream(outByteArray);
+        Main.runTest(in, outPrint, root);
+
+        AttributesMap rootAttributes = root.getAttributes();
+        assertEquals(new ValueTime("2000/01/01 00:00:00.000"), rootAttributes.get("timestamp"));
+
+        for (ZMI son : root.getSons()) {
+            AttributesMap sonAttributes = son.getAttributes();
+            assertEquals(new ValueTime("2000/01/01 00:00:00.000"), sonAttributes.get("timestamp"));
+        }
+    }
+
     @Test
     public void fileTest01() throws Exception {
         runFileTest(1);
@@ -112,7 +135,10 @@ public class InterpreterTests {
         FileInputStream in = new FileInputStream(test.getFile());
         ByteArrayOutputStream outByteArray = new ByteArrayOutputStream();
         PrintStream outPrint = new PrintStream(outByteArray);
-        Main.runTest(in, outPrint);
+
+        ZMI root = Main.createTestHierarchy();
+        Main.runTest(in, outPrint, root);
+
         String actual = outByteArray.toString();
 
         File expectedFile = new File(testOut.getFile());
