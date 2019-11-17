@@ -9,6 +9,8 @@ import java.net.URL;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import pl.edu.mimuw.cloudatlas.model.ZMI;
+
 public class InterpreterTests {
     @Test
     public void fileTest01() throws Exception {
@@ -112,7 +114,10 @@ public class InterpreterTests {
         FileInputStream in = new FileInputStream(test.getFile());
         ByteArrayOutputStream outByteArray = new ByteArrayOutputStream();
         PrintStream outPrint = new PrintStream(outByteArray);
-        Main.runTest(in, outPrint);
+
+        ZMI root = Main.createTestHierarchy();
+        Main.runTest(in, outPrint, root);
+
         String actual = outByteArray.toString();
 
         File expectedFile = new File(testOut.getFile());

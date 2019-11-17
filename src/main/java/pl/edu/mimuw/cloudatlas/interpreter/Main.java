@@ -52,14 +52,11 @@ import pl.edu.mimuw.cloudatlas.model.ValueTime;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 public class Main {
-    private static ZMI root;
-
     public static void main(String[] args) throws Exception {
-        runTest(System.in, System.out);
+        runTest(System.in, System.out, createTestHierarchy2());
     }
 
-    public static void runTest(InputStream in, PrintStream out) throws Exception {
-        root = createTestHierarchy();
+    public static void runTest(InputStream in, PrintStream out, ZMI root) throws Exception {
         Scanner scanner = new Scanner(in);
         scanner.useDelimiter("\\n");
         while(scanner.hasNext()) {
@@ -97,7 +94,7 @@ public class Main {
         }));
     }
 
-    private static ZMI createTestHierarchy() throws ParseException, UnknownHostException {
+    public static ZMI createTestHierarchy() throws ParseException, UnknownHostException {
         ValueContact violet07Contact = createContact("/uw/violet07", (byte)10, (byte)1, (byte)1, (byte)10);
         ValueContact khaki13Contact = createContact("/uw/khaki13", (byte)10, (byte)1, (byte)1, (byte)38);
         ValueContact khaki31Contact = createContact("/uw/khaki31", (byte)10, (byte)1, (byte)1, (byte)39);
@@ -106,7 +103,7 @@ public class Main {
 
         List<Value> list;
 
-        root = new ZMI();
+        ZMI root = new ZMI();
         root.getAttributes().add("level", new ValueInt(0l));
         root.getAttributes().add("name", new ValueString(null));
         root.getAttributes().add("owner", new ValueString("/uw/violet07"));
@@ -261,7 +258,7 @@ public class Main {
 
         List<Value> list;
 
-        root = new ZMI();
+        ZMI root = new ZMI();
         root.getAttributes().add("level", new ValueInt(0l));
         root.getAttributes().add("name", new ValueString(null));
         // root.getAttributes().add("owner", new ValueString("/uw/violet07"));
