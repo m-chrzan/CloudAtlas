@@ -44,10 +44,6 @@ application {
     mainClassName = 'pl.edu.mimuw.cloudatlas.interpreter.Main'
 }
 
-run {
-    standardInput = System.in
-}
-
 task runAgent(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.agent.Agent'
@@ -61,4 +57,10 @@ task runClient(type: JavaExec) {
 task runFetcher(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.fetcher.Fetcher'
+}
+
+task runInterpreter(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'pl.edu.mimuw.cloudatlas.interpreter.Main'
+    standardInput = System.in
 }
