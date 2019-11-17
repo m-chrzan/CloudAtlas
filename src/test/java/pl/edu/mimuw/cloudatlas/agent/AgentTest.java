@@ -4,6 +4,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.hasItems;
+
 
 import java.lang.Runtime;
 import java.lang.Process;
@@ -48,7 +51,12 @@ public class AgentTest {
             Registry registry = LocateRegistry.getRegistry("localhost");
             Api api = (Api) registry.lookup("Api");
             Set<String> set = api.getZoneSet();
-            assertEquals(null, set);
+            assertEquals(8, set.size());
+            assertThat(set, hasItems("/"));
+            assertThat(set, hasItems("/uw"));
+            assertThat(set, hasItems("/uw/violet07", "/uw/khaki31", "/uw/khaki13"));
+            assertThat(set, hasItems("/pjwstk"));
+            assertThat(set, hasItems("/pjwstk/whatever01", "/pjwstk/whatever02"));
         } catch (Exception e) {
             e.printStackTrace();
             assertTrue(false);

@@ -11,11 +11,27 @@ import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueSet;
 import pl.edu.mimuw.cloudatlas.model.ValueNull;
 import pl.edu.mimuw.cloudatlas.model.TypePrimitive;
+import pl.edu.mimuw.cloudatlas.model.ZMI;
 import pl.edu.mimuw.cloudatlas.api.Api;
 
 public class ApiImplementation implements Api {
+    ZMI root;
+
+    public ApiImplementation(ZMI root) {
+        this.root = root;
+    }
+
     public Set<String> getZoneSet() throws RemoteException {
-        return null;
+        Set<String> zones = new HashSet<String>();
+        collectZoneNames(root, zones);
+        return zones;
+    }
+
+    private void collectZoneNames(ZMI zone, Set<String> names) {
+        names.add(zone.getPathName().toString());
+        for (ZMI son : zone.getSons()) {
+            collectZoneNames(son, names);
+        }
     }
 
     public AttributesMap getZoneAttributeValue(String zoneName) throws RemoteException {

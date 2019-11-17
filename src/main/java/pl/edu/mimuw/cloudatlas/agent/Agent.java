@@ -6,11 +6,14 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 import pl.edu.mimuw.cloudatlas.api.Api;
+import pl.edu.mimuw.cloudatlas.interpreter.Main;
+import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 public class Agent {
     public static void main(String[] args) {
         try {
-            ApiImplementation api = new ApiImplementation();
+            ZMI root = Main.createTestHierarchy2();
+            ApiImplementation api = new ApiImplementation(root);
             Api apiStub =
                 (Api) UnicastRemoteObject.exportObject(api, 0);
             Registry registry = LocateRegistry.getRegistry();

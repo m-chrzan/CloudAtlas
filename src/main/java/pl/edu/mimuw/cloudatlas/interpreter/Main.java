@@ -65,11 +65,6 @@ public class Main {
         scanner.close();
     }
 
-    private static PathName getPathName(ZMI zmi) {
-        String name = ((ValueString)zmi.getAttributes().get("name")).getValue();
-        return zmi.getFather() == null? PathName.ROOT : getPathName(zmi.getFather()).levelDown(name);
-    }
-
     private static void executeQueries(ZMI zmi, String query, PrintStream out) throws Exception {
         if(!zmi.getSons().isEmpty()) {
             for(ZMI son : zmi.getSons())
@@ -78,7 +73,7 @@ public class Main {
             Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
             try {
                 List<QueryResult> result = interpreter.interpretProgram((new parser(lex)).pProgram());
-                PathName zone = getPathName(zmi);
+                PathName zone = zmi.getPathName();
                 for(QueryResult r : result) {
                     out.println(zone + ": " + r);
                     zmi.getAttributes().addOrChange(r.getName(), r.getValue());
@@ -249,7 +244,7 @@ public class Main {
         return root;
     }
 
-    private static ZMI createTestHierarchy2() throws ParseException, UnknownHostException {
+    public static ZMI createTestHierarchy2() throws ParseException, UnknownHostException {
         ValueContact violet07Contact = createContact("/uw/violet07", (byte)10, (byte)1, (byte)1, (byte)10);
         ValueContact khaki13Contact = createContact("/uw/khaki13", (byte)10, (byte)1, (byte)1, (byte)38);
         ValueContact khaki31Contact = createContact("/uw/khaki31", (byte)10, (byte)1, (byte)1, (byte)39);

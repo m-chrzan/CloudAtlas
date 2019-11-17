@@ -170,6 +170,16 @@ public class ZMI implements Cloneable {
         return attributes.toString();
     }
 
+    /**
+     * Gets the PathName representing this zone.
+     *
+     * @return a <code>PathName</code> object representing this zone
+     */
+    public PathName getPathName() {
+        String name = ((ValueString)getAttributes().get("name")).getValue();
+        return getFather() == null? PathName.ROOT : getFather().getPathName().levelDown(name);
+    }
+
     public static ZMI deserialize(InputStream in) {
         Kryo kryo = new Kryo();
         Input kryoInput = new Input(in);
