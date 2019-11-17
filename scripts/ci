@@ -1,4 +1,3 @@
 #!/bin/bash
 
 ./gradlew build
-# true
