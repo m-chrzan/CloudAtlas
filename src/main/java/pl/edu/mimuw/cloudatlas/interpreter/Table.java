@@ -44,80 +44,80 @@ import pl.edu.mimuw.cloudatlas.model.ValueNull;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 public class Table implements Iterable<TableRow> {
-	private final List<String> columns = new ArrayList<String>();
-	private final Map<String, Integer> headersMap = new HashMap<String, Integer>();
-	private final List<TableRow> rows = new ArrayList<TableRow>();
+    private final List<String> columns = new ArrayList<String>();
+    private final Map<String, Integer> headersMap = new HashMap<String, Integer>();
+    private final List<TableRow> rows = new ArrayList<TableRow>();
 
-	// creates whole table based on a given ZMI
-	public Table(ZMI zmi) {
-		Set<String> allColumns = new HashSet<String>();
-		for(ZMI z : zmi.getSons())
-			for(Entry<Attribute, Value> e : z.getAttributes())
-				allColumns.add(e.getKey().getName());
+    // creates whole table based on a given ZMI
+    public Table(ZMI zmi) {
+        Set<String> allColumns = new HashSet<String>();
+        for(ZMI z : zmi.getSons())
+            for(Entry<Attribute, Value> e : z.getAttributes())
+                allColumns.add(e.getKey().getName());
 
-		columns.addAll(allColumns);
-		int i = 0;
-		for(String c : columns)
-			headersMap.put(c, i++);
-		for(ZMI z : zmi.getSons()) {
-			Value[] row = new Value[columns.size()];
-			for(int j = 0; j < row.length; ++j)
-				row[j] = ValueNull.getInstance();
-			for(Entry<Attribute, Value> e : z.getAttributes())
-				row[getColumnIndex(e.getKey().getName())] = e.getValue();
-			appendRow(new TableRow(row));
-		}
-	}
+        columns.addAll(allColumns);
+        int i = 0;
+        for(String c : columns)
+            headersMap.put(c, i++);
+        for(ZMI z : zmi.getSons()) {
+            Value[] row = new Value[columns.size()];
+            for(int j = 0; j < row.length; ++j)
+                row[j] = ValueNull.getInstance();
+            for(Entry<Attribute, Value> e : z.getAttributes())
+                row[getColumnIndex(e.getKey().getName())] = e.getValue();
+            appendRow(new TableRow(row));
+        }
+    }
 
-	// creates an empty table with same columns as given
-	public Table(Table table) {
-		this.columns.addAll(table.columns);
-		this.headersMap.putAll(table.headersMap);
-	}
+    // creates an empty table with same columns as given
+    public Table(Table table) {
+        this.columns.addAll(table.columns);
+        this.headersMap.putAll(table.headersMap);
+    }
 
-	public List<String> getColumns() {
-		return Collections.unmodifiableList(columns);
-	}
+    public List<String> getColumns() {
+        return Collections.unmodifiableList(columns);
+    }
 
-	public void appendRow(TableRow row) {
-		if(row.getSize() != columns.size())
-			throw new InternalInterpreterException("Cannot append row. Length expected: " + columns.size() + ", got: "
-					+ row.getSize() + ".");
-		rows.add(row);
-	}
+    public void appendRow(TableRow row) {
+        if(row.getSize() != columns.size())
+            throw new InternalInterpreterException("Cannot append row. Length expected: " + columns.size() + ", got: "
+                    + row.getSize() + ".");
+        rows.add(row);
+    }
 
-	public int getColumnIndex(String column) {
-		try {
-			return headersMap.get(column).intValue();
-		} catch(NullPointerException exception) {
-			throw new NoSuchAttributeException(column);
-		}
-	}
+    public int getColumnIndex(String column) {
+        try {
+            return headersMap.get(column).intValue();
+        } catch(NullPointerException exception) {
+            throw new NoSuchAttributeException(column);
+        }
+    }
 
-	public ValueList getColumn(String column) {
-		if(column.startsWith("&")) {
-			throw new NoSuchAttributeException(column);
-		}
-		try {
-			int position = headersMap.get(column);
-			List<Value> result = new ArrayList<Value>();
-			for(TableRow row : rows) {
-				Value v = row.getIth(position);
-				result.add(v);
-			}
-			Type elementType = TypeCollection.computeElementType(result);
-			return new ValueList(result, elementType);
-		} catch(NullPointerException exception) {
-			throw new NoSuchAttributeException(column);
-		}
-	}
+    public ValueList getColumn(String column) {
+        if(column.startsWith("&")) {
+            throw new NoSuchAttributeException(column);
+        }
+        try {
+            int position = headersMap.get(column);
+            List<Value> result = new ArrayList<Value>();
+            for(TableRow row : rows) {
+                Value v = row.getIth(position);
+                result.add(v);
+            }
+            Type elementType = TypeCollection.computeElementType(result);
+            return new ValueList(result, elementType);
+        } catch(NullPointerException exception) {
+            throw new NoSuchAttributeException(column);
+        }
+    }
 
-	@Override
-	public Iterator<TableRow> iterator() {
-		return rows.iterator();
-	}
+    @Override
+    public Iterator<TableRow> iterator() {
+        return rows.iterator();
+    }
 
-	public void sort(Comparator<TableRow> comparator) {
-		Collections.sort(rows, comparator);
-	}
+    public void sort(Comparator<TableRow> comparator) {
+        Collections.sort(rows, comparator);
+    }
 }

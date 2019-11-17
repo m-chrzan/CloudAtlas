@@ -33,16 +33,16 @@ import pl.edu.mimuw.cloudatlas.model.ValueBoolean;
 import pl.edu.mimuw.cloudatlas.model.ValueList;
 
 class ResultSingle extends Result {
-	private final Value value;
+    private final Value value;
 
-	public ResultSingle(Value value) {
-		this.value = value;
-	}
-	
-	@Override
-	protected ResultSingle binaryOperationTyped(BinaryOperation operation, ResultSingle right) {
-		return new ResultSingle(operation.perform(value, right.value));
-	}
+    public ResultSingle(Value value) {
+        this.value = value;
+    }
+
+    @Override
+    protected ResultSingle binaryOperationTyped(BinaryOperation operation, ResultSingle right) {
+        return new ResultSingle(operation.perform(value, right.value));
+    }
 
     @Override
     protected ResultColumn binaryOperationTyped(BinaryOperation operation, ResultColumn right) {
@@ -52,66 +52,66 @@ class ResultSingle extends Result {
             results.add(operation.perform(this.value, value));
         }
 
-		return new ResultColumn(results);
+        return new ResultColumn(results);
     }
 
-	@Override
-	public ResultSingle unaryOperation(UnaryOperation operation) {
-		return new ResultSingle(operation.perform(value));
-	}
+    @Override
+    public ResultSingle unaryOperation(UnaryOperation operation) {
+        return new ResultSingle(operation.perform(value));
+    }
 
-	@Override
-	protected Result callMe(BinaryOperation operation, Result left) {
-		return left.binaryOperationTyped(operation, this);
-	}
+    @Override
+    protected Result callMe(BinaryOperation operation, Result left) {
+        return left.binaryOperationTyped(operation, this);
+    }
 
-	@Override
-	public Value getValue() {
-		return value;
-	}
+    @Override
+    public Value getValue() {
+        return value;
+    }
 
-	@Override
-	public ValueList getList() {
-		throw new UnsupportedOperationException("Not a ResultList.");
-	}
+    @Override
+    public ValueList getList() {
+        throw new UnsupportedOperationException("Not a ResultList.");
+    }
 
-	@Override
-	public ValueList getColumn() {
-		throw new UnsupportedOperationException("Not a ResultColumn.");
-	}
+    @Override
+    public ValueList getColumn() {
+        throw new UnsupportedOperationException("Not a ResultColumn.");
+    }
 
-	@Override
-	public Result filterNulls() {
-		throw new UnsupportedOperationException("Operation filterNulls not supported on ResultSingle.");
-	}
+    @Override
+    public Result filterNulls() {
+        throw new UnsupportedOperationException("Operation filterNulls not supported on ResultSingle.");
+    }
 
-	@Override
-	public Result first(int size) {
-		throw new UnsupportedOperationException("Operation first not supported on ResultSingle.");
-	}
+    @Override
+    public Result first(int size) {
+        throw new UnsupportedOperationException("Operation first not supported on ResultSingle.");
+    }
 
-	@Override
-	public Result last(int size) {
-		throw new UnsupportedOperationException("Operation last not supported on ResultSingle.");
-	}
+    @Override
+    public Result last(int size) {
+        throw new UnsupportedOperationException("Operation last not supported on ResultSingle.");
+    }
 
-	@Override
-	public Result random(int size) {
-		throw new UnsupportedOperationException("Operation random not supported on ResultSingle.");
-	}
+    @Override
+    public Result random(int size) {
+        throw new UnsupportedOperationException("Operation random not supported on ResultSingle.");
+    }
 
-	@Override
-	public ResultSingle convertTo(Type to) {
-		return new ResultSingle(value.convertTo(to));
-	}
+    @Override
+    public ResultSingle convertTo(Type to) {
+        return new ResultSingle(value.convertTo(to));
+    }
 
-	@Override
-	public ResultSingle isNull() {
-		return new ResultSingle(new ValueBoolean(value.isNull()));
-	}
+    @Override
+    public ResultSingle isNull() {
+        return new ResultSingle(new ValueBoolean(value.isNull()));
+    }
 
-	@Override
-	public Type getType() {
-		return value.getType();
-	}
+    @Override
+    public Type getType() {
+        return value.getType();
+    }
 }

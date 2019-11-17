@@ -30,17 +30,17 @@ import pl.edu.mimuw.cloudatlas.model.Value;
 
 // immutable
 public class TableRow {
-	private final Value[] columns;
+    private final Value[] columns;
 
-	public TableRow(Value[] values) {
-		this.columns = Arrays.copyOf(values, values.length);
-	}
+    public TableRow(Value[] values) {
+        this.columns = Arrays.copyOf(values, values.length);
+    }
 
-	public int getSize() {
-		return columns.length;
-	}
+    public int getSize() {
+        return columns.length;
+    }
 
-	public Value getIth(int i) {
-		return columns[i];
-	}
+    public Value getIth(int i) {
+        return columns[i];
+    }
 }

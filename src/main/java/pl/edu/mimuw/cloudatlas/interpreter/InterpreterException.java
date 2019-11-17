@@ -26,7 +26,7 @@ package pl.edu.mimuw.cloudatlas.interpreter;
 
 @SuppressWarnings("serial")
 public abstract class InterpreterException extends RuntimeException {
-	protected InterpreterException(String message) {
-		super(message);
-	}
+    protected InterpreterException(String message) {
+        super(message);
+    }
 }

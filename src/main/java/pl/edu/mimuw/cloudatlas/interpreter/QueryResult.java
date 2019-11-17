@@ -29,27 +29,27 @@ import pl.edu.mimuw.cloudatlas.model.Value;
 
 // immutable
 public class QueryResult {
-	private final Attribute name;
-	private final Value value;
+    private final Attribute name;
+    private final Value value;
 
-	public QueryResult(Attribute name, Value value) {
-		this.name = name;
-		this.value = value;
-	}
+    public QueryResult(Attribute name, Value value) {
+        this.name = name;
+        this.value = value;
+    }
 
-	public QueryResult(Value value) {
-		this(null, value);
-	}
+    public QueryResult(Value value) {
+        this(null, value);
+    }
 
-	public Attribute getName() {
-		return name;
-	}
+    public Attribute getName() {
+        return name;
+    }
 
-	public Value getValue() {
-		return value;
-	}
+    public Value getValue() {
+        return value;
+    }
 
-	public String toString() {
-		return name + ": " + value;
-	}
+    public String toString() {
+        return name + ": " + value;
+    }
 }
