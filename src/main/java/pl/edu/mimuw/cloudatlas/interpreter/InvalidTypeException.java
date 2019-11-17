@@ -28,20 +28,20 @@ import pl.edu.mimuw.cloudatlas.model.Type;
 
 @SuppressWarnings("serial")
 public class InvalidTypeException extends InterpreterException {
-	private final Type expected;
-	private final Type got;
+    private final Type expected;
+    private final Type got;
 
-	protected InvalidTypeException(Type expected, Type got) {
-		super("Invalid type. Expected " + expected + ", got " + got + ".");
-		this.expected = expected;
-		this.got = got;
-	}
+    protected InvalidTypeException(Type expected, Type got) {
+        super("Invalid type. Expected " + expected + ", got " + got + ".");
+        this.expected = expected;
+        this.got = got;
+    }
 
-	public Type getExpected() {
-		return expected;
-	}
+    public Type getExpected() {
+        return expected;
+    }
 
-	public Type getGot() {
-		return got;
-	}
+    public Type getGot() {
+        return got;
+    }
 }

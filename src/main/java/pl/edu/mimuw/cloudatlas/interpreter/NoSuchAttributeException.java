@@ -26,14 +26,14 @@ package pl.edu.mimuw.cloudatlas.interpreter;
 
 @SuppressWarnings("serial")
 public class NoSuchAttributeException extends InterpreterException {
-	private final String attribute;
+    private final String attribute;
 
-	protected NoSuchAttributeException(String attribute) {
-		super("Attribute " + attribute + " does not exist.");
-		this.attribute = attribute;
-	}
+    protected NoSuchAttributeException(String attribute) {
+        super("Attribute " + attribute + " does not exist.");
+        this.attribute = attribute;
+    }
 
-	public String getAttribute() {
-		return attribute;
-	}
+    public String getAttribute() {
+        return attribute;
+    }
 }
