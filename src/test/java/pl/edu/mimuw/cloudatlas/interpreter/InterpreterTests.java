@@ -10,6 +10,7 @@ import java.net.URL;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
@@ -88,6 +89,7 @@ public class InterpreterTests {
         runFileTest(11);
     }
 
+    @Ignore
     @Test
     public void fileTest12() throws Exception {
         runFileTest(12);
