@@ -31,6 +31,7 @@ import pl.edu.mimuw.cloudatlas.model.ValueDouble;
 import pl.edu.mimuw.cloudatlas.model.ValueInt;
 import pl.edu.mimuw.cloudatlas.model.ValueList;
 import pl.edu.mimuw.cloudatlas.model.ValueNull;
+import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 
@@ -103,6 +104,24 @@ public class AgentTest {
         List<Value> phpModules = new ArrayList<Value>();
         phpModules.add(new ValueString("rewrite"));
         assertEquals(new ValueList(phpModules, TypePrimitive.STRING), attributes.get("php_modules"));
+    }
 
+    @Test
+    public void testInstallQuery() throws Exception {
+        String name = "&query";
+        String queryCode = "SELECT 1 AS one";
+        api.installQuery(name, queryCode);
+        AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
+        assertEquals(new ValueQuery(queryCode), attributes.get(name));
+    }
+
+    @Test
+    public void testUninstallQuery() throws Exception {
+        String name = "&query";
+        String queryCode = "SELECT 1 AS one";
+        api.installQuery(name, queryCode);
+        api.uninstallQuery(name);
+        AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
+        assertNull(attributes.getOrNull(name));
     }
 }
