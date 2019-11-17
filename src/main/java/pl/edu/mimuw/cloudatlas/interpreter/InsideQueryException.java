@@ -26,25 +26,25 @@ package pl.edu.mimuw.cloudatlas.interpreter;
 
 @SuppressWarnings("serial")
 public class InsideQueryException extends InterpreterException {
-	private final String fragment;
-	private final Exception exception;
+    private final String fragment;
+    private final Exception exception;
 
-	protected InsideQueryException(String fragment, Exception exception) {
-		super(exception.getMessage() + "\nin: " + fragment);
-		this.fragment = fragment;
-		this.exception = exception;
-	}
+    protected InsideQueryException(String fragment, Exception exception) {
+        super(exception.getMessage() + "\nin: " + fragment);
+        this.fragment = fragment;
+        this.exception = exception;
+    }
 
-	public String getFragment() {
-		return fragment;
-	}
+    public String getFragment() {
+        return fragment;
+    }
 
-	public Exception getException() {
-		return exception;
-	}
+    public Exception getException() {
+        return exception;
+    }
 
-	@Override
-	public StackTraceElement[] getStackTrace() {
-		return exception.getStackTrace();
-	}
+    @Override
+    public StackTraceElement[] getStackTrace() {
+        return exception.getStackTrace();
+    }
 }

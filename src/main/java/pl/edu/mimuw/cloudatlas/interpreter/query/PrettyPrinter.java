@@ -1132,7 +1132,7 @@ public class PrettyPrinter
   private static void trim()
   {
      while (buf_.length() > 0 && buf_.charAt(0) == ' ')
-        buf_.deleteCharAt(0); 
+        buf_.deleteCharAt(0);
     while (buf_.length() > 0 && buf_.charAt(buf_.length()-1) == ' ')
         buf_.deleteCharAt(buf_.length()-1);
   }

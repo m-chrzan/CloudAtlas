@@ -26,7 +26,7 @@ package pl.edu.mimuw.cloudatlas.interpreter;
 
 @SuppressWarnings("serial")
 public class InternalInterpreterException extends InterpreterException {
-	protected InternalInterpreterException(String message) {
-		super(message);
-	}
+    protected InternalInterpreterException(String message) {
+        super(message);
+    }
 }

@@ -44,14 +44,14 @@ public class AgentTest {
 
     @Test
     public void testGetZoneSet() {
-		try {
-			Registry registry = LocateRegistry.getRegistry("localhost");
-			Api api = (Api) registry.lookup("Api");
-			Set<String> set = api.getZoneSet();
+        try {
+            Registry registry = LocateRegistry.getRegistry("localhost");
+            Api api = (Api) registry.lookup("Api");
+            Set<String> set = api.getZoneSet();
             assertEquals(null, set);
-		} catch (Exception e) {
-			e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
             assertTrue(false);
-		}
+        }
     }
 }

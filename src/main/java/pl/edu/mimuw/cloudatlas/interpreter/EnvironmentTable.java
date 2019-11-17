@@ -7,13 +7,13 @@ import java.util.Map;
 import pl.edu.mimuw.cloudatlas.model.ValueNull;
 
 class EnvironmentTable extends Environment {
-	private final Table table;
+    private final Table table;
 
-	public EnvironmentTable(Table table) {
-		this.table = table;
-	}
+    public EnvironmentTable(Table table) {
+        this.table = table;
+    }
 
-	public Result getIdent(String ident) {
+    public Result getIdent(String ident) {
         return new ResultColumn(table.getColumn(ident).getValue());
-	}
+    }
 }

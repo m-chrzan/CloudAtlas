@@ -9,16 +9,16 @@ import pl.edu.mimuw.cloudatlas.api.Api;
 
 public class Agent {
     public static void main(String[] args) {
-		try {
-			ApiImplementation api = new ApiImplementation();
-			Api apiStub =
-				(Api) UnicastRemoteObject.exportObject(api, 0);
-			Registry registry = LocateRegistry.getRegistry();
-			registry.rebind("Api", apiStub);
-			System.out.println("Api bound");
-		} catch (Exception e) {
-			System.err.println("Agent exception:");
-			e.printStackTrace();
-		}
+        try {
+            ApiImplementation api = new ApiImplementation();
+            Api apiStub =
+                (Api) UnicastRemoteObject.exportObject(api, 0);
+            Registry registry = LocateRegistry.getRegistry();
+            registry.rebind("Api", apiStub);
+            System.out.println("Api bound");
+        } catch (Exception e) {
+            System.err.println("Agent exception:");
+            e.printStackTrace();
+        }
     }
 }

@@ -22,7 +22,7 @@ public class parser extends java_cup.runtime.lr_parser {
   public parser(java_cup.runtime.Scanner s, java_cup.runtime.SymbolFactory sf) {super(s,sf);}
 
   /** Production table. */
-  protected static final short _production_table[][] = 
+  protected static final short _production_table[][] =
     unpackFromStrings(new String[] {
     "\000\071\000\002\002\004\000\002\002\003\000\002\002" +
     "\005\000\002\003\003\000\002\003\005\000\002\004\003" +
@@ -47,7 +47,7 @@ public class parser extends java_cup.runtime.lr_parser {
   public short[][] production_table() {return _production_table;}
 
   /** Parse-action table. */
-  protected static final short[][] _action_table = 
+  protected static final short[][] _action_table =
     unpackFromStrings(new String[] {
     "\000\124\000\004\037\006\001\002\000\004\002\126\001" +
     "\002\000\006\002\000\004\124\001\002\000\022\007\024" +
@@ -206,7 +206,7 @@ public class parser extends java_cup.runtime.lr_parser {
   public short[][] action_table() {return _action_table;}
 
   /** <code>reduce_goto</code> table. */
-  protected static final short[][] _reduce_table = 
+  protected static final short[][] _reduce_table =
     unpackFromStrings(new String[] {
     "\000\124\000\010\002\006\006\003\007\004\001\001\000" +
     "\002\001\001\000\002\001\001\000\026\004\016\015\026" +
@@ -293,20 +293,20 @@ public class parser extends java_cup.runtime.lr_parser {
 
   public pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Program pProgram() throws Exception
   {
-	java_cup.runtime.Symbol res = parse();
-	return (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Program) res.value;
+    java_cup.runtime.Symbol res = parse();
+    return (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Program) res.value;
   }
 
 public <B,A extends java.util.LinkedList<? super B>> A cons_(B x, A xs) { xs.addFirst(x); return xs; }
 
 public void syntax_error(java_cup.runtime.Symbol cur_token)
 {
-	report_error("Syntax Error, trying to recover and continue parse...", cur_token);
+    report_error("Syntax Error, trying to recover and continue parse...", cur_token);
 }
 
 public void unrecovered_syntax_error(java_cup.runtime.Symbol cur_token) throws java.lang.Exception
 {
-	throw new Exception("Unrecoverable Syntax Error");
+    throw new Exception("Unrecoverable Syntax Error");
 }
 
 
@@ -336,576 +336,576 @@ class CUP$parser$actions {
       switch (CUP$parser$act_num)
         {
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 56: // RelOp ::= _SYMB_14 
+          case 56: // RelOp ::= _SYMB_14
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOp RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOpGeC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOpGeC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("RelOp",20, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 55: // RelOp ::= _SYMB_13 
+          case 55: // RelOp ::= _SYMB_13
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOp RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOpLeC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOpLeC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("RelOp",20, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 54: // RelOp ::= _SYMB_12 
+          case 54: // RelOp ::= _SYMB_12
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOp RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOpLtC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOpLtC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("RelOp",20, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 53: // RelOp ::= _SYMB_11 
+          case 53: // RelOp ::= _SYMB_11
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOp RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOpNeC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOpNeC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("RelOp",20, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 52: // RelOp ::= _SYMB_10 
+          case 52: // RelOp ::= _SYMB_10
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOp RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOpEqC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOpEqC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("RelOp",20, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 51: // RelOp ::= _SYMB_9 
+          case 51: // RelOp ::= _SYMB_9
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOp RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOpGtC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOpGtC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("RelOp",20, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 50: // BasicExpr3 ::= _SYMB_7 Statement _SYMB_8 
+          case 50: // BasicExpr3 ::= _SYMB_7 Statement _SYMB_8
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Statement p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Statement)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EStmtC(p_2); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Statement p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Statement)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EStmtC(p_2);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr3",19, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 49: // BasicExpr3 ::= _SYMB_7 CondExpr _SYMB_8 
+          case 49: // BasicExpr3 ::= _SYMB_7 CondExpr _SYMB_8
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ECondExprC(p_2); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ECondExprC(p_2);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr3",19, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 48: // BasicExpr3 ::= QDouble 
+          case 48: // BasicExpr3 ::= QDouble
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		String p_1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EDblC(p_1); 
+        String p_1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EDblC(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr3",19, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 47: // BasicExpr3 ::= QInteger 
+          case 47: // BasicExpr3 ::= QInteger
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		String p_1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EIntC(p_1); 
+        String p_1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EIntC(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr3",19, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 46: // BasicExpr3 ::= _STRING_ 
+          case 46: // BasicExpr3 ::= _STRING_
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		String p_1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EStrC(p_1); 
+        String p_1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EStrC(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr3",19, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 45: // BasicExpr3 ::= QIdent _SYMB_7 ListCondExpr _SYMB_8 
+          case 45: // BasicExpr3 ::= QIdent _SYMB_7 ListCondExpr _SYMB_8
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		String p_1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EFunC(p_1,p_3); 
+        String p_1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EFunC(p_1,p_3);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr3",19, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 44: // BasicExpr3 ::= QIdent 
+          case 44: // BasicExpr3 ::= QIdent
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		String p_1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EIdentC(p_1); 
+        String p_1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EIdentC(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr3",19, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 43: // BasicExpr3 ::= QBool 
+          case 43: // BasicExpr3 ::= QBool
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		String p_1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EBoolC(p_1); 
+        String p_1 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.EBoolC(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr3",19, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 42: // BasicExpr2 ::= BasicExpr3 
+          case 42: // BasicExpr2 ::= BasicExpr3
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = p_1; 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = p_1;
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr2",18, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 41: // BasicExpr2 ::= _SYMB_3 BasicExpr2 
+          case 41: // BasicExpr2 ::= _SYMB_3 BasicExpr2
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExprNegC(p_2); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExprNegC(p_2);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr2",18, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 40: // BasicExpr1 ::= BasicExpr2 
+          case 40: // BasicExpr1 ::= BasicExpr2
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = p_1; 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = p_1;
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr1",17, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 39: // BasicExpr1 ::= BasicExpr1 _SYMB_6 BasicExpr2 
+          case 39: // BasicExpr1 ::= BasicExpr1 _SYMB_6 BasicExpr2
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExprModC(p_1,p_3); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExprModC(p_1,p_3);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr1",17, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 38: // BasicExpr1 ::= BasicExpr1 _SYMB_5 BasicExpr2 
+          case 38: // BasicExpr1 ::= BasicExpr1 _SYMB_5 BasicExpr2
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExprDivC(p_1,p_3); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExprDivC(p_1,p_3);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr1",17, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 37: // BasicExpr1 ::= BasicExpr1 _SYMB_4 BasicExpr2 
+          case 37: // BasicExpr1 ::= BasicExpr1 _SYMB_4 BasicExpr2
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExprMulC(p_1,p_3); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExprMulC(p_1,p_3);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr1",17, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 36: // BasicExpr ::= BasicExpr1 
+          case 36: // BasicExpr ::= BasicExpr1
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = p_1; 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = p_1;
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr",16, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 35: // BasicExpr ::= BasicExpr _SYMB_3 BasicExpr1 
+          case 35: // BasicExpr ::= BasicExpr _SYMB_3 BasicExpr1
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExprSubC(p_1,p_3); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExprSubC(p_1,p_3);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr",16, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 34: // BasicExpr ::= BasicExpr _SYMB_2 BasicExpr1 
+          case 34: // BasicExpr ::= BasicExpr _SYMB_2 BasicExpr1
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExprAddC(p_1,p_3); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExprAddC(p_1,p_3);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BasicExpr",16, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 33: // CondExpr2 ::= BoolExpr 
+          case 33: // CondExpr2 ::= BoolExpr
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BoolExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BoolExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExprBoolExprC(p_1); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BoolExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BoolExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExprBoolExprC(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("CondExpr2",15, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 32: // CondExpr2 ::= _SYMB_22 CondExpr2 
+          case 32: // CondExpr2 ::= _SYMB_22 CondExpr2
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExprNotC(p_2); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExprNotC(p_2);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("CondExpr2",15, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 31: // CondExpr1 ::= CondExpr2 
+          case 31: // CondExpr1 ::= CondExpr2
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = p_1; 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = p_1;
               CUP$parser$result = parser.getSymbolFactory().newSymbol("CondExpr1",14, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 30: // CondExpr1 ::= CondExpr1 _SYMB_15 CondExpr2 
+          case 30: // CondExpr1 ::= CondExpr1 _SYMB_15 CondExpr2
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExprAndC(p_1,p_3); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExprAndC(p_1,p_3);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("CondExpr1",14, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 29: // CondExpr ::= CondExpr1 
+          case 29: // CondExpr ::= CondExpr1
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = p_1; 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = p_1;
               CUP$parser$result = parser.getSymbolFactory().newSymbol("CondExpr",13, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 28: // CondExpr ::= CondExpr _SYMB_24 CondExpr1 
+          case 28: // CondExpr ::= CondExpr _SYMB_24 CondExpr1
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExprOrC(p_1,p_3); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExprOrC(p_1,p_3);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("CondExpr",13, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 27: // BoolExpr ::= BasicExpr 
+          case 27: // BoolExpr ::= BasicExpr
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BoolExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BoolExprBasicExprC(p_1); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BoolExprBasicExprC(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BoolExpr",12, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 26: // BoolExpr ::= BasicExpr _SYMB_26 _STRING_ 
+          case 26: // BoolExpr ::= BasicExpr _SYMB_26 _STRING_
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BoolExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		String p_3 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BoolExprRegExpC(p_1,p_3); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        String p_3 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BoolExprRegExpC(p_1,p_3);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BoolExpr",12, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 25: // BoolExpr ::= BasicExpr RelOp BasicExpr 
+          case 25: // BoolExpr ::= BasicExpr RelOp BasicExpr
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BoolExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOp p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOp)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BoolExprCmpC(p_1,p_2,p_3); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOp p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.RelOp)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BasicExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.BoolExprCmpC(p_1,p_2,p_3);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("BoolExpr",12, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 24: // SelItem ::= CondExpr _SYMB_16 QIdent 
+          case 24: // SelItem ::= CondExpr _SYMB_16 QIdent
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.SelItem RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		String p_3 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.AliasedSelItemC(p_1,p_3); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        String p_3 = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.AliasedSelItemC(p_1,p_3);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("SelItem",11, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 23: // SelItem ::= CondExpr 
+          case 23: // SelItem ::= CondExpr
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.SelItem RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.SelItemC(p_1); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.SelItemC(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("SelItem",11, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 22: // Nulls ::= _SYMB_23 _SYMB_21 
+          case 22: // Nulls ::= _SYMB_23 _SYMB_21
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Nulls RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.NullsLastC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.NullsLastC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Nulls",10, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 21: // Nulls ::= _SYMB_23 _SYMB_20 
+          case 21: // Nulls ::= _SYMB_23 _SYMB_20
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Nulls RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.NullFirstsC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.NullFirstsC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Nulls",10, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 20: // Nulls ::= 
+          case 20: // Nulls ::=
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Nulls RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.NoNullsC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.NoNullsC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Nulls",10, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 19: // Order ::= 
+          case 19: // Order ::=
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Order RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.NoOrderC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.NoOrderC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Order",9, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 18: // Order ::= _SYMB_19 
+          case 18: // Order ::= _SYMB_19
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Order RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.DescOrderC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.DescOrderC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Order",9, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 17: // Order ::= _SYMB_17 
+          case 17: // Order ::= _SYMB_17
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Order RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.AscOrderC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.AscOrderC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Order",9, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 16: // OrderItem ::= CondExpr Order Nulls 
+          case 16: // OrderItem ::= CondExpr Order Nulls
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderItem RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Order p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Order)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Nulls p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Nulls)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderItemC(p_1,p_2,p_3); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Order p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Order)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Nulls p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Nulls)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderItemC(p_1,p_2,p_3);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("OrderItem",8, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 15: // OrderBy ::= _SYMB_25 _SYMB_18 ListOrderItem 
+          case 15: // OrderBy ::= _SYMB_25 _SYMB_18 ListOrderItem
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderBy RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListOrderItem p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListOrderItem)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderByC(p_3); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListOrderItem p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListOrderItem)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderByC(p_3);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("OrderBy",7, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 14: // OrderBy ::= 
+          case 14: // OrderBy ::=
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderBy RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.NoOrderByC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.NoOrderByC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("OrderBy",7, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 13: // Where ::= _SYMB_28 CondExpr 
+          case 13: // Where ::= _SYMB_28 CondExpr
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Where RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.WhereC(p_2); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.WhereC(p_2);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Where",6, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 12: // Where ::= 
+          case 12: // Where ::=
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Where RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.NoWhereC(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.NoWhereC();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Where",6, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 11: // Statement ::= _SYMB_27 ListSelItem Where OrderBy 
+          case 11: // Statement ::= _SYMB_27 ListSelItem Where OrderBy
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Statement RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListSelItem p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListSelItem)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Where p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Where)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderBy p_4 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderBy)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.StatementC(p_2,p_3,p_4); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListSelItem p_2 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListSelItem)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Where p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Where)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderBy p_4 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderBy)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.StatementC(p_2,p_3,p_4);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Statement",5, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 10: // Program ::= ListStatement 
+          case 10: // Program ::= ListStatement
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Program RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListStatement p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListStatement)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ProgramC(p_1); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListStatement p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListStatement)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ProgramC(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Program",4, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 9: // ListCondExpr ::= CondExpr _SYMB_1 ListCondExpr 
+          case 9: // ListCondExpr ::= CondExpr _SYMB_1 ListCondExpr
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = p_3; p_3.addFirst(p_1); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = p_3; p_3.addFirst(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ListCondExpr",3, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 8: // ListCondExpr ::= CondExpr 
+          case 8: // ListCondExpr ::= CondExpr
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr(); RESULT.addLast(p_1); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.CondExpr)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr(); RESULT.addLast(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ListCondExpr",3, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 7: // ListCondExpr ::= 
+          case 7: // ListCondExpr ::=
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr RESULT =null;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr(); 
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListCondExpr();
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ListCondExpr",3, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 6: // ListSelItem ::= SelItem _SYMB_1 ListSelItem 
+          case 6: // ListSelItem ::= SelItem _SYMB_1 ListSelItem
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListSelItem RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.SelItem p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.SelItem)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListSelItem p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListSelItem)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = p_3; p_3.addFirst(p_1); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.SelItem p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.SelItem)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListSelItem p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListSelItem)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = p_3; p_3.addFirst(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ListSelItem",2, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 5: // ListSelItem ::= SelItem 
+          case 5: // ListSelItem ::= SelItem
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListSelItem RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.SelItem p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.SelItem)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListSelItem(); RESULT.addLast(p_1); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.SelItem p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.SelItem)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListSelItem(); RESULT.addLast(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ListSelItem",2, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 4: // ListOrderItem ::= OrderItem _SYMB_1 ListOrderItem 
+          case 4: // ListOrderItem ::= OrderItem _SYMB_1 ListOrderItem
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListOrderItem RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderItem p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderItem)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListOrderItem p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListOrderItem)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = p_3; p_3.addFirst(p_1); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderItem p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderItem)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListOrderItem p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListOrderItem)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = p_3; p_3.addFirst(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ListOrderItem",1, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 3: // ListOrderItem ::= OrderItem 
+          case 3: // ListOrderItem ::= OrderItem
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListOrderItem RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderItem p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderItem)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListOrderItem(); RESULT.addLast(p_1); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderItem p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.OrderItem)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListOrderItem(); RESULT.addLast(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ListOrderItem",1, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 2: // ListStatement ::= Statement _SYMB_0 ListStatement 
+          case 2: // ListStatement ::= Statement _SYMB_0 ListStatement
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListStatement RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Statement p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Statement)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListStatement p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListStatement)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = p_3; p_3.addFirst(p_1); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Statement p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Statement)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListStatement p_3 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListStatement)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = p_3; p_3.addFirst(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ListStatement",0, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 1: // ListStatement ::= Statement 
+          case 1: // ListStatement ::= Statement
             {
               pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListStatement RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Statement p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Statement)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListStatement(); RESULT.addLast(p_1); 
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Statement p_1 = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Statement)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+         RESULT = new pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.ListStatement(); RESULT.addLast(p_1);
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ListStatement",0, RESULT);
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 0: // $START ::= Program EOF 
+          case 0: // $START ::= Program EOF
             {
               Object RESULT =null;
-		pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Program start_val = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Program)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		RESULT = start_val;
+        pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Program start_val = (pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Program)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+        RESULT = start_val;
               CUP$parser$result = parser.getSymbolFactory().newSymbol("$START",0, RESULT);
             }
           /* ACCEPT */

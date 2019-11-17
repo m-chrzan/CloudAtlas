@@ -25,5 +25,5 @@
 package pl.edu.mimuw.cloudatlas.interpreter;
 
 abstract class Environment {
-	abstract public Result getIdent(String ident);
+    abstract public Result getIdent(String ident);
 }
