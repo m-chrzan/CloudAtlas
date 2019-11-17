@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
+import pl.edu.mimuw.cloudatlas.model.PathName;
 import pl.edu.mimuw.cloudatlas.model.ValueContact;
 import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueSet;
@@ -34,8 +35,13 @@ public class ApiImplementation implements Api {
         }
     }
 
-    public AttributesMap getZoneAttributeValue(String zoneName) throws RemoteException {
-        return null;
+    public AttributesMap getZoneAttributeValues(String zoneName) throws RemoteException {
+        try {
+            ZMI zmi = root.findDescendant(new PathName(zoneName));
+            return zmi.getAttributes();
+        } catch (ZMI.NoSuchZoneException e) {
+            throw new RemoteException("Zone not found", e);
+        }
     }
 
     public void installQuery(String queryName, String query) throws RemoteException {

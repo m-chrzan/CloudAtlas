@@ -41,6 +41,11 @@ import com.esotericsoftware.kryo.io.Output;
  * references to its father and sons in the tree.
  */
 public class ZMI implements Cloneable {
+    public class NoSuchZoneException extends Exception {
+        public NoSuchZoneException(PathName path) {
+            super("No such zone: " + path);
+        }
+    }
     private final AttributesMap attributes = new AttributesMap();
 
     private final List<ZMI> sons = new ArrayList<ZMI>();
@@ -83,6 +88,26 @@ public class ZMI implements Cloneable {
      */
     public void setFather(ZMI father) {
         this.father = father;
+    }
+
+    public ZMI findDescendant(PathName path) throws NoSuchZoneException {
+        ZMI descendant = this;
+        for (String component : path.getComponents()) {
+            boolean foundNextSon = false;
+            for (ZMI son : descendant.getSons()) {
+                if (son.getAttributes().get("name").equals(new ValueString(component))) {
+                    descendant = son;
+                    foundNextSon = true;
+                    break;
+                }
+            }
+
+            if (!foundNextSon) {
+                throw new NoSuchZoneException(path);
+            }
+        }
+
+        return descendant;
     }
 
     /**
