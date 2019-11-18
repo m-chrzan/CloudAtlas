@@ -1,10 +1,13 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
+import java.io.PrintStream;
+
 import java.rmi.RemoteException;
 
 import java.util.Set;
 import java.util.HashSet;
 
+import pl.edu.mimuw.cloudatlas.interpreter.Main;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.PathName;
@@ -53,6 +56,7 @@ public class ApiImplementation implements Api {
             ValueQuery query = new ValueQuery(queryCode);
             Attribute attributeName = new Attribute(name);
             installQueryInHierarchy(root, attributeName, query);
+            Main.executeQueries(root, query.getQuery(), new PrintStream(new NoopOutputStream()));
         } catch (Exception e) {
             throw new RemoteException("Failed to install query", e);
         }

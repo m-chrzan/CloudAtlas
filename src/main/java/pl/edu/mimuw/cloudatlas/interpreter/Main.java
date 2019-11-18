@@ -72,7 +72,7 @@ public class Main {
         executeQueries(zmi, program, out);
     }
 
-    private static void executeQueries(ZMI zmi, Program program, PrintStream out) throws Exception {
+    public static void executeQueries(ZMI zmi, Program program, PrintStream out) throws Exception {
         if(!zmi.getSons().isEmpty()) {
             for(ZMI son : zmi.getSons()) {
                 executeQueries(son, program, out);
