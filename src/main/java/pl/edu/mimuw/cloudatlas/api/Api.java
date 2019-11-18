@@ -25,14 +25,14 @@ public interface Api extends Remote {
 
     public Set<String> getZoneSet() throws RemoteException;
 
-    public AttributesMap getZoneAttributeValue(String zoneName) throws RemoteException;
+    public AttributesMap getZoneAttributeValues(String zoneName) throws RemoteException;
 
     public void installQuery(String queryName, String query) throws RemoteException;
 
     public void uninstallQuery(String queryName) throws RemoteException;
 
-    public void setAttributeValue(String attributeName, Value value) throws RemoteException;
+    public void setAttributeValue(String zoneName, String attributeName, Value value) throws RemoteException;
 
-    public void setFallbackContacts(Set<ValueContact> serializedContacts) throws RemoteException;
+    public void setFallbackContacts(Set<ValueContact> contacts) throws RemoteException;
 
 }

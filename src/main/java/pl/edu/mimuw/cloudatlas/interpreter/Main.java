@@ -65,11 +65,6 @@ public class Main {
         scanner.close();
     }
 
-    private static PathName getPathName(ZMI zmi) {
-        String name = ((ValueString)zmi.getAttributes().get("name")).getValue();
-        return zmi.getFather() == null? PathName.ROOT : getPathName(zmi.getFather()).levelDown(name);
-    }
-
     private static void executeQueries(ZMI zmi, String query, PrintStream out) throws Exception {
         if(!zmi.getSons().isEmpty()) {
             for(ZMI son : zmi.getSons())
@@ -78,7 +73,7 @@ public class Main {
             Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
             try {
                 List<QueryResult> result = interpreter.interpretProgram((new parser(lex)).pProgram());
-                PathName zone = getPathName(zmi);
+                PathName zone = zmi.getPathName();
                 for(QueryResult r : result) {
                     out.println(zone + ": " + r);
                     zmi.getAttributes().addOrChange(r.getName(), r.getValue());
@@ -249,7 +244,7 @@ public class Main {
         return root;
     }
 
-    private static ZMI createTestHierarchy2() throws ParseException, UnknownHostException {
+    public static ZMI createTestHierarchy2() throws ParseException, UnknownHostException {
         ValueContact violet07Contact = createContact("/uw/violet07", (byte)10, (byte)1, (byte)1, (byte)10);
         ValueContact khaki13Contact = createContact("/uw/khaki13", (byte)10, (byte)1, (byte)1, (byte)38);
         ValueContact khaki31Contact = createContact("/uw/khaki31", (byte)10, (byte)1, (byte)1, (byte)39);
@@ -368,6 +363,7 @@ public class Main {
         khaki13.getAttributes().add("creation", new ValueTime((Long)null));
         khaki13.getAttributes().add("cpu_usage", new ValueDouble(0.1));
         khaki13.getAttributes().add("num_cores", new ValueInt(null));
+        khaki13.getAttributes().add("num_processes", new ValueInt(107l));
         khaki13.getAttributes().add("has_ups", new ValueBoolean(true));
         list = Arrays.asList(new Value[] {});
         khaki13.getAttributes().add("some_names", new ValueList(list, TypePrimitive.STRING));

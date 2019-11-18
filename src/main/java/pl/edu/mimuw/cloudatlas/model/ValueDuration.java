@@ -248,7 +248,8 @@ public class ValueDuration extends ValueSimple<Long> {
         return new ValueDuration(-getValue());
     }
 
-    public String toString() {
+
+    private String makeString() {
         long remainingUnits = getValue();
         boolean positive = remainingUnits >= 0;
         remainingUnits = positive ? remainingUnits : -remainingUnits;
@@ -272,7 +273,7 @@ public class ValueDuration extends ValueSimple<Long> {
     public Value convertTo(Type type) {
         switch(type.getPrimaryType()) {
             case STRING:
-                return getValue() == null? ValueString.NULL_STRING : new ValueString(toString());
+                return getValue() == null? ValueString.NULL_STRING : new ValueString(makeString());
             case DURATION:
                 return this;
             default:

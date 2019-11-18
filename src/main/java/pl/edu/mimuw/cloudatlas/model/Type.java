@@ -24,16 +24,18 @@
 
 package pl.edu.mimuw.cloudatlas.model;
 
+import java.io.Serializable;
+
 /**
  * A type of a value that may be stored as an attribute.
  */
-public abstract class Type {
+public abstract class Type implements Serializable {
     /**
      * A primary type. This is a characteristic that every type has. It can be extended: for instance a collection may
      * be parameterized with a type of stored values.
      */
     public static enum PrimaryType {
-        BOOLEAN, CONTACT, DOUBLE, DURATION, INT, LIST, NULL, SET, STRING, TIME,
+        BOOLEAN, CONTACT, DOUBLE, DURATION, INT, LIST, NULL, SET, STRING, TIME, QUERY
     }
 
     private final PrimaryType primaryType;

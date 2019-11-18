@@ -73,6 +73,11 @@ public class TypePrimitive extends Type {
      */
     public static final TypePrimitive TIME = new TypePrimitive(PrimaryType.TIME);
 
+    /**
+     * Query type.
+     */
+    public static final TypePrimitive QUERY = new TypePrimitive(PrimaryType.QUERY);
+
     private TypePrimitive(PrimaryType primaryType) {
         super(primaryType);
         switch(primaryType) {
@@ -84,6 +89,7 @@ public class TypePrimitive extends Type {
             case NULL:
             case STRING:
             case TIME:
+            case QUERY:
                 break;
             default:
                 throw new IllegalArgumentException(
