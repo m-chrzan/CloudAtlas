@@ -81,17 +81,17 @@ public class ApiImplementationTests {
         String name = "&query";
         String queryCode = "SELECT 1 AS one";
         api.installQuery(name, queryCode);
-        AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
-        assertEquals(new ValueQuery(queryCode), attributes.get(name));
+        assertAttributeInZmiEquals(name, new ValueQuery(queryCode), "/");
+        assertAttributeInZmiEquals(name, new ValueQuery(queryCode), "/uw");
+        assertAttributeInZmiEquals(name, new ValueQuery(queryCode), "/pjwstk");
     }
 
     @Test
     public void testInstallQueryRuns() throws Exception {
-        String name = "&query";
-        String queryCode = "SELECT 1 AS one";
-        api.installQuery(name, queryCode);
-        AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
-        assertEquals(new ValueInt(1l), attributes.get("one"));
+        api.installQuery("&query", "SELECT 1 AS one");
+        assertAttributeInZmiEquals("one", new ValueInt(1l), "/");
+        assertAttributeInZmiEquals("one", new ValueInt(1l), "/uw");
+        assertAttributeInZmiEquals("one", new ValueInt(1l), "/pjwstk");
     }
 
     @Test
