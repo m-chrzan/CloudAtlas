@@ -95,6 +95,19 @@ public class ApiImplementationTests {
     }
 
     @Test
+    public void testInstallQueryRuns2() throws Exception {
+        api.installQuery("&query", "SELECT sum(num_processes) AS num_processes");
+        assertAttributeInZmiEquals("num_processes", new ValueInt(362l), "/uw");
+        assertAttributeInZmiEquals("num_processes", new ValueInt(437l), "/pjwstk");
+        assertAttributeInZmiEquals("num_processes", new ValueInt(799l), "/");
+    }
+
+    public void assertAttributeInZmiEquals(String attribute, Value expected, String zmiPath) throws Exception {
+        AttributesMap attributes = api.getZoneAttributeValues(zmiPath);
+        assertEquals(expected, attributes.get(attribute));
+    }
+
+    @Test
     public void testUninstallQuery() throws Exception {
         String name = "&query";
         String queryCode = "SELECT 1 AS one";
