@@ -311,6 +311,7 @@ public class Main {
         violet07.getAttributes().add("creation", new ValueTime("2011/11/09 20:8:13.123"));
         violet07.getAttributes().add("cpu_usage", new ValueDouble(0.9));
         violet07.getAttributes().add("num_cores", new ValueInt(3l));
+        violet07.getAttributes().add("num_processes", new ValueInt(131l));
         violet07.getAttributes().add("has_ups", new ValueBoolean(null));
         list = Arrays.asList(new Value[] {
             new ValueString("tola"), new ValueString("tosia"),
@@ -342,6 +343,7 @@ public class Main {
         khaki31.getAttributes().add("creation", new ValueTime("2011/11/09 20:12:13.123"));
         khaki31.getAttributes().add("cpu_usage", new ValueDouble(null));
         khaki31.getAttributes().add("num_cores", new ValueInt(3l));
+        khaki31.getAttributes().add("num_processes", new ValueInt(124l));
         khaki31.getAttributes().add("has_ups", new ValueBoolean(false));
         list = Arrays.asList(new Value[] {
             new ValueString("agatka"), new ValueString("beatka"), new ValueString("celina"),
