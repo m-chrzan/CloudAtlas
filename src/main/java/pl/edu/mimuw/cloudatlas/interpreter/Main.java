@@ -363,6 +363,7 @@ public class Main {
         khaki13.getAttributes().add("creation", new ValueTime((Long)null));
         khaki13.getAttributes().add("cpu_usage", new ValueDouble(0.1));
         khaki13.getAttributes().add("num_cores", new ValueInt(null));
+        khaki13.getAttributes().add("num_processes", new ValueInt(107l));
         khaki13.getAttributes().add("has_ups", new ValueBoolean(true));
         list = Arrays.asList(new Value[] {});
         khaki13.getAttributes().add("some_names", new ValueList(list, TypePrimitive.STRING));

@@ -124,4 +124,20 @@ public class AgentTest {
         AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
         assertNull(attributes.getOrNull(name));
     }
+
+    @Test
+    public void testSetAttributeValueChange() throws Exception {
+        Value numProcesses = new ValueInt(42l);
+        api.setAttributeValue("/uw/khaki13", "num_processes", numProcesses);
+        AttributesMap attributes = api.getZoneAttributeValues("/uw/khaki13");
+        assertEquals(numProcesses, attributes.get("num_processes"));
+    }
+
+    @Test
+    public void testSetAttributeValueAdd() throws Exception {
+        Value numProcesses = new ValueInt(42l);
+        api.setAttributeValue("/uw/khaki13", "an_attribute", numProcesses);
+        AttributesMap attributes = api.getZoneAttributeValues("/uw/khaki13");
+        assertEquals(numProcesses, attributes.get("an_attribute"));
+    }
 }

@@ -19,9 +19,11 @@ import pl.edu.mimuw.cloudatlas.api.Api;
 
 public class ApiImplementation implements Api {
     ZMI root;
+    Set<ValueContact> contacts;
 
     public ApiImplementation(ZMI root) {
         this.root = root;
+        this.contacts = new HashSet<ValueContact>();
     }
 
     public Set<String> getZoneSet() throws RemoteException {
@@ -78,9 +80,16 @@ public class ApiImplementation implements Api {
         }
     }
 
-    public void setAttributeValue(String attributeName, Value value) throws RemoteException {
+    public void setAttributeValue(String zoneName, String attributeName, Value value) throws RemoteException {
+        try {
+            ZMI zmi = root.findDescendant(new PathName(zoneName));
+            zmi.getAttributes().addOrChange(new Attribute(attributeName), value);
+        } catch (ZMI.NoSuchZoneException e) {
+            throw new RemoteException("Zone not found", e);
+        }
     }
 
-    public void setFallbackContacts(Set<ValueContact> serializedContacts) throws RemoteException {
+    public void setFallbackContacts(Set<ValueContact> contacts) throws RemoteException {
+        this.contacts = contacts;
     }
 }

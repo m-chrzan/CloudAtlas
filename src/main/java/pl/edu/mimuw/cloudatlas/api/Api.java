@@ -31,8 +31,8 @@ public interface Api extends Remote {
 
     public void uninstallQuery(String queryName) throws RemoteException;
 
-    public void setAttributeValue(String attributeName, Value value) throws RemoteException;
+    public void setAttributeValue(String zoneName, String attributeName, Value value) throws RemoteException;
 
-    public void setFallbackContacts(Set<ValueContact> serializedContacts) throws RemoteException;
+    public void setFallbackContacts(Set<ValueContact> contacts) throws RemoteException;
 
 }
