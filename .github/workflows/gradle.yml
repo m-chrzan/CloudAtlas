@@ -16,6 +16,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew test
     - name: Upload test report
+      if: always()
       uses: actions/upload-artifact@v1
       with:
         name: test-report
