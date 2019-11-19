@@ -1,8 +1,8 @@
 package pl.edu.mimuw.cloudatlas.client;
 
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
 
 /*
 should enable reading attribute values stored by the agent
@@ -15,11 +15,12 @@ and presenting the information fetched from the agent in a textual form (with au
 plotting the attributes with numeric values as real-time graphs.
 */
 
-@RestController
-public class Controller {
+@Controller
+public class ClientController {
 
     @GetMapping("/")
     public String homePage(Model model) {
+        model.addAttribute("homeMessage", "Welcome to CloudaAtlas client interface");
         return "home";
     }
 }

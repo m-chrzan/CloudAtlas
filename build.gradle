@@ -27,6 +27,8 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web:2.2.1.RELEASE'
 
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.2.1.RELEASE'
+
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
 
