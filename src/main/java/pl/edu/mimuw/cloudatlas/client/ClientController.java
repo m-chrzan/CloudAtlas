@@ -32,7 +32,6 @@ public class ClientController {
 
     @PostMapping("/query")
     public String submitQuery(@ModelAttribute Query queryObject, Model model) {
-        System.out.println(queryObject.toString());
         model.addAttribute("homeMessage", "Query submitted successfully");
         return "home";
     }
@@ -44,7 +43,6 @@ public class ClientController {
 
     @PostMapping("/contacts")
     public String contactPage(@ModelAttribute String contactsObject, Model model) {
-        System.out.println(contactsObject);
         model.addAttribute("homeMessage", "Contact list submitted successfully");
         return "home";
     }
