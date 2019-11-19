@@ -21,7 +21,6 @@ import java.util.Set;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
-import java.math.BigDecimal;
 
 import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
@@ -35,7 +34,7 @@ import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 
-public class AgentTest {
+public class AgentIntegrationTest {
     private static Process registryProcess;
     private static Process agentProcess;
 
@@ -113,6 +112,15 @@ public class AgentTest {
         api.installQuery(name, queryCode);
         AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
         assertEquals(new ValueQuery(queryCode), attributes.get(name));
+    }
+
+    @Test
+    public void testInstallQueryRuns() throws Exception {
+        String name = "&query";
+        String queryCode = "SELECT 1 AS one";
+        api.installQuery(name, queryCode);
+        AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
+        assertEquals(new ValueInt(1l), attributes.get("one"));
     }
 
     @Test

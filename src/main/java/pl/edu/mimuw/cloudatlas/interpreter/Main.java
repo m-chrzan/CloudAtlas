@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 
+import pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Program;
 import pl.edu.mimuw.cloudatlas.interpreter.query.Yylex;
 import pl.edu.mimuw.cloudatlas.interpreter.query.parser;
 import pl.edu.mimuw.cloudatlas.model.PathName;
@@ -60,19 +61,26 @@ public class Main {
         Scanner scanner = new Scanner(in);
         scanner.useDelimiter("\\n");
         while(scanner.hasNext()) {
-            executeQueries(root, scanner.next(), out);
+            executeQueriesFromSource(root, scanner.next(), out);
         }
         scanner.close();
     }
 
-    private static void executeQueries(ZMI zmi, String query, PrintStream out) throws Exception {
+    private static void executeQueriesFromSource(ZMI zmi, String query, PrintStream out) throws Exception {
+        Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
+        Program program = (new parser(lex)).pProgram();
+        executeQueries(zmi, program, out);
+    }
+
+    public static void executeQueries(ZMI zmi, Program program, PrintStream out) throws Exception {
         if(!zmi.getSons().isEmpty()) {
-            for(ZMI son : zmi.getSons())
-                executeQueries(son, query, out);
+            for(ZMI son : zmi.getSons()) {
+                executeQueries(son, program, out);
+            }
+
             Interpreter interpreter = new Interpreter(zmi);
-            Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
             try {
-                List<QueryResult> result = interpreter.interpretProgram((new parser(lex)).pProgram());
+                List<QueryResult> result = interpreter.interpretProgram(program);
                 PathName zone = zmi.getPathName();
                 for(QueryResult r : result) {
                     out.println(zone + ": " + r);
@@ -303,6 +311,7 @@ public class Main {
         violet07.getAttributes().add("creation", new ValueTime("2011/11/09 20:8:13.123"));
         violet07.getAttributes().add("cpu_usage", new ValueDouble(0.9));
         violet07.getAttributes().add("num_cores", new ValueInt(3l));
+        violet07.getAttributes().add("num_processes", new ValueInt(131l));
         violet07.getAttributes().add("has_ups", new ValueBoolean(null));
         list = Arrays.asList(new Value[] {
             new ValueString("tola"), new ValueString("tosia"),
@@ -334,6 +343,7 @@ public class Main {
         khaki31.getAttributes().add("creation", new ValueTime("2011/11/09 20:12:13.123"));
         khaki31.getAttributes().add("cpu_usage", new ValueDouble(null));
         khaki31.getAttributes().add("num_cores", new ValueInt(3l));
+        khaki31.getAttributes().add("num_processes", new ValueInt(124l));
         khaki31.getAttributes().add("has_ups", new ValueBoolean(false));
         list = Arrays.asList(new Value[] {
             new ValueString("agatka"), new ValueString("beatka"), new ValueString("celina"),

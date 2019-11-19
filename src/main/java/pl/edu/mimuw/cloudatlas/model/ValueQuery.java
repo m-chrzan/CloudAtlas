@@ -32,6 +32,10 @@ public class ValueQuery extends Value {
         this.query = null;
     }
 
+    public Program getQuery() {
+        return query;
+    }
+
     @Override
     public Type getType() {
         return TypePrimitive.QUERY;
