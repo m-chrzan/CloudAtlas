@@ -23,4 +23,17 @@ public class ClientController {
         model.addAttribute("homeMessage", "Welcome to CloudaAtlas client interface");
         return "home";
     }
+
+    @GetMapping("/query")
+    public String queryPage(Model model) {
+        model.addAttribute("queryObject", new Query());
+        return "queryForm";
+    }
+
+    @PostMapping("/submitQuery")
+    public String submitQuery(@ModelAttribute Query queryObject, Model model) {
+        System.out.println(queryObject.toString());
+        model.addAttribute("homeMessage", "Query submitted successfully");
+        return "home";
+    }
 }
