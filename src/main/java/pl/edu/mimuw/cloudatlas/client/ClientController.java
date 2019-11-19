@@ -36,4 +36,16 @@ public class ClientController {
         model.addAttribute("homeMessage", "Query submitted successfully");
         return "home";
     }
+
+    @GetMapping("/contacts")
+    public String contactPage(Model model) {
+        return "contactsForm";
+    }
+
+    @PostMapping("/contacts")
+    public String contactPage(@ModelAttribute String contactsObject, Model model) {
+        System.out.println(contactsObject);
+        model.addAttribute("homeMessage", "Contact list submitted successfully");
+        return "home";
+    }
 }
