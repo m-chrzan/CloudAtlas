@@ -46,4 +46,9 @@ public class ClientController {
         model.addAttribute("homeMessage", "Contact list submitted successfully");
         return "home";
     }
+
+    @GetMapping("/attribs")
+    public String attribPage(Model model) {
+        return "attribChart";
+    }
 }
