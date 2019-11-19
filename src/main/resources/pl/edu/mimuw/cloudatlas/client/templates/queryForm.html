@@ -11,7 +11,7 @@
 
 <div th:replace="fragments/navbar :: navbar"></div>
 <div id="queryForm">
-    <form action="#" th:action="@{/submitQuery}" th:object="${queryObject}" method="post">
+    <form action="#" th:action="@{/query}" th:object="${queryObject}" method="post">
         <div class="form-group">
             <label for="QueryName1">Enter query name</label>
             <input type="text" class="form-control" id="QueryName1" rows="3" th:field="*{name}"/>

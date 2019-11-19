@@ -30,7 +30,7 @@ public class ClientController {
         return "queryForm";
     }
 
-    @PostMapping("/submitQuery")
+    @PostMapping("/query")
     public String submitQuery(@ModelAttribute Query queryObject, Model model) {
         System.out.println(queryObject.toString());
         model.addAttribute("homeMessage", "Query submitted successfully");
