@@ -13,8 +13,8 @@
 <div id="queryForm">
     <form action="#" th:action="@{/contacts}" th:object="${contactsObject}" method="post">
         <div class="form-group">
-            <label for="Textarea1">Enter contacts as a Json list</label>
-            <textarea class="form-control" id="Textarea1" rows="3"></textarea>
+            <label for="Textarea1">Enter contacts as a Json map with string key and integer list as value</label>
+            <textarea class="form-control" id="Textarea1" rows="3" th:field="*{string}"></textarea>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

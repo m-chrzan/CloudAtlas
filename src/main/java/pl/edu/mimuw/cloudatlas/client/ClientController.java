@@ -1,12 +1,21 @@
 package pl.edu.mimuw.cloudatlas.client;
 
+import com.google.gson.Gson;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import pl.edu.mimuw.cloudatlas.api.Api;
+import pl.edu.mimuw.cloudatlas.model.PathName;
+import pl.edu.mimuw.cloudatlas.model.ValueContact;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /*
 should enable reading attribute values stored by the agent
@@ -72,12 +81,43 @@ public class ClientController {
 
     @GetMapping("/contacts")
     public String contactPage(Model model) {
+        model.addAttribute("contactsObject" , new ContactsString());
         return "contactsForm";
     }
 
     @PostMapping("/contacts")
-    public String contactPage(@ModelAttribute String contactsObject, Model model) {
-        model.addAttribute("homeMessage", "Contact list submitted successfully");
+    public String contactPage(@ModelAttribute ContactsString contactsObject, Model model) {
+        boolean success = true;
+        Gson gson = new Gson();
+        Map<String, ArrayList> contactStrings = gson.fromJson(contactsObject.getString(), Map.class);
+        Set<ValueContact> contactObjects = new HashSet<ValueContact>();
+        ArrayList<Double> cAddr;
+        byte[] inetArray = new byte[4];
+
+        try {
+            for (Map.Entry<String, ArrayList> cursor : contactStrings.entrySet()) {
+                cAddr = cursor.getValue(); // gson always reads numerical values as doubles
+                for (int i = 0; i < 4; i++) {
+                    inetArray[i] = (byte) cAddr.get(i).doubleValue();
+                }
+                contactObjects.add(new ValueContact(
+                        new PathName(cursor.getKey()),
+                        InetAddress.getByAddress(inetArray))
+                );
+            }
+            this.api.setFallbackContacts(contactObjects);
+        } catch (Exception e) {
+            success = false;
+            System.err.println("Client exception:");
+            e.printStackTrace();
+        }
+
+        if (success) {
+            model.addAttribute("homeMessage", "Contact list submitted successfully");
+        } else {
+            model.addAttribute("homeMessage", "Contact list submission failed");
+        }
+
         return "home";
     }
 
