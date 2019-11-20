@@ -123,6 +123,17 @@ public class ClientController {
 
     @GetMapping("/attribs")
     public String attribPage(Model model) {
+        model.addAttribute("attributeObject", new Attribute());
+        return "attribForm";
+    }
+
+    @PostMapping("/attribs")
+    public String attribPage(@ModelAttribute Attribute attributeObject, Model model) {
+        return "attribForm";
+    }
+
+    @GetMapping("/values")
+    public String valuesPage(Model model) {
         return "attribChart";
     }
 }
