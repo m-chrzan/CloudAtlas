@@ -47,14 +47,26 @@ public class ClientController {
 
     @PostMapping("/query")
     public String submitQuery(@ModelAttribute Query queryObject, Model model)  {
+        boolean success = true;
+
         try {
             this.api.installQuery(queryObject.getName(), queryObject.getValue());
         } catch (Exception e) {
+            success = false;
             System.err.println("Client exception:");
             e.printStackTrace();
         }
 
-        model.addAttribute("homeMessage", "Query submitted successfully");
+        if (success) {
+            model.addAttribute(
+                    "homeMessage",
+                    "Query submitted successfully");
+        } else {
+            model.addAttribute(
+                    "homeMessage",
+                    "Query submission failed with a remote exception");
+        }
+
         return "home";
     }
 
