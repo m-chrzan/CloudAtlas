@@ -1,8 +1,16 @@
 package pl.edu.mimuw.cloudatlas.client;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
+import pl.edu.mimuw.cloudatlas.api.Api;
+
+import javax.annotation.PostConstruct;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 /*
 should enable reading attribute values stored by the agent
@@ -17,6 +25,17 @@ plotting the attributes with numeric values as real-time graphs.
 
 @Controller
 public class ClientController {
+    private Api api;
+
+    ClientController() {
+        try {
+            Registry registry = LocateRegistry.getRegistry("localhost");
+            this.api = (Api) registry.lookup("Api");
+        } catch (Exception e) {
+            System.err.println("Client exception:");
+            e.printStackTrace();
+        }
+    }
 
     @GetMapping("/")
     public String homePage(Model model) {
@@ -31,7 +50,14 @@ public class ClientController {
     }
 
     @PostMapping("/query")
-    public String submitQuery(@ModelAttribute Query queryObject, Model model) {
+    public String submitQuery(@ModelAttribute Query queryObject, Model model)  {
+        try {
+            this.api.installQuery(queryObject.getName(), queryObject.getValue());
+        } catch (Exception e) {
+            System.err.println("Client exception:");
+            e.printStackTrace();
+        }
+
         model.addAttribute("homeMessage", "Query submitted successfully");
         return "home";
     }

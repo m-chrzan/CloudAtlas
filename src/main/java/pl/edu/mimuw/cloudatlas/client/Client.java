@@ -1,5 +1,6 @@
 package pl.edu.mimuw.cloudatlas.client;
 
+import org.springframework.context.annotation.Bean;
 import pl.edu.mimuw.cloudatlas.api.Api;
 
 import java.rmi.registry.LocateRegistry;
@@ -29,14 +30,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Client {
     public static void main(String[] args) {
-        try {
-            Registry registry = LocateRegistry.getRegistry("localhost");
-            Api api = (Api) registry.lookup("Api");
-
-            SpringApplication.run(Client.class, args);
-        } catch (Exception e) {
-            System.err.println("Client exception:");
-            e.printStackTrace();
-        }
+        SpringApplication.run(Client.class, args);
     }
 }
