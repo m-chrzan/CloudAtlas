@@ -85,26 +85,34 @@ public class ClientController {
         return "contactsForm";
     }
 
-    @PostMapping("/contacts")
-    public String contactPage(@ModelAttribute ContactsString contactsObject, Model model) {
-        boolean success = true;
+    private Set<ValueContact> parseContactsString(ContactsString contactsInput) throws Exception {
         Gson gson = new Gson();
-        Map<String, ArrayList> contactStrings = gson.fromJson(contactsObject.getString(), Map.class);
+        Map<String, ArrayList> contactStrings = gson.fromJson(contactsInput.getString(), Map.class);
         Set<ValueContact> contactObjects = new HashSet<ValueContact>();
         ArrayList<Double> cAddr;
         byte[] inetArray = new byte[4];
 
-        try {
-            for (Map.Entry<String, ArrayList> cursor : contactStrings.entrySet()) {
-                cAddr = cursor.getValue(); // gson always reads numerical values as doubles
-                for (int i = 0; i < 4; i++) {
-                    inetArray[i] = (byte) cAddr.get(i).doubleValue();
-                }
-                contactObjects.add(new ValueContact(
-                        new PathName(cursor.getKey()),
-                        InetAddress.getByAddress(inetArray))
-                );
+        for (Map.Entry<String, ArrayList> cursor : contactStrings.entrySet()) {
+            cAddr = cursor.getValue(); // gson always reads numerical values as doubles
+            for (int i = 0; i < 4; i++) {
+                inetArray[i] = (byte) cAddr.get(i).doubleValue();
             }
+            contactObjects.add(new ValueContact(
+                    new PathName(cursor.getKey()),
+                    InetAddress.getByAddress(inetArray))
+            );
+        }
+
+        return contactObjects;
+    }
+
+    @PostMapping("/contacts")
+    public String contactPage(@ModelAttribute ContactsString contactsObject, Model model) {
+        boolean success = true;
+        Set<ValueContact> contactObjects;
+
+        try {
+            contactObjects = parseContactsString(contactsObject);
             this.api.setFallbackContacts(contactObjects);
         } catch (Exception e) {
             success = false;
