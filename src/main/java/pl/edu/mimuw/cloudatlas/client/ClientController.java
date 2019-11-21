@@ -202,6 +202,23 @@ public class ClientController {
 
     @GetMapping("/values")
     public String valuesPage(Model model) {
+        model.addAttribute("zoneName", new ContactsString());
+        return "attribChart";
+    }
+
+    @PostMapping("/values")
+    public String valuesPage(@ModelAttribute ContactsString zoneName, Model model) {
+        boolean success = true;
+        AttributesMap attribData;
+
+        try {
+            attribData = api.getZoneAttributeValues(zoneName.getString());
+        } catch (Exception e) {
+            success = false;
+            System.err.println("Client exception:");
+            e.printStackTrace();
+        }
+
         return "attribChart";
     }
 }
