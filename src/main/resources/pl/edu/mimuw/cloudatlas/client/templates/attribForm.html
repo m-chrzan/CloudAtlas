@@ -11,7 +11,7 @@
 
 <div th:replace="fragments/navbar :: navbar"></div>
 <div id="queryForm">
-    <form action="#" th:action="@{/contacts}" th:object="${attributeObject}" method="post">
+    <form action="#" th:action="@{/attribs}" th:object="${attributeObject}" method="post">
         <div class="form-group">
             <label for="ZoneName1">Enter zone name</label>
             <input type="text" class="form-control" id="ZoneName1" rows="3" th:field="*{zoneName}"/>
@@ -23,14 +23,14 @@
         <div class="form-group">
             <label for="TypeSelect1">Enter attribute type</label>
             <select class="form-control" id="TypeSelect1" th:field="*{attributeType}">
-                <option th:value="1" th:text="Boolean"></option>
-                <option th:value="2" th:text="Double"></option>
-                <option th:value="3" th:text="Int"></option>
-                <option th:value="4" th:text="String"></option>
-                <option th:value="5" th:text="Time"></option>
-                <option th:value="6" th:text="Duration"></option>
-                <option th:value="7" th:text="Contact"></option>
-                <option th:value="8" th:text="Query"></option>
+                <option th:value="Boolean" th:text="Boolean"></option>
+                <option th:value="Double" th:text="Double"></option>
+                <option th:value="Int" th:text="Int"></option>
+                <option th:value="String" th:text="String"></option>
+                <option th:value="Time" th:text="Time"></option>
+                <option th:value="Duration" th:text="Duration"></option>
+                <option th:value="Contact" th:text="Contact"></option>
+                <option th:value="Query" th:text="Query"></option>
             </select>
         </div>
         <div class="form-group">
