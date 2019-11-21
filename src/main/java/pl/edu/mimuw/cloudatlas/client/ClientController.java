@@ -1,12 +1,12 @@
 package pl.edu.mimuw.cloudatlas.client;
 
 import com.google.gson.Gson;
+import com.sun.jdi.BooleanValue;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import pl.edu.mimuw.cloudatlas.api.Api;
-import pl.edu.mimuw.cloudatlas.model.PathName;
-import pl.edu.mimuw.cloudatlas.model.ValueContact;
+import pl.edu.mimuw.cloudatlas.model.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -135,9 +135,70 @@ public class ClientController {
         return "attribForm";
     }
 
+    private Value parseAttributeValue(Attribute attributeObject) throws Exception {
+        Value attributeValue = null;
+
+        switch (attributeObject.getAttributeType()) {
+            case "Boolean":
+                attributeValue = attributeObject.getValueString().toLowerCase().equals("true") ?
+                        new ValueBoolean(true) :
+                        new ValueBoolean(false);
+                break;
+            case "Double":
+                attributeValue = new ValueDouble(Double.parseDouble(attributeObject.getValueString()));
+                break;
+            case "Int":
+                attributeValue = new ValueInt(Long.parseLong(attributeObject.getValueString()));
+                break;
+            case "String":
+                attributeValue = new ValueString(attributeObject.getValueString());
+                break;
+            case "Time":
+                attributeValue = new ValueTime(Long.parseLong(attributeObject.getValueString()));
+                break;
+            case "Duration":
+                attributeValue = new ValueDuration(attributeObject.getValueString());
+                break;
+            case "Contact":
+                ContactsString contactsString = new ContactsString();
+                contactsString.setString(attributeObject.getValueString());
+                attributeValue = parseContactsString(contactsString).iterator().next();
+                break;
+            case "Query":
+                attributeValue = new ValueQuery(attributeObject.getValueString());
+                break;
+            default:
+                String errMsg = "Value type not supported: " + attributeObject.getAttributeType();
+                throw new UnsupportedOperationException(errMsg);
+        }
+
+        return attributeValue;
+    }
+
     @PostMapping("/attribs")
     public String attribPage(@ModelAttribute Attribute attributeObject, Model model) {
-        return "attribForm";
+        boolean success = true;
+        Value attributeValue;
+
+        try {
+            attributeValue = parseAttributeValue(attributeObject);
+            api.setAttributeValue(
+                    attributeObject.getZoneName(),
+                    attributeObject.getAttributeName(),
+                    attributeValue);
+        } catch (Exception e) {
+            success = false;
+            System.err.println("Client exception:");
+            e.printStackTrace();
+        }
+
+        if (success) {
+            model.addAttribute("homeMessage", "Attribute submitted successfully");
+        } else {
+            model.addAttribute("homeMessage", "Attribute submission failed");
+        }
+
+        return "home";
     }
 
     @GetMapping("/values")
