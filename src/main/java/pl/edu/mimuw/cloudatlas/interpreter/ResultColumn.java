@@ -124,8 +124,7 @@ class ResultColumn extends Result {
 
     @Override
     public ResultSingle isNull() {
-        throw new UnsupportedOperationException("Operation isNull not supported yet.");
-        // return new ResultSingle(new ValueBoolean(value.isNull()));
+        return new ResultSingle(new ValueBoolean(true));
     }
 
     @Override

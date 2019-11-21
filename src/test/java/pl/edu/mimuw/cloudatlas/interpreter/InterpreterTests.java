@@ -7,12 +7,14 @@ import java.io.File;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
+import java.util.Calendar;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Ignore;
 
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
+import pl.edu.mimuw.cloudatlas.model.ValueBoolean;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
 
@@ -105,9 +107,6 @@ public class InterpreterTests {
                     "/pjwstk: php_modules: [rewrite]",
                     "/: php_modules: [rewrite]",
         });
-        System.out.println("output: " + output);
-        System.out.println("expected1: " + expected1);
-        System.out.println("expected2: " + expected2);
 
         assertTrue(output.equals(expected1) || output.equals(expected2));
     }
@@ -124,12 +123,70 @@ public class InterpreterTests {
         );
     }
 
+    @Test
+    public void testMax() throws Exception {
+        assertInterpreterRun(
+                "SELECT max(cpu_usage) AS cpu_usage",
+                new String[] {
+                    "/uw: cpu_usage: 0.9",
+                    "/pjwstk: cpu_usage: 0.4",
+                    "/: cpu_usage: 0.9",
+                }
+        );
+    }
+
+    @Test
+    public void testLand() throws Exception {
+        assertInterpreterRun(
+                "SELECT max(cpu_usage) AS cpu_usage; SELECT land(cpu_usage < 0.5) AS low_cpu",
+                new String[] {
+                    "/uw: cpu_usage: 0.9",
+                    "/uw: low_cpu: false",
+                    "/pjwstk: cpu_usage: 0.4",
+                    "/pjwstk: low_cpu: true",
+                    "/: cpu_usage: 0.9",
+                    "/: low_cpu: false",
+                }
+        );
+    }
+
+    @Test
+    public void testLor() throws Exception {
+        assertInterpreterRun(
+                "SELECT max(cpu_usage) AS cpu_usage; SELECT lor(cpu_usage > 0.5) AS high_cpu",
+                new String[] {
+                    "/uw: cpu_usage: 0.9",
+                    "/uw: high_cpu: true",
+                    "/pjwstk: cpu_usage: 0.4",
+                    "/pjwstk: high_cpu: false",
+                    "/: cpu_usage: 0.9",
+                    "/: high_cpu: true",
+                }
+        );
+    }
+
+    @Test
+    public void testNow() throws Exception {
+        ValueTime timeBefore = new ValueTime(Calendar.getInstance().getTimeInMillis());
+        String query = "SELECT now() AS now";
+        ByteArrayInputStream in = new ByteArrayInputStream(query.getBytes());
+        String output = runInterpreter(in);
+        ValueTime timeAfter = new ValueTime(Calendar.getInstance().getTimeInMillis());
+        String[] lines = output.split("\n");
+        assertEquals(3, lines.length);
+        for (String line : lines) {
+            String timestamp = line.split(":", 3)[2];
+            ValueTime resultTime = new ValueTime(timestamp);
+            assertFalse(((ValueBoolean) resultTime.isLowerThan(timeBefore)).getValue());
+            assertFalse(((ValueBoolean) timeAfter.isLowerThan(resultTime)).getValue());
+        }
+    }
+
     private void assertInterpreterRun(String query, String[] expectedOutput) throws Exception {
         ByteArrayInputStream in = new ByteArrayInputStream(query.getBytes());
 
         String expected = join(expectedOutput);
 
-        System.out.println("expected: " + expected);
         runTest(in, expected);
     }
 
