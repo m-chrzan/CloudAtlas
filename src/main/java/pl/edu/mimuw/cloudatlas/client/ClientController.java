@@ -200,8 +200,30 @@ public class ClientController {
         return "home";
     }
 
+    private String getAvailableZonesString() {
+        boolean success = true;
+        Set<String> availableZones;
+        String availableZonesString = "";
+
+        try {
+            availableZones = api.getZoneSet();
+            availableZonesString = availableZones.toString().substring(1, availableZones.toString().length() - 1);
+        } catch (Exception e) {
+            success = false;
+            System.err.println("Client exception:");
+            e.printStackTrace();
+        }
+
+        if (success) {
+            return "Available zones are: " + availableZonesString;
+        } else {
+            return "No zones available, error occured during fetch";
+        }
+    }
+
     @GetMapping("/values")
     public String valuesPage(Model model) {
+        model.addAttribute("availableZones", getAvailableZonesString());
         model.addAttribute("zoneName", new ContactsString());
         return "attribChart";
     }
@@ -219,6 +241,7 @@ public class ClientController {
             e.printStackTrace();
         }
 
+        model.addAttribute("availableZones", getAvailableZonesString());
         return "attribChart";
     }
 }
