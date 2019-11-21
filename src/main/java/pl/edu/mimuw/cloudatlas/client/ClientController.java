@@ -5,8 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import pl.edu.mimuw.cloudatlas.api.Api;
-import pl.edu.mimuw.cloudatlas.model.PathName;
-import pl.edu.mimuw.cloudatlas.model.ValueContact;
+import pl.edu.mimuw.cloudatlas.model.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -85,26 +84,34 @@ public class ClientController {
         return "contactsForm";
     }
 
-    @PostMapping("/contacts")
-    public String contactPage(@ModelAttribute ContactsString contactsObject, Model model) {
-        boolean success = true;
+    private Set<ValueContact> parseContactsString(ContactsString contactsInput) throws Exception {
         Gson gson = new Gson();
-        Map<String, ArrayList> contactStrings = gson.fromJson(contactsObject.getString(), Map.class);
+        Map<String, ArrayList> contactStrings = gson.fromJson(contactsInput.getString(), Map.class);
         Set<ValueContact> contactObjects = new HashSet<ValueContact>();
         ArrayList<Double> cAddr;
         byte[] inetArray = new byte[4];
 
-        try {
-            for (Map.Entry<String, ArrayList> cursor : contactStrings.entrySet()) {
-                cAddr = cursor.getValue(); // gson always reads numerical values as doubles
-                for (int i = 0; i < 4; i++) {
-                    inetArray[i] = (byte) cAddr.get(i).doubleValue();
-                }
-                contactObjects.add(new ValueContact(
-                        new PathName(cursor.getKey()),
-                        InetAddress.getByAddress(inetArray))
-                );
+        for (Map.Entry<String, ArrayList> cursor : contactStrings.entrySet()) {
+            cAddr = cursor.getValue(); // gson always reads numerical values as doubles
+            for (int i = 0; i < 4; i++) {
+                inetArray[i] = (byte) cAddr.get(i).doubleValue();
             }
+            contactObjects.add(new ValueContact(
+                    new PathName(cursor.getKey()),
+                    InetAddress.getByAddress(inetArray))
+            );
+        }
+
+        return contactObjects;
+    }
+
+    @PostMapping("/contacts")
+    public String contactPage(@ModelAttribute ContactsString contactsObject, Model model) {
+        boolean success = true;
+        Set<ValueContact> contactObjects;
+
+        try {
+            contactObjects = parseContactsString(contactsObject);
             this.api.setFallbackContacts(contactObjects);
         } catch (Exception e) {
             success = false;
@@ -123,6 +130,78 @@ public class ClientController {
 
     @GetMapping("/attribs")
     public String attribPage(Model model) {
+        model.addAttribute("attributeObject", new Attribute());
+        return "attribForm";
+    }
+
+    private Value parseAttributeValue(Attribute attributeObject) throws Exception {
+        Value attributeValue = null;
+
+        switch (attributeObject.getAttributeType()) {
+            case "Boolean":
+                attributeValue = attributeObject.getValueString().toLowerCase().equals("true") ?
+                        new ValueBoolean(true) :
+                        new ValueBoolean(false);
+                break;
+            case "Double":
+                attributeValue = new ValueDouble(Double.parseDouble(attributeObject.getValueString()));
+                break;
+            case "Int":
+                attributeValue = new ValueInt(Long.parseLong(attributeObject.getValueString()));
+                break;
+            case "String":
+                attributeValue = new ValueString(attributeObject.getValueString());
+                break;
+            case "Time":
+                attributeValue = new ValueTime(Long.parseLong(attributeObject.getValueString()));
+                break;
+            case "Duration":
+                attributeValue = new ValueDuration(attributeObject.getValueString());
+                break;
+            case "Contact":
+                ContactsString contactsString = new ContactsString();
+                contactsString.setString(attributeObject.getValueString());
+                attributeValue = parseContactsString(contactsString).iterator().next();
+                break;
+            case "Query":
+                attributeValue = new ValueQuery(attributeObject.getValueString());
+                break;
+            default:
+                String errMsg = "Value type not supported: " + attributeObject.getAttributeType();
+                throw new UnsupportedOperationException(errMsg);
+        }
+
+        return attributeValue;
+    }
+
+    @PostMapping("/attribs")
+    public String attribPage(@ModelAttribute Attribute attributeObject, Model model) {
+        boolean success = true;
+        Value attributeValue;
+
+        try {
+            attributeValue = parseAttributeValue(attributeObject);
+            api.setAttributeValue(
+                    attributeObject.getZoneName(),
+                    attributeObject.getAttributeName(),
+                    attributeValue);
+        } catch (Exception e) {
+            success = false;
+            System.err.println("Client exception:");
+            e.printStackTrace();
+        }
+
+        if (success) {
+            model.addAttribute("homeMessage", "Attribute submitted successfully");
+        } else {
+            model.addAttribute("homeMessage", "Attribute submission failed");
+        }
+
+        return "home";
+    }
+
+    @GetMapping("/values")
+    public String valuesPage(Model model) {
         return "attribChart";
     }
 }
