@@ -243,7 +243,6 @@ public class ClientController {
                 attribData = api.getZoneAttributeValues(this.currentZoneName);
                 currentTime = new ValueTime(System.currentTimeMillis());
                 this.attributes.put(currentTime, attribData);
-                System.out.println(currentTime.toString() + ": " + attribData.toString());
             }
         } catch (Exception e) {
             System.err.println("Client exception:");
@@ -254,7 +253,6 @@ public class ClientController {
         while (it.hasNext() && this.attributes.size() > 1000) {
             it.next();
             it.remove();
-            System.out.println(this.attributes.toString());
         }
     }
 
