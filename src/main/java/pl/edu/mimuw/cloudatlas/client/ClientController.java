@@ -1,6 +1,7 @@
 package pl.edu.mimuw.cloudatlas.client;
 
 import com.google.gson.Gson;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
@@ -11,10 +12,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /*
 should enable reading attribute values stored by the agent
@@ -31,6 +29,9 @@ plotting the attributes with numeric values as real-time graphs.
 public class ClientController {
     private Api api;
 
+    private Map<ValueTime, AttributesMap> attributes;
+    private String currentZoneName;
+
     ClientController() {
         try {
             Registry registry = LocateRegistry.getRegistry("localhost");
@@ -39,6 +40,9 @@ public class ClientController {
             System.err.println("Client exception:");
             e.printStackTrace();
         }
+
+        this.attributes = new LinkedHashMap<ValueTime, AttributesMap>();
+        this.currentZoneName = "/";
     }
 
     @GetMapping("/")
@@ -224,23 +228,41 @@ public class ClientController {
     @GetMapping("/values")
     public String valuesPage(Model model) {
         model.addAttribute("availableZones", getAvailableZonesString());
+        model.addAttribute("currentZone", "Current zone: " + this.currentZoneName);
         model.addAttribute("zoneName", new ContactsString());
         return "attribChart";
     }
 
-    @PostMapping("/values")
-    public String valuesPage(@ModelAttribute ContactsString zoneName, Model model) {
-        boolean success = true;
+    @Scheduled(fixedRate = 5000)
+    private void fetchAttributeData() {
         AttributesMap attribData;
+        ValueTime currentTime;
 
         try {
-            attribData = api.getZoneAttributeValues(zoneName.getString());
+            if (!this.currentZoneName.isEmpty()) {
+                attribData = api.getZoneAttributeValues(this.currentZoneName);
+                currentTime = new ValueTime(System.currentTimeMillis());
+                this.attributes.put(currentTime, attribData);
+                System.out.println(currentTime.toString() + ": " + attribData.toString());
+            }
         } catch (Exception e) {
-            success = false;
             System.err.println("Client exception:");
             e.printStackTrace();
         }
 
+        Iterator<ValueTime> it = this.attributes.keySet().iterator();
+        while (it.hasNext() && this.attributes.size() > 1000) {
+            it.next();
+            it.remove();
+            System.out.println(this.attributes.toString());
+        }
+    }
+
+    @PostMapping("/values")
+    public String valuesPage(@ModelAttribute ContactsString zoneName, Model model) {
+        this.currentZoneName = zoneName.getString();
+        this.attributes.clear();
+        model.addAttribute("currentZone", "Current zone: " + this.currentZoneName);
         model.addAttribute("availableZones", getAvailableZonesString());
         return "attribChart";
     }

@@ -34,6 +34,7 @@
 <body>
 
 <div th:replace="fragments/navbar :: navbar"></div>
+<h4 th:text="${currentZone}"></h4>
 <div id="zoneAttribForm">
     <form action="#" th:action="@{/values}" th:object="${zoneName}" method="post">
         <div class="form-group">
@@ -45,7 +46,6 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
-
 <div id="chart_div" style="width: 100%; height: 500px;"></div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
