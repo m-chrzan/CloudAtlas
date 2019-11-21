@@ -35,6 +35,109 @@ public class InterpreterTests {
     }
 
     @Test
+    public void testAvg() throws Exception {
+        assertInterpreterRun(
+                "SELECT avg(cpu_usage) AS cpu_usage",
+                new String[] {
+                    "/uw: cpu_usage: 0.5",
+                    "/pjwstk: cpu_usage: 0.25",
+                    "/: cpu_usage: 0.375",
+                }
+        );
+    }
+
+    @Test
+    public void testCount() throws Exception {
+        assertInterpreterRun(
+                "SELECT count(cpu_usage) AS cpu_usage",
+                new String[] {
+                    "/uw: cpu_usage: 2",
+                    "/pjwstk: cpu_usage: 2",
+                    "/: cpu_usage: 2",
+                }
+        );
+    }
+
+    @Test
+    public void testSum() throws Exception {
+        assertInterpreterRun(
+                "SELECT sum(cpu_usage) AS cpu_usage",
+                new String[] {
+                    "/uw: cpu_usage: 1.0",
+                    "/pjwstk: cpu_usage: 0.5",
+                    "/: cpu_usage: 1.5",
+                }
+        );
+    }
+
+    @Test
+    public void testFirst() throws Exception {
+        assertInterpreterRun(
+                "SELECT first(1, unfold(php_modules)) AS php_modules",
+                new String[] {
+                    "/pjwstk: php_modules: [rewrite]",
+                    "/: php_modules: [rewrite]",
+                }
+        );
+    }
+
+    @Test
+    public void testLast() throws Exception {
+        assertInterpreterRun(
+                "SELECT last(1, unfold(php_modules)) AS php_modules",
+                new String[] {
+                    "/pjwstk: php_modules: [odbc]",
+                    "/: php_modules: [odbc]",
+                }
+        );
+    }
+
+    @Test
+    public void testRandom() throws Exception {
+        String query = "SELECT random(1, unfold(php_modules)) AS php_modules";
+        ByteArrayInputStream in = new ByteArrayInputStream(query.getBytes());
+        String output = runInterpreter(in);
+        String expected1 = join(new String[] {
+                    "/pjwstk: php_modules: [odbc]",
+                    "/: php_modules: [odbc]",
+        });
+        String expected2 = join(new String[] {
+                    "/pjwstk: php_modules: [rewrite]",
+                    "/: php_modules: [rewrite]",
+        });
+        System.out.println("output: " + output);
+        System.out.println("expected1: " + expected1);
+        System.out.println("expected2: " + expected2);
+
+        assertTrue(output.equals(expected1) || output.equals(expected2));
+    }
+
+    @Test
+    public void testMin() throws Exception {
+        assertInterpreterRun(
+                "SELECT min(cpu_usage) AS cpu_usage",
+                new String[] {
+                    "/uw: cpu_usage: 0.1",
+                    "/pjwstk: cpu_usage: 0.1",
+                    "/: cpu_usage: 0.1",
+                }
+        );
+    }
+
+    private void assertInterpreterRun(String query, String[] expectedOutput) throws Exception {
+        ByteArrayInputStream in = new ByteArrayInputStream(query.getBytes());
+
+        String expected = join(expectedOutput);
+
+        System.out.println("expected: " + expected);
+        runTest(in, expected);
+    }
+
+    private String join(String[] strings) {
+        return String.join("\n", strings) + "\n";
+    }
+
+    @Test
     public void fileTest01() throws Exception {
         runFileTest(1);
     }
@@ -135,19 +238,28 @@ public class InterpreterTests {
         URL testOut = InterpreterTests.class.getResource(i + ".out");
 
         FileInputStream in = new FileInputStream(test.getFile());
-        ByteArrayOutputStream outByteArray = new ByteArrayOutputStream();
-        PrintStream outPrint = new PrintStream(outByteArray);
-
-        ZMI root = Main.createTestHierarchy();
-        Main.runTest(in, outPrint, root);
-
-        String actual = outByteArray.toString();
 
         File expectedFile = new File(testOut.getFile());
         FileInputStream expectedIn = new FileInputStream(expectedFile);
         byte[] buffer = new byte[(int)expectedFile.length()];
         expectedIn.read(buffer);
         String expected = new String(buffer, "UTF-8");
+
+        runTest(in, expected);
+    }
+
+    private String runInterpreter(InputStream in) throws Exception {
+        ByteArrayOutputStream outByteArray = new ByteArrayOutputStream();
+        PrintStream outPrint = new PrintStream(outByteArray);
+
+        ZMI root = Main.createTestHierarchy();
+        Main.runTest(in, outPrint, root);
+
+        return outByteArray.toString();
+    }
+
+    private void runTest(InputStream in, String expected) throws Exception {
+        String actual = runInterpreter(in);
 
         assertEquals(expected, actual);
     }

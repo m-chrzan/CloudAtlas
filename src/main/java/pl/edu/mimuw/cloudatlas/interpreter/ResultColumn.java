@@ -100,7 +100,7 @@ class ResultColumn extends Result {
 
     @Override
     public Result random(int size) {
-        return new ResultColumn(
+        return new ResultSingle(
             randomList(
                 new ValueList(
                     column,
