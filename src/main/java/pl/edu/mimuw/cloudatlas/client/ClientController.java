@@ -1,7 +1,6 @@
 package pl.edu.mimuw.cloudatlas.client;
 
 import com.google.gson.Gson;
-import com.sun.jdi.BooleanValue;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
