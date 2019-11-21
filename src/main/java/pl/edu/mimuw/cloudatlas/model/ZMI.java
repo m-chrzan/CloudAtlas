@@ -27,6 +27,7 @@ package pl.edu.mimuw.cloudatlas.model;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +41,7 @@ import com.esotericsoftware.kryo.io.Output;
  * A zone management information object. This object is a single node in a zone hierarchy. It stores zone attributes as well as
  * references to its father and sons in the tree.
  */
-public class ZMI implements Cloneable {
+public class ZMI implements Cloneable, Serializable {
     public class NoSuchZoneException extends Exception {
         public NoSuchZoneException(PathName path) {
             super("No such zone: " + path);
