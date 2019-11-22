@@ -8,11 +8,9 @@ import org.springframework.stereotype.Controller;
 import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.model.*;
 
-import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /*
@@ -257,7 +255,7 @@ public class ClientController {
         }
     }
 
-    private ArrayList getNumericalValues(AttributesMap attribs) {
+    private ArrayList getNumericalAttributeValue(AttributesMap attribs) {
         Value val;
         Type valType;
         ArrayList valuesList = new ArrayList<>();
@@ -296,7 +294,7 @@ public class ClientController {
         return attribsMap.get(attribsMap.size() - 1).getValue();
     }
 
-    private ArrayList<String> getChartColumnNames() {
+    private ArrayList<String> getNumericalColumnNames() {
         ArrayList<String> chartValueNames = new ArrayList<>();
         AttributesMap lastAttribMap = getLastAttributesMap();
 
@@ -309,14 +307,16 @@ public class ClientController {
         return chartValueNames;
     }
 
+    // data format compatible with Google Line Chart
+    // https://developers.google.com/chart/interactive/docs/gallery/linechart
     private ArrayList<ArrayList> getNumericalValuesTable() {
         ArrayList<ArrayList> chartValues = new ArrayList<>();
-        ArrayList<String> chartValueNames = getChartColumnNames();
+        ArrayList<String> chartValueNames = getNumericalColumnNames();
         ArrayList chartValueColumn;
 
         System.out.println(this.attributes);
         for (Map.Entry<ValueTime, AttributesMap> attribsMap : this.attributes.entrySet()) {
-            chartValueColumn = getNumericalValues(attribsMap.getValue());
+            chartValueColumn = getNumericalAttributeValue(attribsMap.getValue());
             chartValueColumn.add(0, attribsMap.getKey().toString().substring(11, 19));
             while (chartValueColumn.size() < chartValueNames.size()) {
                 chartValueColumn.add(null);
