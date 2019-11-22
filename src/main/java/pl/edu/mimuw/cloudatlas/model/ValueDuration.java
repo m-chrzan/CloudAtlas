@@ -264,9 +264,9 @@ public class ValueDuration extends ValueSimple<Long> {
         remainingUnits /= 24;
         long days = remainingUnits;
 
-        return (positive ? "+" : "-") + Long.toString(days) + " " + Long.toString(hours)
-            + ":" + Long.toString(minutes) + ":" + Long.toString(seconds) + "." +
-            Long.toString(milliseconds);
+        return (positive ? "+" : "-") + String.format("%d %02d:%02d:%02d.%03d",
+                days, hours, minutes, seconds, milliseconds
+        );
     }
 
     @Override

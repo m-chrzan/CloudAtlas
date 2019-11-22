@@ -182,6 +182,120 @@ public class InterpreterTests {
         }
     }
 
+    @Test
+    public void testEpoch() throws Exception {
+        assertInterpreterRun(
+                "SELECT epoch() AS epoch",
+                new String[] {
+                    "/uw: epoch: 2000/01/01 00:00:00.000",
+                    "/pjwstk: epoch: 2000/01/01 00:00:00.000",
+                    "/: epoch: 2000/01/01 00:00:00.000",
+                }
+        );
+    }
+
+    @Test
+    public void testSize() throws Exception {
+        assertInterpreterRun(
+                "SELECT max(size(name)) AS max_len_name",
+                new String[] {
+                    "/uw: max_len_name: 8",
+                    "/pjwstk: max_len_name: 10",
+                    "/: max_len_name: 6",
+                }
+        );
+    }
+
+    @Test
+    public void testRound() throws Exception {
+        assertInterpreterRun(
+                "SELECT max(cpu_usage) AS cpu_usage; SELECT round(max(cpu_usage)) AS approximate_cpu",
+                new String[] {
+                    "/uw: cpu_usage: 0.9",
+                    "/uw: approximate_cpu: 1.0",
+                    "/pjwstk: cpu_usage: 0.4",
+                    "/pjwstk: approximate_cpu: 0.0",
+                    "/: cpu_usage: 0.9",
+                    "/: approximate_cpu: 1.0",
+                }
+        );
+    }
+
+    @Test
+    public void testFloor() throws Exception {
+        assertInterpreterRun(
+                "SELECT max(cpu_usage) AS cpu_usage; SELECT floor(0.2 + max(cpu_usage)) AS approximate_cpu",
+                new String[] {
+                    "/uw: cpu_usage: 0.9",
+                    "/uw: approximate_cpu: 1.0",
+                    "/pjwstk: cpu_usage: 0.4",
+                    "/pjwstk: approximate_cpu: 0.0",
+                    "/: cpu_usage: 0.9",
+                    "/: approximate_cpu: 1.0",
+                }
+        );
+    }
+
+    @Test
+    public void testCeil() throws Exception {
+        assertInterpreterRun(
+                "SELECT max(cpu_usage) AS cpu_usage; SELECT ceil(0.2 + max(cpu_usage)) AS approximate_cpu",
+                new String[] {
+                    "/uw: cpu_usage: 0.9",
+                    "/uw: approximate_cpu: 2.0",
+                    "/pjwstk: cpu_usage: 0.4",
+                    "/pjwstk: approximate_cpu: 1.0",
+                    "/: cpu_usage: 0.9",
+                    "/: approximate_cpu: 2.0",
+                }
+        );
+    }
+
+    @Test
+    public void testDoublePlusIntFails() throws Exception {
+        assertInterpreterRun(
+                "SELECT 1 + 1.0 AS two",
+                new String[] {
+                }
+        );
+    }
+
+    @Test
+    public void testDoubleToInt() throws Exception {
+        assertInterpreterRun(
+                "SELECT 1 + to_integer(1.0) AS two",
+                new String[] {
+                    "/uw: two: 2",
+                    "/pjwstk: two: 2",
+                    "/: two: 2",
+                }
+        );
+    }
+
+    @Test
+    public void testIntToDouble() throws Exception {
+        assertInterpreterRun(
+                "SELECT to_double(1) + 1.0 AS two",
+                new String[] {
+                    "/uw: two: 2.0",
+                    "/pjwstk: two: 2.0",
+                    "/: two: 2.0",
+                }
+        );
+    }
+
+    @Test
+    public void testIntToDuration() throws Exception {
+        assertInterpreterRun(
+                "SELECT to_duration(1) AS one_ms",
+                new String[] {
+                    "/uw: one_ms: +0 00:00:00.001",
+                    "/pjwstk: one_ms: +0 00:00:00.001",
+                    "/: one_ms: +0 00:00:00.001",
+                }
+        );
+    }
+
     private void assertInterpreterRun(String query, String[] expectedOutput) throws Exception {
         ByteArrayInputStream in = new ByteArrayInputStream(query.getBytes());
 
@@ -191,6 +305,10 @@ public class InterpreterTests {
     }
 
     private String join(String[] strings) {
+        if (strings.length == 0) {
+            return "";
+        }
+
         return String.join("\n", strings) + "\n";
     }
 
