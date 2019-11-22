@@ -8,9 +8,11 @@ import org.springframework.stereotype.Controller;
 import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.model.*;
 
+import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /*
@@ -255,6 +257,27 @@ public class ClientController {
         }
     }
 
+    private ArrayList getNumericalValues(AttributesMap attribs) {
+        Value val;
+        Type valType;
+        ArrayList valuesList = new ArrayList<>();
+
+        for (Map.Entry<Attribute, Value> entry : attribs) {
+            val = entry.getValue();
+            valType = val.getType();
+            if (TypePrimitive.DOUBLE.isCompatible(valType)) {
+                valuesList.add(Double.parseDouble(val.toString()));
+            } else if (TypePrimitive.INTEGER.isCompatible(valType)) {
+                valuesList.add(Long.parseLong(val.toString()));
+            } else if (TypePrimitive.TIME.isCompatible(valType)) {
+                valuesList.add(Long.parseLong(val.toString()));
+            } else if (TypePrimitive.DURATION.isCompatible(valType)) {
+                valuesList.add(Long.parseLong(val.convertTo(TypePrimitive.INTEGER).toString()));
+            }
+        }
+        return valuesList;
+    }
+
     private boolean isValueNumerical(Value val) {
         Type valType = val.getType();
 
@@ -268,29 +291,47 @@ public class ClientController {
         }
     }
 
-    private String processAttribNumValues() {
-        String jsonAttributes = "";
-        Gson gson = new Gson();
-        Value val;
-        ArrayList<ArrayList<String>> chartValues = new ArrayList<>();
+    private AttributesMap getLastAttributesMap() {
+        ArrayList<Map.Entry<ValueTime, AttributesMap>> attribsMap = new ArrayList<>(this.attributes.entrySet());
+        return attribsMap.get(attribsMap.size() - 1).getValue();
+    }
+
+    private ArrayList<String> getChartColumnNames() {
         ArrayList<String> chartValueNames = new ArrayList<>();
+        AttributesMap lastAttribMap = getLastAttributesMap();
+
+        for (Map.Entry<Attribute, Value> e : lastAttribMap) {
+            if (isValueNumerical(e.getValue())) {
+                chartValueNames.add(e.getKey().getName());
+            }
+        }
+        chartValueNames.add(0, "Timestamp");
+        return chartValueNames;
+    }
+
+    private ArrayList<ArrayList> getNumericalValuesTable() {
+        ArrayList<ArrayList> chartValues = new ArrayList<>();
+        ArrayList<String> chartValueNames = getChartColumnNames();
+        ArrayList chartValueColumn;
 
         System.out.println(this.attributes);
-        for (AttributesMap m : this.attributes.values()) {
-            ArrayList<String> chartValueColumn = new ArrayList<>();
-            chartValueNames.clear();
-            for (Map.Entry<Attribute, Value> e : m) {
-                val = e.getValue();
-                System.out.println(val);
-                if (isValueNumerical(val)) {
-                    chartValueNames.add(e.getKey().getName());
-                    chartValueColumn.add(val.toString());
-                }
+        for (Map.Entry<ValueTime, AttributesMap> attribsMap : this.attributes.entrySet()) {
+            chartValueColumn = getNumericalValues(attribsMap.getValue());
+            chartValueColumn.add(0, attribsMap.getKey().toString().substring(11, 19));
+            while (chartValueColumn.size() < chartValueNames.size()) {
+                chartValueColumn.add(null);
             }
             chartValues.add(chartValueColumn);
         }
 
         chartValues.add(0, chartValueNames);
+        return chartValues;
+    }
+
+    private String processAttribNumValues() {
+        String jsonAttributes = "";
+        Gson gson = new Gson();
+        ArrayList<ArrayList> chartValues = getNumericalValuesTable();
         jsonAttributes = gson.toJson(chartValues);
         System.out.println(jsonAttributes);
         return jsonAttributes;
