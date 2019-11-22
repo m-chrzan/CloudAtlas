@@ -30,6 +30,7 @@ public class ClientController {
 
     private Map<ValueTime, AttributesMap> attributes;
     private String currentZoneName;
+    private static final int MAX_ENTRIES = 10;
 
     ClientController() {
         try {
@@ -40,8 +41,12 @@ public class ClientController {
             e.printStackTrace();
         }
 
-        this.attributes = new LinkedHashMap<ValueTime, AttributesMap>();
-        this.currentZoneName = "/";
+        this.attributes = new LinkedHashMap<ValueTime, AttributesMap>() {
+            protected boolean removeEldestEntry(Map.Entry<ValueTime, AttributesMap> eldest) {
+                return size() > MAX_ENTRIES;
+            }
+        };
+        this.currentZoneName = "/uw/violet07";
     }
 
     @GetMapping("/")
@@ -247,42 +252,30 @@ public class ClientController {
             System.err.println("Client exception:");
             e.printStackTrace();
         }
-
-        Iterator<ValueTime> it = this.attributes.keySet().iterator();
-        while (it.hasNext() && this.attributes.size() > 50) {
-            it.next();
-            it.remove();
-        }
     }
 
-    private ArrayList getNumericalAttributeValue(AttributesMap attribs) {
-        Value val;
-        Type valType;
+    private ArrayList getAllAttributeValues(AttributesMap attribs, Boolean justNumerical) {
         ArrayList valuesList = new ArrayList<>();
+        Value val;
 
         for (Map.Entry<Attribute, Value> entry : attribs) {
             val = entry.getValue();
-            valType = val.getType();
-            if (TypePrimitive.DOUBLE.isCompatible(valType)) {
+            // casting to ValueDouble and ValueInt caused some errors
+            // and gson turns all numerical values into doubles anyway
+            if (justNumerical && isValueNumerical(val)) {
                 valuesList.add(Double.parseDouble(val.toString()));
-            } else if (TypePrimitive.INTEGER.isCompatible(valType)) {
-                valuesList.add(Long.parseLong(val.toString()));
-            } else if (TypePrimitive.TIME.isCompatible(valType)) {
-                valuesList.add(Long.parseLong(val.toString()));
-            } else if (TypePrimitive.DURATION.isCompatible(valType)) {
-                valuesList.add(Long.parseLong(val.convertTo(TypePrimitive.INTEGER).toString()));
+            } else if (!justNumerical) {
+                valuesList.add(val.toString());
             }
         }
+
         return valuesList;
     }
 
     private boolean isValueNumerical(Value val) {
         Type valType = val.getType();
 
-        if (TypePrimitive.DOUBLE.isCompatible(valType) ||
-                TypePrimitive.INTEGER.isCompatible(valType) ||
-                TypePrimitive.TIME.isCompatible(valType) ||
-                TypePrimitive.DURATION.isCompatible(valType)) {
+        if (TypePrimitive.DOUBLE.isCompatible(valType) || TypePrimitive.INTEGER.isCompatible(valType)) {
             return true;
         } else {
             return false;
@@ -294,12 +287,12 @@ public class ClientController {
         return attribsMap.get(attribsMap.size() - 1).getValue();
     }
 
-    private ArrayList<String> getNumericalColumnNames() {
+    private ArrayList<String> getAttributesColumnNames(Boolean justNumerical) {
         ArrayList<String> chartValueNames = new ArrayList<>();
         AttributesMap lastAttribMap = getLastAttributesMap();
 
         for (Map.Entry<Attribute, Value> e : lastAttribMap) {
-            if (isValueNumerical(e.getValue())) {
+            if (!justNumerical || isValueNumerical(e.getValue())) {
                 chartValueNames.add(e.getKey().getName());
             }
         }
@@ -307,32 +300,35 @@ public class ClientController {
         return chartValueNames;
     }
 
-    // data format compatible with Google Line Chart
-    // https://developers.google.com/chart/interactive/docs/gallery/linechart
-    private ArrayList<ArrayList> getNumericalValuesTable() {
-        ArrayList<ArrayList> chartValues = new ArrayList<>();
-        ArrayList<String> chartValueNames = getNumericalColumnNames();
-        ArrayList chartValueColumn;
+    // data format compatible with Google Charts Table and Google Line Chart input
+    // but it's a generic 2d array table representation
+    // https://developers.google.com/chart/interactive/docs/gallery/table
+    private ArrayList<ArrayList> getValuesTable(Boolean justNumerical) {
+        ArrayList valueRow;
+        ArrayList<ArrayList> allValues = new ArrayList<>();
+        ArrayList<String> valueNames = getAttributesColumnNames(justNumerical);
 
-        System.out.println(this.attributes);
-        for (Map.Entry<ValueTime, AttributesMap> attribsMap : this.attributes.entrySet()) {
-            chartValueColumn = getNumericalAttributeValue(attribsMap.getValue());
-            chartValueColumn.add(0, attribsMap.getKey().toString().substring(11, 19));
-            while (chartValueColumn.size() < chartValueNames.size()) {
-                chartValueColumn.add(null);
+        for (Map.Entry<ValueTime, AttributesMap> attribMapEntry : this.attributes.entrySet()) {
+            valueRow = getAllAttributeValues(attribMapEntry.getValue(), justNumerical);
+            while (valueRow.size() < valueNames.size() - 1) {
+                valueRow.add(null);
             }
-            chartValues.add(chartValueColumn);
+            valueRow.add(0, attribMapEntry.getKey().toString().substring(11, 19));
+            allValues.add(valueRow);
         }
 
-        chartValues.add(0, chartValueNames);
-        return chartValues;
+        // optional trimming of table length
+        // if (allValues.size() > 10) {
+        //     allValues =  new ArrayList<ArrayList>(allValues.subList(allValues.size() - 11, allValues.size() - 1));
+        // }
+        allValues.add(0, valueNames);
+        return allValues;
     }
 
-    private String processAttribNumValues() {
+    private String processAttribValues(ArrayList<ArrayList> valuesTable) {
         String jsonAttributes = "";
         Gson gson = new Gson();
-        ArrayList<ArrayList> chartValues = getNumericalValuesTable();
-        jsonAttributes = gson.toJson(chartValues);
+        jsonAttributes = gson.toJson(valuesTable);
         System.out.println(jsonAttributes);
         return jsonAttributes;
     }
@@ -340,7 +336,13 @@ public class ClientController {
     @GetMapping("/attribNumValues")
     @ResponseBody
     public String attribNumValuesApi() {
-        return processAttribNumValues();
+        return processAttribValues(getValuesTable(true));
+    }
+
+    @GetMapping("/attribAllValues")
+    @ResponseBody
+    public String attribAllValuesApi() {
+        return processAttribValues(getValuesTable(false));
     }
 
     @PostMapping("/values")
