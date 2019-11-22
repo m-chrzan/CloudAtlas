@@ -274,6 +274,8 @@ public class ValueDuration extends ValueSimple<Long> {
         switch(type.getPrimaryType()) {
             case STRING:
                 return getValue() == null? ValueString.NULL_STRING : new ValueString(makeString());
+            case INT:
+                return new ValueInt(getValue() == null? null : getValue());
             case DURATION:
                 return this;
             default:

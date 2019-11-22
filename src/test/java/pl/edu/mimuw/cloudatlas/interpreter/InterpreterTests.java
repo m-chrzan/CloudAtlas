@@ -296,6 +296,18 @@ public class InterpreterTests {
         );
     }
 
+    @Test
+    public void testDurationToInt() throws Exception {
+        assertInterpreterRun(
+                "SELECT to_integer(to_duration(1)) AS one",
+                new String[] {
+                    "/uw: one: 1",
+                    "/pjwstk: one: 1",
+                    "/: one: 1",
+                }
+        );
+    }
+
     private void assertInterpreterRun(String query, String[] expectedOutput) throws Exception {
         ByteArrayInputStream in = new ByteArrayInputStream(query.getBytes());
 
