@@ -9,7 +9,6 @@ import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.model.*;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.*;
@@ -84,11 +83,11 @@ public class ClientController {
 
     @GetMapping("/contacts")
     public String contactPage(Model model) {
-        model.addAttribute("contactsObject" , new ContactsString());
+        model.addAttribute("contactsObject" , new DataStringInput());
         return "contactsForm";
     }
 
-    private Set<ValueContact> parseContactsString(ContactsString contactsInput) throws Exception {
+    private Set<ValueContact> parseContactsString(DataStringInput contactsInput) throws Exception {
         Gson gson = new Gson();
         Map<String, ArrayList> contactStrings = gson.fromJson(contactsInput.getString(), Map.class);
         Set<ValueContact> contactObjects = new HashSet<ValueContact>();
@@ -110,7 +109,7 @@ public class ClientController {
     }
 
     @PostMapping("/contacts")
-    public String contactPage(@ModelAttribute ContactsString contactsObject, Model model) {
+    public String contactPage(@ModelAttribute DataStringInput contactsObject, Model model) {
         boolean success = true;
         Set<ValueContact> contactObjects;
 
@@ -134,11 +133,11 @@ public class ClientController {
 
     @GetMapping("/attribs")
     public String attribPage(Model model) {
-        model.addAttribute("attributeObject", new Attribute());
+        model.addAttribute("attributeObject", new AttributeInput());
         return "attribForm";
     }
 
-    private Value parseAttributeValue(Attribute attributeObject) throws Exception {
+    private Value parseAttributeValue(AttributeInput attributeObject) throws Exception {
         Value attributeValue = null;
 
         switch (attributeObject.getAttributeType()) {
@@ -163,7 +162,7 @@ public class ClientController {
                 attributeValue = new ValueDuration(attributeObject.getValueString());
                 break;
             case "Contact":
-                ContactsString contactsString = new ContactsString();
+                DataStringInput contactsString = new DataStringInput();
                 contactsString.setString(attributeObject.getValueString());
                 attributeValue = parseContactsString(contactsString).iterator().next();
                 break;
@@ -179,7 +178,7 @@ public class ClientController {
     }
 
     @PostMapping("/attribs")
-    public String attribPage(@ModelAttribute Attribute attributeObject, Model model) {
+    public String attribPage(@ModelAttribute AttributeInput attributeObject, Model model) {
         boolean success = true;
         Value attributeValue;
 
@@ -229,7 +228,7 @@ public class ClientController {
     public String valuesPage(Model model) {
         model.addAttribute("availableZones", getAvailableZonesString());
         model.addAttribute("currentZone", "Current zone: " + this.currentZoneName);
-        model.addAttribute("zoneName", new ContactsString());
+        model.addAttribute("zoneName", new DataStringInput());
         return "attribChart";
     }
 
@@ -250,18 +249,66 @@ public class ClientController {
         }
 
         Iterator<ValueTime> it = this.attributes.keySet().iterator();
-        while (it.hasNext() && this.attributes.size() > 1000) {
+        while (it.hasNext() && this.attributes.size() > 50) {
             it.next();
             it.remove();
         }
     }
 
+    private boolean isValueNumerical(Value val) {
+        Type valType = val.getType();
+
+        if (TypePrimitive.DOUBLE.isCompatible(valType) ||
+                TypePrimitive.INTEGER.isCompatible(valType) ||
+                TypePrimitive.TIME.isCompatible(valType) ||
+                TypePrimitive.DURATION.isCompatible(valType)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private String processAttribNumValues() {
+        String jsonAttributes = "";
+        Gson gson = new Gson();
+        Value val;
+        ArrayList<ArrayList<String>> chartValues = new ArrayList<>();
+        ArrayList<String> chartValueNames = new ArrayList<>();
+
+        System.out.println(this.attributes);
+        for (AttributesMap m : this.attributes.values()) {
+            ArrayList<String> chartValueColumn = new ArrayList<>();
+            chartValueNames.clear();
+            for (Map.Entry<Attribute, Value> e : m) {
+                val = e.getValue();
+                System.out.println(val);
+                if (isValueNumerical(val)) {
+                    chartValueNames.add(e.getKey().getName());
+                    chartValueColumn.add(val.toString());
+                }
+            }
+            chartValues.add(chartValueColumn);
+        }
+
+        chartValues.add(0, chartValueNames);
+        jsonAttributes = gson.toJson(chartValues);
+        System.out.println(jsonAttributes);
+        return jsonAttributes;
+    }
+
+    @GetMapping("/attribNumValues")
+    @ResponseBody
+    public String attribNumValuesApi() {
+        return processAttribNumValues();
+    }
+
     @PostMapping("/values")
-    public String valuesPage(@ModelAttribute ContactsString zoneName, Model model) {
+    public String valuesPage(@ModelAttribute DataStringInput zoneName, Model model) {
         this.currentZoneName = zoneName.getString();
         this.attributes.clear();
         model.addAttribute("currentZone", "Current zone: " + this.currentZoneName);
         model.addAttribute("availableZones", getAvailableZonesString());
+        model.addAttribute("zoneName", new DataStringInput());
         return "attribChart";
     }
 }

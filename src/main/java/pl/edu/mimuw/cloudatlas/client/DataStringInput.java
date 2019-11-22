@@ -1,6 +1,6 @@
 package pl.edu.mimuw.cloudatlas.client;
 
-public class ContactsString {
+public class DataStringInput {
     private String string;
 
     public String getString() {

@@ -2,7 +2,7 @@ package pl.edu.mimuw.cloudatlas.client;
 
 import pl.edu.mimuw.cloudatlas.model.Value;
 
-public class Attribute {
+public class AttributeInput {
     private String zoneName;
     private String attributeName;
     private String valueString;
