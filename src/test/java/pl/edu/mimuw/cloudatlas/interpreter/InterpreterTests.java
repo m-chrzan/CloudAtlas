@@ -481,6 +481,15 @@ public class InterpreterTests {
         );
     }
 
+    @Test
+    public void testBinopOnListResultFails() throws Exception {
+        assertInterpreterRun(
+                "SELECT max(distinct(cardinality) + num_cores) AS x",
+                new String[] {
+                }
+        );
+    }
+
     private void assertInterpreterRun(String query, String[] expectedOutput) throws Exception {
         ByteArrayInputStream in = new ByteArrayInputStream(query.getBytes());
 

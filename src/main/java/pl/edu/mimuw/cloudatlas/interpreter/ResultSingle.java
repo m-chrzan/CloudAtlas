@@ -55,6 +55,17 @@ class ResultSingle extends Result {
         return new ResultColumn(results);
     }
 
+    protected ResultList binaryOperationTyped(BinaryOperation operation, ResultList right) {
+        List<Value> results = new ArrayList<Value>();
+
+        for (Value value : right.getList()) {
+            results.add(operation.perform(this.value, value));
+        }
+
+        return new ResultList(results);
+
+    }
+
     @Override
     public ResultSingle unaryOperation(UnaryOperation operation) {
         return new ResultSingle(operation.perform(value));
