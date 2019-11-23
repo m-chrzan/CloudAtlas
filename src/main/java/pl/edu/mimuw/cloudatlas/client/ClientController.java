@@ -1,6 +1,7 @@
 package pl.edu.mimuw.cloudatlas.client;
 
 import com.google.gson.Gson;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
@@ -8,13 +9,9 @@ import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.model.*;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /*
 should enable reading attribute values stored by the agent
@@ -31,6 +28,10 @@ plotting the attributes with numeric values as real-time graphs.
 public class ClientController {
     private Api api;
 
+    private Map<ValueTime, AttributesMap> attributes;
+    private String currentZoneName;
+    private static final int MAX_ENTRIES = 10;
+
     ClientController() {
         try {
             Registry registry = LocateRegistry.getRegistry("localhost");
@@ -39,6 +40,13 @@ public class ClientController {
             System.err.println("Client exception:");
             e.printStackTrace();
         }
+
+        this.attributes = new LinkedHashMap<ValueTime, AttributesMap>() {
+            protected boolean removeEldestEntry(Map.Entry<ValueTime, AttributesMap> eldest) {
+                return size() > MAX_ENTRIES;
+            }
+        };
+        this.currentZoneName = "/uw/violet07";
     }
 
     @GetMapping("/")
@@ -80,11 +88,11 @@ public class ClientController {
 
     @GetMapping("/contacts")
     public String contactPage(Model model) {
-        model.addAttribute("contactsObject" , new ContactsString());
+        model.addAttribute("contactsObject" , new DataStringInput());
         return "contactsForm";
     }
 
-    private Set<ValueContact> parseContactsString(ContactsString contactsInput) throws Exception {
+    private Set<ValueContact> parseContactsString(DataStringInput contactsInput) throws Exception {
         Gson gson = new Gson();
         Map<String, ArrayList> contactStrings = gson.fromJson(contactsInput.getString(), Map.class);
         Set<ValueContact> contactObjects = new HashSet<ValueContact>();
@@ -106,7 +114,7 @@ public class ClientController {
     }
 
     @PostMapping("/contacts")
-    public String contactPage(@ModelAttribute ContactsString contactsObject, Model model) {
+    public String contactPage(@ModelAttribute DataStringInput contactsObject, Model model) {
         boolean success = true;
         Set<ValueContact> contactObjects;
 
@@ -130,11 +138,11 @@ public class ClientController {
 
     @GetMapping("/attribs")
     public String attribPage(Model model) {
-        model.addAttribute("attributeObject", new Attribute());
+        model.addAttribute("attributeObject", new AttributeInput());
         return "attribForm";
     }
 
-    private Value parseAttributeValue(Attribute attributeObject) throws Exception {
+    private Value parseAttributeValue(AttributeInput attributeObject) throws Exception {
         Value attributeValue = null;
 
         switch (attributeObject.getAttributeType()) {
@@ -159,7 +167,7 @@ public class ClientController {
                 attributeValue = new ValueDuration(attributeObject.getValueString());
                 break;
             case "Contact":
-                ContactsString contactsString = new ContactsString();
+                DataStringInput contactsString = new DataStringInput();
                 contactsString.setString(attributeObject.getValueString());
                 attributeValue = parseContactsString(contactsString).iterator().next();
                 break;
@@ -175,7 +183,7 @@ public class ClientController {
     }
 
     @PostMapping("/attribs")
-    public String attribPage(@ModelAttribute Attribute attributeObject, Model model) {
+    public String attribPage(@ModelAttribute AttributeInput attributeObject, Model model) {
         boolean success = true;
         Value attributeValue;
 
@@ -200,8 +208,150 @@ public class ClientController {
         return "home";
     }
 
+    private String getAvailableZonesString() {
+        boolean success = true;
+        Set<String> availableZones;
+        String availableZonesString = "";
+
+        try {
+            availableZones = api.getZoneSet();
+            availableZonesString = availableZones.toString().substring(1, availableZones.toString().length() - 1);
+        } catch (Exception e) {
+            success = false;
+            System.err.println("Client exception:");
+            e.printStackTrace();
+        }
+
+        if (success) {
+            return "Available zones are: " + availableZonesString;
+        } else {
+            return "No zones available, error occured during fetch";
+        }
+    }
+
     @GetMapping("/values")
     public String valuesPage(Model model) {
+        model.addAttribute("availableZones", getAvailableZonesString());
+        model.addAttribute("currentZone", "Current zone: " + this.currentZoneName);
+        model.addAttribute("zoneName", new DataStringInput());
+        return "attribChart";
+    }
+
+    @Scheduled(fixedRate = 5000)
+    private void fetchAttributeData() {
+        AttributesMap attribData;
+        ValueTime currentTime;
+
+        try {
+            if (!this.currentZoneName.isEmpty()) {
+                attribData = api.getZoneAttributeValues(this.currentZoneName);
+                currentTime = new ValueTime(System.currentTimeMillis());
+                this.attributes.put(currentTime, attribData);
+            }
+        } catch (Exception e) {
+            System.err.println("Client exception:");
+            e.printStackTrace();
+        }
+    }
+
+    private ArrayList getAllAttributeValues(AttributesMap attribs, Boolean justNumerical) {
+        ArrayList valuesList = new ArrayList<>();
+        Value val;
+
+        for (Map.Entry<Attribute, Value> entry : attribs) {
+            val = entry.getValue();
+            // casting to ValueDouble and ValueInt caused some errors
+            // and gson turns all numerical values into doubles anyway
+            if (justNumerical && isValueNumerical(val)) {
+                valuesList.add(Double.parseDouble(val.toString()));
+            } else if (!justNumerical) {
+                valuesList.add(val.toString());
+            }
+        }
+
+        return valuesList;
+    }
+
+    private boolean isValueNumerical(Value val) {
+        Type valType = val.getType();
+
+        if (TypePrimitive.DOUBLE.isCompatible(valType) || TypePrimitive.INTEGER.isCompatible(valType)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private AttributesMap getLastAttributesMap() {
+        ArrayList<Map.Entry<ValueTime, AttributesMap>> attribsMap = new ArrayList<>(this.attributes.entrySet());
+        return attribsMap.get(attribsMap.size() - 1).getValue();
+    }
+
+    private ArrayList<String> getAttributesColumnNames(Boolean justNumerical) {
+        ArrayList<String> chartValueNames = new ArrayList<>();
+        AttributesMap lastAttribMap = getLastAttributesMap();
+
+        for (Map.Entry<Attribute, Value> e : lastAttribMap) {
+            if (!justNumerical || isValueNumerical(e.getValue())) {
+                chartValueNames.add(e.getKey().getName());
+            }
+        }
+        chartValueNames.add(0, "Timestamp");
+        return chartValueNames;
+    }
+
+    // data format compatible with Google Charts Table and Google Line Chart input
+    // but it's a generic 2d array table representation
+    // https://developers.google.com/chart/interactive/docs/gallery/table
+    private ArrayList<ArrayList> getValuesTable(Boolean justNumerical) {
+        ArrayList valueRow;
+        ArrayList<ArrayList> allValues = new ArrayList<>();
+        ArrayList<String> valueNames = getAttributesColumnNames(justNumerical);
+
+        for (Map.Entry<ValueTime, AttributesMap> attribMapEntry : this.attributes.entrySet()) {
+            valueRow = getAllAttributeValues(attribMapEntry.getValue(), justNumerical);
+            while (valueRow.size() < valueNames.size() - 1) {
+                valueRow.add(null);
+            }
+            valueRow.add(0, attribMapEntry.getKey().toString().substring(11, 19));
+            allValues.add(valueRow);
+        }
+
+        // optional trimming of table length
+        // if (allValues.size() > 10) {
+        //     allValues =  new ArrayList<ArrayList>(allValues.subList(allValues.size() - 11, allValues.size() - 1));
+        // }
+        allValues.add(0, valueNames);
+        return allValues;
+    }
+
+    private String processAttribValues(ArrayList<ArrayList> valuesTable) {
+        String jsonAttributes = "";
+        Gson gson = new Gson();
+        jsonAttributes = gson.toJson(valuesTable);
+        System.out.println(jsonAttributes);
+        return jsonAttributes;
+    }
+
+    @GetMapping("/attribNumValues")
+    @ResponseBody
+    public String attribNumValuesApi() {
+        return processAttribValues(getValuesTable(true));
+    }
+
+    @GetMapping("/attribAllValues")
+    @ResponseBody
+    public String attribAllValuesApi() {
+        return processAttribValues(getValuesTable(false));
+    }
+
+    @PostMapping("/values")
+    public String valuesPage(@ModelAttribute DataStringInput zoneName, Model model) {
+        this.currentZoneName = zoneName.getString();
+        this.attributes.clear();
+        model.addAttribute("currentZone", "Current zone: " + this.currentZoneName);
+        model.addAttribute("availableZones", getAvailableZonesString());
+        model.addAttribute("zoneName", new DataStringInput());
         return "attribChart";
     }
 }

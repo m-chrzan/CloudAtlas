@@ -6,38 +6,75 @@
     <title>Attributes chart</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript">
+        google.charts.load('current', {'packages':['table']});
         google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(drawChart);
+        google.charts.setOnLoadCallback(refreshChart());
 
-        function drawChart() {
-            var data = google.visualization.arrayToDataTable([
-                ['Year', 'Sales', 'Expenses'],
-                ['2013',  1000,      400],
-                ['2014',  1170,      460],
-                ['2015',  660,       1120],
-                ['2016',  1030,      540]
-            ]);
+        function refreshChart() {
+            setInterval(getData, 5000);
+        }
+
+        function getData(){
+            $.getJSON("/attribAllValues", function(data, status){
+                drawTable(data)
+            });
+            $.getJSON("/attribNumValues", function(data, status){
+                drawChart(data)
+            });
+        }
+
+        function drawChart(jsonData) {
+            var data = google.visualization.arrayToDataTable(jsonData);
 
             var options = {
-                title: 'Company Performance',
-                hAxis: {title: 'Year',  titleTextStyle: {color: '#333'}},
-                vAxis: {minValue: 0}
+                title: 'Attribute values',
+                hAxis: {title: 'Timestamp',  titleTextStyle: {color: '#333'}},
+                vAxis: {scaleType: 'log'},
+                interpolateNulls: true,
+                crosshair: {trigger: 'both', orientation: 'vertical'}
             };
 
-            var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+            var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
             chart.draw(data, options);
         }
+
+        function drawTable(jsonData) {
+            var data = new google.visualization.DataTable();
+            for (let col of jsonData[0]) {
+                data.addColumn('string', col);
+            }
+            jsonData.shift();
+            data.addRows(jsonData);
+
+            var table = new google.visualization.Table(document.getElementById('table_div'));
+
+            table.draw(data, {width: '100%', height: '100%'});
+        }
+
     </script>
 </head>
 
 <body>
 
 <div th:replace="fragments/navbar :: navbar"></div>
+<h4 th:text="${currentZone}"></h4>
+<div id="zoneAttribForm">
+    <form action="#" th:action="@{/values}" th:object="${zoneName}" method="post">
+        <div class="form-group">
+            <label for="ZoneName1">Enter zone name to get attribute values</label>
+            <input type="text" class="form-control" id="ZoneName1" rows="3" th:field="*{string}"/>
+            <small id="passwordHelpBlock" class="form-text text-muted" th:text="${availableZones}">
+            </small>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+<div id="table_div"></div>
 <div id="chart_div" style="width: 100%; height: 500px;"></div>
 
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
 </body>
