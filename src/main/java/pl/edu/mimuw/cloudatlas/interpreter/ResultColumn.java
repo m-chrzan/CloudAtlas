@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.mimuw.cloudatlas.model.Type;
+import pl.edu.mimuw.cloudatlas.model.TypePrimitive;
 import pl.edu.mimuw.cloudatlas.model.TypeCollection;
 import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueBoolean;
@@ -100,7 +101,7 @@ class ResultColumn extends Result {
 
     @Override
     public Result random(int size) {
-        return new ResultColumn(
+        return new ResultSingle(
             randomList(
                 new ValueList(
                     column,
@@ -124,13 +125,18 @@ class ResultColumn extends Result {
 
     @Override
     public ResultSingle isNull() {
-        throw new UnsupportedOperationException("Operation isNull not supported yet.");
-        // return new ResultSingle(new ValueBoolean(value.isNull()));
+        return new ResultSingle(new ValueBoolean(true));
     }
 
     @Override
     public Type getType() {
-        throw new UnsupportedOperationException("Operation getType not supported yet.");
-        // return value.getType();
+        Type type = TypePrimitive.NULL;
+        for (Value value : column) {
+            if (value.getType() != TypePrimitive.NULL) {
+                type = value.getType();
+            }
+        }
+
+        return type;
     }
 }

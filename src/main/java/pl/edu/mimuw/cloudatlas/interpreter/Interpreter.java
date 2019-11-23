@@ -329,8 +329,13 @@ public class Interpreter {
         }
 
         public Result visit(CondExprAndC expr, Environment env) {
-            // TODO
-            throw new UnsupportedOperationException("CondExprAndC Not yet implemented");
+            try {
+                Result left = expr.condexpr_1.accept(new CondExprInterpreter(), env);
+                Result right = expr.condexpr_2.accept(new CondExprInterpreter(), env);
+                return left.and(right);
+            } catch(Exception exception) {
+                throw new InsideQueryException(PrettyPrinter.print(expr), exception);
+            }
         }
 
         public Result visit(CondExprNotC expr, Environment env) {
