@@ -252,6 +252,54 @@ public class InterpreterTests {
     }
 
     @Test
+    public void testBoolToString() throws Exception {
+        assertInterpreterRun(
+                "SELECT to_string(true) + \"x\" AS truex",
+                new String[] {
+                    "/uw: truex: truex",
+                    "/pjwstk: truex: truex",
+                    "/: truex: truex",
+                }
+        );
+    }
+
+    @Test
+    public void testStringToBool() throws Exception {
+        assertInterpreterRun(
+                "SELECT to_boolean(\"true\") AND true AS tru",
+                new String[] {
+                    "/uw: tru: true",
+                    "/pjwstk: tru: true",
+                    "/: tru: true",
+                }
+        );
+    }
+
+    @Test
+    public void testIntToString() throws Exception {
+        assertInterpreterRun(
+                "SELECT to_string(1) + \"x\" AS onex",
+                new String[] {
+                    "/uw: onex: 1x",
+                    "/pjwstk: onex: 1x",
+                    "/: onex: 1x",
+                }
+        );
+    }
+
+    @Test
+    public void testStringToInt() throws Exception {
+        assertInterpreterRun(
+                "SELECT to_integer(\"1\") + 1 AS two",
+                new String[] {
+                    "/uw: two: 2",
+                    "/pjwstk: two: 2",
+                    "/: two: 2",
+                }
+        );
+    }
+
+    @Test
     public void testDoublePlusIntFails() throws Exception {
         assertInterpreterRun(
                 "SELECT 1 + 1.0 AS two",
@@ -304,6 +352,30 @@ public class InterpreterTests {
                     "/uw: one: 1",
                     "/pjwstk: one: 1",
                     "/: one: 1",
+                }
+        );
+    }
+
+    @Test
+    public void testDoubleToString() throws Exception {
+        assertInterpreterRun(
+                "SELECT to_string(1.0) + \"x\" AS onex",
+                new String[] {
+                    "/uw: onex: 1.0x",
+                    "/pjwstk: onex: 1.0x",
+                    "/: onex: 1.0x",
+                }
+        );
+    }
+
+    @Test
+    public void testStringToDouble() throws Exception {
+        assertInterpreterRun(
+                "SELECT to_double(\"1.0\") + 1.0 AS two",
+                new String[] {
+                    "/uw: two: 2.0",
+                    "/pjwstk: two: 2.0",
+                    "/: two: 2.0",
                 }
         );
     }
