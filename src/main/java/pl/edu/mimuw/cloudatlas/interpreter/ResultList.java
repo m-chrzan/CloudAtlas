@@ -10,46 +10,40 @@ import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueBoolean;
 import pl.edu.mimuw.cloudatlas.model.ValueList;
 
-class ResultColumn extends Result {
-    private final List<Value> column;
+class ResultList extends Result {
+    private final List<Value> list;
 
-    public ResultColumn(List<Value> column) {
-        this.column = column;
+    public ResultList(List<Value> list) {
+        this.list = list;
     }
 
     @Override
-    protected ResultColumn binaryOperationTyped(BinaryOperation operation, ResultSingle right) {
+    protected ResultList binaryOperationTyped(BinaryOperation operation, ResultSingle right) {
         List<Value> results = new ArrayList<Value>();
 
-        for (Value value : column) {
+        for (Value value : list) {
             results.add(operation.perform(value, right.getValue()));
         }
 
-        return new ResultColumn(results);
+        return new ResultList(results);
     }
 
     protected Result binaryOperationTyped(BinaryOperation operation, ResultList right) {
-        throw new UnsupportedOperationException("Binary operation not supported on ResultColumn and ResultLists");
+        throw new UnsupportedOperationException("Binary operation not supported on two ResultLists");
     }
 
-    protected ResultColumn binaryOperationTyped(BinaryOperation operation, ResultColumn right) {
-        List<Value> results = new ArrayList<Value>();
-
-        for (int i = 0; i < column.size(); i++) {
-            results.add(operation.perform(column.get(i), right.column.get(i)));
-        }
-
-        return new ResultColumn(results);
+    protected Result binaryOperationTyped(BinaryOperation operation, ResultColumn right) {
+        throw new UnsupportedOperationException("Binary operation not supported on ResultList and ResultColumn");
     }
 
     @Override
-    public ResultColumn unaryOperation(UnaryOperation operation) {
+    public ResultList unaryOperation(UnaryOperation operation) {
         List<Value> results = new ArrayList<Value>();
 
-        for (Value value : column) {
+        for (Value value : list) {
             results.add(operation.perform(value));
         }
-        return new ResultColumn(results);
+        return new ResultList(results);
     }
 
     @Override
@@ -59,27 +53,27 @@ class ResultColumn extends Result {
 
     @Override
     public Value getValue() {
-        throw new UnsupportedOperationException("Not a ResultSingle.");
+        throw new UnsupportedOperationException("ResultList: Not a ResultSingle.");
     }
 
     @Override
     public ValueList getList() {
-        throw new UnsupportedOperationException("Not a ResultList.");
+        return new ValueList(list, TypeCollection.computeElementType(list));
     }
 
     @Override
     public ValueList getColumn() {
-        return new ValueList(column, TypeCollection.computeElementType(column));
+        throw new UnsupportedOperationException("Not a ResultColumn.");
     }
 
     @Override
     public ResultSingle aggregationOperation(AggregationOperation operation) {
-        return new ResultSingle(operation.perform(getColumn()));
+        return new ResultSingle(operation.perform(getList()));
     }
 
     @Override
     public Result transformOperation(TransformOperation operation) {
-        return new ResultList(operation.perform(getColumn()));
+        return new ResultList(operation.perform(getList()));
     }
 
     @Override
@@ -89,15 +83,15 @@ class ResultColumn extends Result {
 
     @Override
     public Result first(int size) {
-        List<Value> subList = column.subList(0, Math.min(size, column.size()));
+        List<Value> subList = list.subList(0, Math.min(size, list.size()));
         return new ResultSingle(new ValueList(subList, TypeCollection.computeElementType(subList)));
     }
 
     @Override
     public Result last(int size) {
-        List<Value> subList = column.subList(
-                Math.max(0, column.size() - size),
-                column.size()
+        List<Value> subList = list.subList(
+                Math.max(0, list.size() - size),
+                list.size()
         );
         return new ResultSingle(new ValueList(subList, TypeCollection.computeElementType(subList)));
     }
@@ -107,8 +101,8 @@ class ResultColumn extends Result {
         return new ResultSingle(
             randomList(
                 new ValueList(
-                    column,
-                    TypeCollection.computeElementType(column)
+                    list,
+                    TypeCollection.computeElementType(list)
                 ),
                 size
             )
@@ -116,25 +110,25 @@ class ResultColumn extends Result {
     }
 
     @Override
-    public ResultColumn convertTo(Type to) {
+    public ResultList convertTo(Type to) {
         List<Value> results = new ArrayList<Value>();
 
-        for (Value value : column) {
+        for (Value value : list) {
             results.add(value.convertTo(to));
         }
 
-        return new ResultColumn(results);
+        return new ResultList(results);
     }
 
     @Override
     public ResultSingle isNull() {
-        return new ResultSingle(new ValueBoolean(false));
+        return new ResultSingle(new ValueBoolean(true));
     }
 
     @Override
     public Type getType() {
         Type type = TypePrimitive.NULL;
-        for (Value value : column) {
+        for (Value value : list) {
             if (value.getType() != TypePrimitive.NULL) {
                 type = value.getType();
             }

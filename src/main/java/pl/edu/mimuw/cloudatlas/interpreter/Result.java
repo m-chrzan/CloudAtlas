@@ -135,6 +135,7 @@ abstract class Result {
 
     protected abstract Result binaryOperationTyped(BinaryOperation operation, ResultSingle right);
     protected abstract Result binaryOperationTyped(BinaryOperation operation, ResultColumn right);
+    protected abstract Result binaryOperationTyped(BinaryOperation operation, ResultList right);
 
     public Result binaryOperation(BinaryOperation operation, Result right) {
         return right.callMe(operation, this);
@@ -151,12 +152,10 @@ abstract class Result {
     public abstract ValueList getColumn();
 
     public ResultSingle aggregationOperation(AggregationOperation operation) {
-        // TODO
         throw new UnsupportedOperationException("aggregation Not yet implemented");
     }
 
     public Result transformOperation(TransformOperation operation) {
-        // TODO
         throw new UnsupportedOperationException("transformation Not yet implemented");
     }
 
