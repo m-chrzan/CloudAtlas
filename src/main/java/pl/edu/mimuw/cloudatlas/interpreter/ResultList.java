@@ -19,14 +19,11 @@ class ResultList extends Result {
 
     @Override
     protected ResultList binaryOperationTyped(BinaryOperation operation, ResultSingle right) {
-        System.out.println("in binoptyped for ResultList on ResultSingle " + right);
         List<Value> results = new ArrayList<Value>();
 
         for (Value value : list) {
             results.add(operation.perform(value, right.getValue()));
         }
-
-        System.out.println("went through list" + results);
 
         return new ResultList(results);
     }

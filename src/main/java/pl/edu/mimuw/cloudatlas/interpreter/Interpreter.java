@@ -482,8 +482,7 @@ public class Interpreter {
         }
 
         public Result visit(RelOpEqC op, ValuesPair pair) {
-            // TODO
-            throw new UnsupportedOperationException("RelOpEqC Not yet implemented");
+            return pair.left.isEqual(pair.right);
         }
 
         public Result visit(RelOpNeC op, ValuesPair pair) {
@@ -495,8 +494,7 @@ public class Interpreter {
         }
 
         public Result visit(RelOpLeC op, ValuesPair pair) {
-            // TODO
-            throw new UnsupportedOperationException("RelOpLeC Not yet implemented");
+            return pair.right.isLowerThan(pair.left).negate();
         }
 
         public Result visit(RelOpGeC op, ValuesPair pair) {

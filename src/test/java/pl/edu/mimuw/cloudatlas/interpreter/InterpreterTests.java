@@ -490,6 +490,123 @@ public class InterpreterTests {
         );
     }
 
+    @Test
+    public void testAggregateResultList() throws Exception {
+        assertInterpreterRun(
+                "SELECT sum(cardinality) AS cardinality; SELECT sum(distinct(cardinality)) AS dc",
+                new String[] {
+                    "/uw: cardinality: 3",
+                    "/uw: dc: 1",
+                    "/pjwstk: cardinality: 2",
+                    "/pjwstk: dc: 1",
+                    "/: cardinality: 5",
+                    "/: dc: 5"
+                }
+        );
+    }
+
+    @Test
+    public void testEq() throws Exception {
+        assertInterpreterRun(
+                "SELECT 1 = 1 AS oeo, 1 = 0 AS oez",
+                new String[] {
+                    "/uw: oeo: true",
+                    "/uw: oez: false",
+                    "/pjwstk: oeo: true",
+                    "/pjwstk: oez: false",
+                    "/: oeo: true",
+                    "/: oez: false"
+                }
+        );
+    }
+
+    @Test
+    public void testNeq() throws Exception {
+        assertInterpreterRun(
+                "SELECT 1 <> 1 AS ono, 1 <> 0 AS onz",
+                new String[] {
+                    "/uw: ono: false",
+                    "/uw: onz: true",
+                    "/pjwstk: ono: false",
+                    "/pjwstk: onz: true",
+                    "/: ono: false",
+                    "/: onz: true"
+                }
+        );
+    }
+
+    @Test
+    public void testLt() throws Exception {
+        assertInterpreterRun(
+                "SELECT 0 < 1 AS zlo, 1 < 1 AS olo, 1 < 0 AS olz",
+                new String[] {
+                    "/uw: zlo: true",
+                    "/uw: olo: false",
+                    "/uw: olz: false",
+                    "/pjwstk: zlo: true",
+                    "/pjwstk: olo: false",
+                    "/pjwstk: olz: false",
+                    "/: zlo: true",
+                    "/: olo: false",
+                    "/: olz: false",
+                }
+        );
+    }
+
+    @Test
+    public void testLeq() throws Exception {
+        assertInterpreterRun(
+                "SELECT 0 <= 1 AS zlo, 1 <= 1 AS olo, 1 <= 0 AS olz",
+                new String[] {
+                    "/uw: zlo: true",
+                    "/uw: olo: true",
+                    "/uw: olz: false",
+                    "/pjwstk: zlo: true",
+                    "/pjwstk: olo: true",
+                    "/pjwstk: olz: false",
+                    "/: zlo: true",
+                    "/: olo: true",
+                    "/: olz: false",
+                }
+        );
+    }
+
+    @Test
+    public void testGeq() throws Exception {
+        assertInterpreterRun(
+                "SELECT 0 >= 1 AS zgo, 1 >= 1 AS ogo, 1 >= 0 AS ogz",
+                new String[] {
+                    "/uw: zgo: false",
+                    "/uw: ogo: true",
+                    "/uw: ogz: true",
+                    "/pjwstk: zgo: false",
+                    "/pjwstk: ogo: true",
+                    "/pjwstk: ogz: true",
+                    "/: zgo: false",
+                    "/: ogo: true",
+                    "/: ogz: true",
+                }
+        );
+    }
+
+    @Test
+    public void testGt() throws Exception {
+        assertInterpreterRun(
+                "SELECT 0 > 1 AS zgo, 1 > 1 AS ogo, 1 > 0 AS ogz",
+                new String[] {
+                    "/uw: zgo: false",
+                    "/uw: ogo: false",
+                    "/uw: ogz: true",
+                    "/pjwstk: zgo: false",
+                    "/pjwstk: ogo: false",
+                    "/pjwstk: ogz: true",
+                    "/: zgo: false",
+                    "/: ogo: false",
+                    "/: ogz: true",
+                }
+        );
+    }
+
     private void assertInterpreterRun(String query, String[] expectedOutput) throws Exception {
         ByteArrayInputStream in = new ByteArrayInputStream(query.getBytes());
 
