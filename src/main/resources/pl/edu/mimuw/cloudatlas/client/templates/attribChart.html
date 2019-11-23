@@ -32,8 +32,9 @@
             var options = {
                 title: 'Attribute values',
                 hAxis: {title: 'Timestamp',  titleTextStyle: {color: '#333'}},
-                vAxis: {minValue: 0},
-                interpolateNulls: true
+                vAxis: {scaleType: 'log'},
+                interpolateNulls: true,
+                crosshair: {trigger: 'both', orientation: 'vertical'}
             };
 
             var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
