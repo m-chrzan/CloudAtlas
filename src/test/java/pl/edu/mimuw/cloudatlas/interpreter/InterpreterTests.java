@@ -380,6 +380,107 @@ public class InterpreterTests {
         );
     }
 
+    @Test
+    public void testSetToList() throws Exception {
+        assertInterpreterRun(
+                "SELECT first(5, unfold(to_list(php_modules) + to_list(php_modules))) AS php_modules",
+                new String[] {
+                    "/pjwstk: php_modules: [rewrite, rewrite, odbc, odbc]",
+                    "/: php_modules: [rewrite, rewrite, odbc, odbc, rewrite]"
+                }
+        );
+    }
+
+    @Test
+    public void testListToSet() throws Exception {
+        assertInterpreterRun(
+                "SELECT to_set(first(5, unfold(to_list(php_modules) + to_list(php_modules)))) AS php_modules",
+                new String[] {
+                    "/pjwstk: php_modules: {odbc, rewrite}",
+                    "/: php_modules: {odbc, rewrite}"
+                }
+        );
+    }
+
+    @Test
+    public void testTimeToString() throws Exception {
+        assertInterpreterRun(
+                "SELECT max(to_string(timestamp)) + \"x\" AS timex",
+                new String[] {
+                    "/uw: timex: 2012/11/09 21:03:00.000x",
+                    "/pjwstk: timex: 2012/11/09 21:13:00.000x",
+                    "/: timex: 2012/11/09 20:08:13.123x"
+                }
+        );
+    }
+
+    @Test
+    public void testStringToTime() throws Exception {
+        assertInterpreterRun(
+                "SELECT to_time(\"2012/11/09 21:03:00.000\") + to_duration(1) AS time",
+                new String[] {
+                    "/uw: time: 2012/11/09 21:03:00.001",
+                    "/pjwstk: time: 2012/11/09 21:03:00.001",
+                    "/: time: 2012/11/09 21:03:00.001"
+                }
+        );
+    }
+
+    @Test
+    public void testDurationToString() throws Exception {
+        assertInterpreterRun(
+                "SELECT to_string(epoch() - epoch()) + \"x\" AS zerox",
+                new String[] {
+                    "/uw: zerox: +0 00:00:00.000x",
+                    "/pjwstk: zerox: +0 00:00:00.000x",
+                    "/: zerox: +0 00:00:00.000x"
+                }
+        );
+    }
+
+    @Test
+    public void testStringToDuration() throws Exception {
+        assertInterpreterRun(
+                "SELECT to_duration(\"+0 00:01:12.000\") + to_duration(1) AS dur",
+                new String[] {
+                    "/uw: dur: +0 00:01:12.001",
+                    "/pjwstk: dur: +0 00:01:12.001",
+                    "/: dur: +0 00:01:12.001"
+                }
+        );
+    }
+
+    @Test
+    public void testContactToString() throws Exception {
+        assertInterpreterRun(
+                "SELECT first(1, to_string(unfold(members))) AS member",
+                new String[] {
+                    "/uw: member: [(/uw/violet07, /10.1.1.10)]",
+                    "/pjwstk: member: [(/uw/whatever01, /82.111.52.56)]",
+                }
+        );
+    }
+
+    @Test
+    public void testListToString() throws Exception {
+        assertInterpreterRun(
+                "SELECT first(1, to_string(to_list(php_modules)) + \"x\") AS listx",
+                new String[] {
+                    "/pjwstk: listx: [[rewrite]x]"
+                }
+        );
+    }
+
+    @Test
+    public void testSetToString() throws Exception {
+        assertInterpreterRun(
+                "SELECT first(1, to_string(to_set(php_modules)) + \"x\") AS setx",
+                new String[] {
+                    "/pjwstk: setx: [{rewrite}x]"
+                }
+        );
+    }
+
     private void assertInterpreterRun(String query, String[] expectedOutput) throws Exception {
         ByteArrayInputStream in = new ByteArrayInputStream(query.getBytes());
 
