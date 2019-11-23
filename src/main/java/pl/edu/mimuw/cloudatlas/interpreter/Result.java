@@ -152,12 +152,10 @@ abstract class Result {
     public abstract ValueList getColumn();
 
     public ResultSingle aggregationOperation(AggregationOperation operation) {
-        // TODO
         throw new UnsupportedOperationException("aggregation Not yet implemented");
     }
 
     public Result transformOperation(TransformOperation operation) {
-        // TODO
         throw new UnsupportedOperationException("transformation Not yet implemented");
     }
 
