@@ -111,7 +111,7 @@ public class Fetcher {
                 deserializedAttribs = deserializeAttribs(jsonAttribs);
                 for (int i = 0; i < fetcherAttributeNames.size(); i++) {
                     api.setAttributeValue(
-                            "/",
+                            "/uw/violet07",
                             fetcherAttributeNames.get(i),
                             packAttributeValue(
                                     deserializedAttribs.get(i),
