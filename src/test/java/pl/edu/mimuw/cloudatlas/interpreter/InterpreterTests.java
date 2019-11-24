@@ -607,6 +607,62 @@ public class InterpreterTests {
         );
     }
 
+    @Test
+    public void testNullFromEmptyColumn() throws Exception {
+        assertInterpreterRun(
+                "SELECT max(num_cores) AS num_cores WHERE cpu_usage = 0.1",
+                new String[] {
+                    "/uw: num_cores: NULL",
+                    "/pjwstk: num_cores: 7",
+                    "/: num_cores: NULL"
+                }
+        );
+    }
+
+    @Test
+    public void testOrderDescending() throws Exception {
+        assertInterpreterRun(
+                "SELECT first(1, unfold(php_modules)) AS php_modules ORDER BY cpu_usage DESC NULLS LAST",
+                new String[] {
+                    "/pjwstk: php_modules: [odbc]",
+                    "/: php_modules: [odbc]",
+                }
+        );
+    }
+
+    @Test
+    public void testOrderAscending() throws Exception {
+        assertInterpreterRun(
+                "SELECT first(1, unfold(php_modules)) AS php_modules ORDER BY cpu_usage ASC NULLS LAST",
+                new String[] {
+                    "/pjwstk: php_modules: [rewrite]",
+                    "/: php_modules: [rewrite]"
+                }
+        );
+    }
+
+    @Test
+    public void testOrderNullsFirst() throws Exception {
+        assertInterpreterRun(
+                "SELECT first(1, unfold(some_names)) AS some_names ORDER BY has_ups NULLS FIRST",
+                new String[] {
+                    "/uw: some_names: [tola]",
+                    "/: some_names: [tola]"
+                }
+        );
+    }
+
+    @Test
+    public void testOrderNullsLast() throws Exception {
+        assertInterpreterRun(
+                "SELECT last(1, unfold(some_names)) AS some_names ORDER BY has_ups NULLS LAST",
+                new String[] {
+                    "/uw: some_names: [tosia]",
+                    "/: some_names: [tosia]"
+                }
+        );
+    }
+
     private void assertInterpreterRun(String query, String[] expectedOutput) throws Exception {
         ByteArrayInputStream in = new ByteArrayInputStream(query.getBytes());
 
