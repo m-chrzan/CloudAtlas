@@ -59,6 +59,7 @@ task runClient(type: JavaExec) {
 task runFetcher(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.fetcher.Fetcher'
+    args("localhost", 1099)
 }
 
 task runInterpreter(type: JavaExec) {

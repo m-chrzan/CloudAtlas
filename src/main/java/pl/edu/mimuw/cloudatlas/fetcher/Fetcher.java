@@ -15,6 +15,9 @@ import com.google.gson.Gson;
 import pl.edu.mimuw.cloudatlas.model.*;
 
 public class Fetcher {
+    private static String host;
+    private static int port;
+
     private static final List<String> fetcherAttributeNames = Arrays.asList(
             "avg_load",
             "free_disk",
@@ -71,7 +74,7 @@ public class Fetcher {
     }
     
     private static void initializeApiStub() throws RemoteException, NotBoundException {
-        Registry registry = LocateRegistry.getRegistry("localhost");
+        Registry registry = LocateRegistry.getRegistry(host, port);
         api = (Api) registry.lookup("Api");
         System.out.println("Fetcher runs with registry");
     }
@@ -124,7 +127,23 @@ public class Fetcher {
         }
     }
 
+    private static void parseArgs(String[] args) {
+        System.out.println("args length: " + args.length);
+        if (args.length < 2) {
+            port = 1099;
+        } else {
+            port = Integer.parseInt(args[1]);
+        }
+
+        if (args.length < 1) {
+            host = "localhost";
+        } else {
+            host = args[0];
+        }
+    }
+
     public static void main(String[] args) {
+        parseArgs(args);
         fetchData();
     }
 }
