@@ -2,74 +2,129 @@ package pl.edu.mimuw.cloudatlas.fetcher;
 
 import pl.edu.mimuw.cloudatlas.api.Api;
 
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.Gson;
+import pl.edu.mimuw.cloudatlas.model.*;
 
 public class Fetcher {
+    private static final List<String> fetcherAttributeNames = Arrays.asList(
+            "avg_load",
+            "free_disk",
+            "total_disk",
+            "free_ram",
+            "total_ram",
+            "free_swap",
+            "total_swap",
+            "num_processes",
+            "num_cores",
+            "kernel_ver",
+            "logged_users",
+            "dns_names"
+    );
 
-//    private static String processAttribs(String jsonAttribs) {
-//        Serializer serializer = new Serializer();
-//        return
-//    }
+    private static final List<Type.PrimaryType> fetcherAttributeTypes = Arrays.asList(
+            Type.PrimaryType.DOUBLE,
+            Type.PrimaryType.INT,
+            Type.PrimaryType.INT,
+            Type.PrimaryType.INT,
+            Type.PrimaryType.INT,
+            Type.PrimaryType.INT,
+            Type.PrimaryType.INT,
+            Type.PrimaryType.INT,
+            Type.PrimaryType.INT,
+            Type.PrimaryType.STRING,
+            Type.PrimaryType.INT,
+            Type.PrimaryType.LIST
+    );
+
+    private static Api api;
+    private static Process pythonProcess;
+
+    private static Value packAttributeValue(Object rawValue, Type.PrimaryType valueType) {
+        Value val = null;
+        ArrayList<Value> contacts = new ArrayList<Value>();
+
+        if (valueType.equals(Type.PrimaryType.STRING)) {
+            val = new ValueString((String) rawValue);
+        } else if (valueType.equals(Type.PrimaryType.INT)) {
+            val = new ValueInt(((Double) rawValue).longValue());
+        } else if (valueType.equals(Type.PrimaryType.DOUBLE)) {
+            val = new ValueDouble((Double) rawValue);
+        } else if (valueType.equals(Type.PrimaryType.LIST)) {
+            for (Object c : (ArrayList) rawValue) {
+                contacts.add(new ValueString((String) c));
+            }
+            val = new ValueList(contacts, TypePrimitive.STRING);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+
+        return val;
+    }
+    
+    private static void initializeApiStub() throws RemoteException, NotBoundException {
+        Registry registry = LocateRegistry.getRegistry("localhost");
+        api = (Api) registry.lookup("Api");
+        System.out.println("Fetcher runs with registry");
+    }
+
+    private static void initializePythonProcess() throws IOException {
+        String pythonScript = Fetcher.class.getResource("data_fetcher.py").getFile();
+        String pythonCmd = "/usr/bin/python3 " + pythonScript;
+        System.out.println("Run cmd: " + pythonCmd);
+        pythonProcess = Runtime.getRuntime().exec(pythonCmd);
+    }
+
+    private static ArrayList deserializeAttribs(String serializedAttribs) {
+        Gson g = new Gson();
+        return g.fromJson(serializedAttribs, ArrayList.class);
+    }
 
     // https://jj09.net/interprocess-communication-python-java/
     private static void fetchData() {
+        BufferedReader bufferRead;
+        ArrayList deserializedAttribs;
+        String jsonAttribs;
+
+        System.out.println(System.getProperty("user.dir"));
+
         try {
-            Registry registry = LocateRegistry.getRegistry("localhost");
-            Api stub = (Api) registry.lookup("Api");
-            System.out.println("Fetcher runs with registry"); // TODO
+            initializeApiStub();
+            initializePythonProcess();
 
-            String pythonScript = Fetcher.class.getResource("data_fetcher.py").getFile();
-            String pythonCmd = "/usr/bin/python3 " + pythonScript;
-            System.out.println("cmd: " + pythonCmd);
-            Process p = Runtime.getRuntime().exec(pythonCmd);
-            BufferedReader bufferRead = new BufferedReader( new InputStreamReader(p.getInputStream()));
-            BufferedReader errorRead = new BufferedReader( new InputStreamReader(p.getErrorStream()));
+            bufferRead = new BufferedReader( new InputStreamReader(pythonProcess.getInputStream()));
 
-
-            System.out.println("Gonna read some attribs");
-            String jsonAttribs = bufferRead.readLine();
-            String serializedAttribs;
-
-            System.out.println("Read some attribs");
-            System.out.println(jsonAttribs);
-            System.out.println("Got some attribs");
-
-            ArrayList aa = deserializeAttribs(jsonAttribs);
-            System.out.println(aa);
-
-            // TODO different condition
-            while(!jsonAttribs.equals("x")) {
+            while((jsonAttribs = bufferRead.readLine()) != null) {
                 System.out.println(jsonAttribs);
                 System.out.flush();
-                serializedAttribs = "1";
-                // stub.setAttributeValue(serializedAttribs);
-                jsonAttribs = bufferRead.readLine();
+                deserializedAttribs = deserializeAttribs(jsonAttribs);
+                for (int i = 0; i < fetcherAttributeNames.size(); i++) {
+                    api.setAttributeValue(
+                            "/",
+                            fetcherAttributeNames.get(i),
+                            packAttributeValue(
+                                    deserializedAttribs.get(i),
+                                    fetcherAttributeTypes.get(i)));
+                }
             }
 
             bufferRead.close();
 
-        } catch(IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             System.err.println("Fetcher exception:");
             e.printStackTrace();
         }
     }
 
-
     public static void main(String[] args) {
         fetchData();
-    }
-
-    public static ArrayList deserializeAttribs(String serializedAttribs) {
-        Gson g = new Gson();
-
-        return g.fromJson(serializedAttribs, ArrayList.class);
     }
 }
