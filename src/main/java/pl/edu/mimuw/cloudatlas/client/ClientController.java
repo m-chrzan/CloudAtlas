@@ -185,9 +185,14 @@ public class ClientController {
 
         switch (attributeObject.getAttributeType()) {
             case "Boolean":
-                attributeValue = attributeObject.getValueString().toLowerCase().equals("true") ?
-                        new ValueBoolean(true) :
-                        new ValueBoolean(false);
+                if (attributeObject.getValueString().toLowerCase().equals("true")) {
+                    attributeValue = new ValueBoolean(true);
+                } else if (attributeObject.getValueString().toLowerCase().equals("false")) {
+                    attributeValue = new ValueBoolean(false);
+                } else {
+                    String errMsg = "Incorrect boolean value: " + attributeObject.getValueString();
+                    throw new UnsupportedOperationException(errMsg);
+                }
                 break;
             case "Double":
                 attributeValue = new ValueDouble(Double.parseDouble(attributeObject.getValueString()));
