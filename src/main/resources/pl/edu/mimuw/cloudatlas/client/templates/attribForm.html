@@ -31,11 +31,30 @@
                 <option th:value="Duration" th:text="Duration"></option>
                 <option th:value="Contact" th:text="Contact"></option>
                 <option th:value="Query" th:text="Query"></option>
+                <option th:value="List" th:text="List"></option>
+                <option th:value="Set" th:text="Set"></option>
             </select>
         </div>
         <div class="form-group">
-            <label for="Textarea1">Enter attribute value as a Json</label>
+            <label for="TypeSelect1">Enter optional complex type</label>
+            <input type="text" class="form-control" id="ComplexType1" rows="3" th:field="*{attributeComplexType}"/>
+            <small id="passwordHelpBlock" class="form-text text-muted">
+                If set or list was chosen in the previous option, please enter whole nested type as a comma-separated list, including wrapper type speccified above. Example: [List, Set, String]
+            </small>
+        </div>
+        <div class="form-group">
+            <label for="Textarea1">Enter attribute value</label>
             <textarea class="form-control" id="Textarea1" rows="3" th:field="*{valueString}"></textarea>
+            <small id="attributeValueHelpBlock" class="form-text text-muted">
+                Use Json list for complex types and stick to proper format in duration and time. <br> Examples: <br>
+                Time: 3600 <br>
+                Duration (version 1): 3600 <br>
+                Duration (version 2): +0 00:00:00.001 <br>
+                Contact: { "contactName" : [ 1, 1, 1, 1 ] } <br>
+                Query: { "&queryName" : "query" } <br>
+                List: [ 1, 2, 3 ] <br>
+                Set: [ [1, 2], [3, 4], [5, 6] ] <br>
+            </small>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

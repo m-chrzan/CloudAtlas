@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Query form</title>
+    <title>Contacts query form</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 
@@ -13,8 +13,13 @@
 <div id="queryForm">
     <form action="#" th:action="@{/contacts}" th:object="${contactsObject}" method="post">
         <div class="form-group">
-            <label for="Textarea1">Enter contacts as a Json map with string key and integer list as value</label>
+            <label for="Textarea1">Enter contacts</label>
             <textarea class="form-control" id="Textarea1" rows="3" th:field="*{string}"></textarea>
+            <small id="attributeValueHelpBlock" class="form-text text-muted">
+                Use Json format for entering contacts. Examples: <br>
+                Contact: { "contactName" : [ 1, 1, 1, 1 ] } <br>
+                Contact: { "contactName1" : [ 1, 1, 1, 1 ], "contactName2" : [ 2, 2, 2, 2 ]  }
+            </small>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
