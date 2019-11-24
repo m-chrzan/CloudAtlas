@@ -61,8 +61,8 @@ public class ClientController {
         return "queryForm";
     }
 
-    @PostMapping("/query")
-    public String submitQuery(@ModelAttribute Query queryObject, Model model)  {
+    @PostMapping("/installQuery")
+    public String installQuery(@ModelAttribute Query queryObject, Model model)  {
         boolean success = true;
 
         try {
@@ -76,7 +76,32 @@ public class ClientController {
         if (success) {
             model.addAttribute(
                     "homeMessage",
-                    "Query submitted successfully");
+                    "Query installed successfully");
+        } else {
+            model.addAttribute(
+                    "homeMessage",
+                    "Query submission failed with a remote exception");
+        }
+
+        return "home";
+    }
+
+    @PostMapping("/uninstallQuery")
+    public String uninstallQuery(@ModelAttribute Query queryObject, Model model)  {
+        boolean success = true;
+
+        try {
+            this.api.uninstallQuery(queryObject.getName());
+        } catch (Exception e) {
+            success = false;
+            System.err.println("Client exception:");
+            e.printStackTrace();
+        }
+
+        if (success) {
+            model.addAttribute(
+                    "homeMessage",
+                    "Query uninstalled successfully");
         } else {
             model.addAttribute(
                     "homeMessage",

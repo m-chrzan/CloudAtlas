@@ -12,7 +12,7 @@
 <div th:replace="fragments/navbar :: navbar"></div>
 <div id="installQueryForm">
     <h2 class="display-7">Install query</h2>
-    <form action="#" th:action="@{/query}" th:object="${queryObject}" method="post">
+    <form action="#" th:action="@{/installQuery}" th:object="${queryObject}" method="post">
         <div class="form-group">
             <label for="InstallQueryName1">Enter query name</label>
             <input type="text" class="form-control" id="InstallQueryName1" rows="3" th:field="*{name}"/>
@@ -27,7 +27,7 @@
 
 <div id="uninstallQueryForm">
     <h2 class="display-7">Uninstall query</h2>
-    <form action="#" th:action="@{/query}" th:object="${queryObject}" method="post">
+    <form action="#" th:action="@{/uninstallQuery}" th:object="${queryObject}" method="post">
         <div class="form-group">
             <label for="UninstallQueryName1">Enter query name</label>
             <input type="text" class="form-control" id="UninstallQueryName1" rows="3" th:field="*{name}"/>
