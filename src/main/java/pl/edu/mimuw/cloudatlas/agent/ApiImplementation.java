@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 
 import pl.edu.mimuw.cloudatlas.interpreter.Interpreter;
 import pl.edu.mimuw.cloudatlas.interpreter.InterpreterException;
@@ -58,6 +61,11 @@ public class ApiImplementation implements Api {
     }
 
     public void installQuery(String name, String queryCode) throws RemoteException {
+        Pattern queryNamePattern = Pattern.compile("&[a-zA-Z][\\w_]*");
+        Matcher matcher = queryNamePattern.matcher(name);
+        if (!matcher.matches()) {
+            throw new RemoteException("Invalid query identifier");
+        }
         try {
             ValueQuery query = new ValueQuery(queryCode);
             Attribute attributeName = new Attribute(name);

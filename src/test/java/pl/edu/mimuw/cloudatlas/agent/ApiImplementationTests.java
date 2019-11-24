@@ -102,6 +102,18 @@ public class ApiImplementationTests {
         assertAttributeInZmiEquals("num_processes", new ValueInt(799l), "/");
     }
 
+    @Test
+    public void testInstallQueryWithInvalidNameFails() throws Exception {
+        String name = "query";
+        String queryCode = "SELECT 1 AS one";
+        try {
+            api.installQuery(name, queryCode);
+            assertTrue("should have thrown", false);
+        } catch (Exception e) {
+            assertEquals("Invalid query identifier", e.getMessage());
+        }
+    }
+
     public void assertAttributeInZmiEquals(String attribute, Value expected, String zmiPath) throws Exception {
         AttributesMap attributes = api.getZoneAttributeValues(zmiPath);
         assertEquals(expected, attributes.get(attribute));
