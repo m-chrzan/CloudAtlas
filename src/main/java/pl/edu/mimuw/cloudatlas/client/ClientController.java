@@ -142,7 +142,43 @@ public class ClientController {
         return "attribForm";
     }
 
+    private List<Value> parseCollectionAttributeValue(List values, ArrayList<String> types) throws Exception {
+        List<Value> resultValue = new ArrayList<Value>();
+        String currentTypeString = types.get(1);
+        AttributeInput attributeInput = new AttributeInput();
+        ArrayList<String> newTypes = new ArrayList<>(types.subList(1, types.size()));
+
+        for (int i = 0; i < values.size(); i++) {
+            if (currentTypeString.equals("List")) {
+                resultValue.add(parseListAttributeValue((List) values.get(i), newTypes));
+            } else if (currentTypeString.equals("Set")) {
+                resultValue.add(parseSetAttributeValue((List) values.get(i), newTypes));
+            } else {
+                attributeInput.setAttributeType(currentTypeString);
+                attributeInput.setValueString(values.get(i).toString());
+                resultValue.add(parseAttributeValue(attributeInput));
+            }
+        }
+
+        return resultValue;
+    }
+
+    private Value parseListAttributeValue(List values, ArrayList<String> types) throws Exception {
+        List<Value> listResultValue = parseCollectionAttributeValue(values, types);
+        ArrayList<Value> resultValue = new ArrayList<>(listResultValue);
+
+        return new ValueList(resultValue, resultValue.iterator().next().getType());
+    }
+
+    private Value parseSetAttributeValue(List values, ArrayList<String> types) throws Exception {
+        List<Value> listResultValue = parseCollectionAttributeValue(values, types);
+        HashSet<Value> resultValue = new HashSet<>(listResultValue);
+
+        return new ValueSet(resultValue, resultValue.iterator().next().getType());
+    }
+
     private Value parseAttributeValue(AttributeInput attributeObject) throws Exception {
+        Gson gson = new Gson();
         Value attributeValue = null;
 
         switch (attributeObject.getAttributeType()) {
@@ -155,7 +191,8 @@ public class ClientController {
                 attributeValue = new ValueDouble(Double.parseDouble(attributeObject.getValueString()));
                 break;
             case "Int":
-                attributeValue = new ValueInt(Long.parseLong(attributeObject.getValueString()));
+                Double tempDouble = Double.parseDouble(attributeObject.getValueString());
+                attributeValue = new ValueInt(tempDouble.longValue());
                 break;
             case "String":
                 attributeValue = new ValueString(attributeObject.getValueString());
@@ -172,7 +209,20 @@ public class ClientController {
                 attributeValue = parseContactsString(contactsString).iterator().next();
                 break;
             case "Query":
+                Map parsedQuery = gson.fromJson(attributeObject.getValueString(), Map.class);
                 attributeValue = new ValueQuery(attributeObject.getValueString());
+                break;
+            case "List":
+                List parsedListValue = gson.fromJson(attributeObject.getValueString(), List.class);
+                ArrayList<String> parsedListTypes = new ArrayList<>(Arrays.asList(
+                        attributeObject.getAttributeComplexType().replaceAll("\\s","").split(",")));
+                attributeValue = parseListAttributeValue(parsedListValue, parsedListTypes);
+                break;
+            case "Set":
+                List parsedSetValue = gson.fromJson(attributeObject.getValueString(), List.class);
+                ArrayList<String> parsedSetTypes = new ArrayList<>(Arrays.asList(
+                        attributeObject.getAttributeComplexType(). replaceAll("\\s","").split(",")));
+                attributeValue = parseSetAttributeValue(parsedSetValue, parsedSetTypes);
                 break;
             default:
                 String errMsg = "Value type not supported: " + attributeObject.getAttributeType();
@@ -329,7 +379,7 @@ public class ClientController {
         String jsonAttributes = "";
         Gson gson = new Gson();
         jsonAttributes = gson.toJson(valuesTable);
-        System.out.println(jsonAttributes);
+        // System.out.println(jsonAttributes);
         return jsonAttributes;
     }
 

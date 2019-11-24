@@ -7,6 +7,7 @@ public class AttributeInput {
     private String attributeName;
     private String valueString;
     private String attributeType;
+    private String attributeComplexType;
     private Value value;
 
     public String getZoneName() {
@@ -47,5 +48,13 @@ public class AttributeInput {
 
     public void setAttributeType(String attributeType) {
         this.attributeType = attributeType;
+    }
+
+    public String getAttributeComplexType() {
+        return attributeComplexType;
+    }
+
+    public void setAttributeComplexType(String attributeComplexType) {
+        this.attributeComplexType = attributeComplexType;
     }
 }
