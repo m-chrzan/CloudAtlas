@@ -81,8 +81,6 @@ public class Fetcher {
         String pythonCmd = "/usr/bin/python3 " + pythonScript;
         System.out.println("Run cmd: " + pythonCmd);
         pythonProcess = Runtime.getRuntime().exec(pythonCmd);
-        System.out.println("Fetcher pid " + ProcessHandle.current().pid());
-        System.out.println("Python process running with PID: " + pythonProcess.pid());
     }
 
     private static ArrayList deserializeAttribs(String serializedAttribs) {
