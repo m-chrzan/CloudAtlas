@@ -8,14 +8,14 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import com.google.gson.Gson;
 import pl.edu.mimuw.cloudatlas.model.*;
 
 public class Fetcher {
-    private static final List<String> fetcherAttributeNames = List.of(
+    private static final List<String> fetcherAttributeNames = Arrays.asList(
             "avg_load",
             "free_disk",
             "total_disk",
@@ -30,7 +30,7 @@ public class Fetcher {
             "dns_names"
     );
 
-    private static final List<Type.PrimaryType> fetcherAttributeTypes = List.of(
+    private static final List<Type.PrimaryType> fetcherAttributeTypes = Arrays.asList(
             Type.PrimaryType.DOUBLE,
             Type.PrimaryType.INT,
             Type.PrimaryType.INT,
