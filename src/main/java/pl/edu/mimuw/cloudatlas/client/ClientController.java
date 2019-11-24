@@ -94,6 +94,7 @@ public class ClientController {
 
     private Set<ValueContact> parseContactsString(DataStringInput contactsInput) throws Exception {
         Gson gson = new Gson();
+        System.out.println(contactsInput);
         Map<String, ArrayList> contactStrings = gson.fromJson(contactsInput.getString(), Map.class);
         Set<ValueContact> contactObjects = new HashSet<ValueContact>();
         ArrayList<Double> cAddr;
@@ -147,6 +148,7 @@ public class ClientController {
         String currentTypeString = types.get(1);
         AttributeInput attributeInput = new AttributeInput();
         ArrayList<String> newTypes = new ArrayList<>(types.subList(1, types.size()));
+        Gson gson = new Gson();
 
         for (int i = 0; i < values.size(); i++) {
             if (currentTypeString.equals("List")) {
@@ -155,7 +157,7 @@ public class ClientController {
                 resultValue.add(parseSetAttributeValue((List) values.get(i), newTypes));
             } else {
                 attributeInput.setAttributeType(currentTypeString);
-                attributeInput.setValueString(values.get(i).toString());
+                attributeInput.setValueString(gson.toJson(values.get(i)));
                 resultValue.add(parseAttributeValue(attributeInput));
             }
         }
@@ -207,10 +209,6 @@ public class ClientController {
                 DataStringInput contactsString = new DataStringInput();
                 contactsString.setString(attributeObject.getValueString());
                 attributeValue = parseContactsString(contactsString).iterator().next();
-                break;
-            case "Query":
-                Map parsedQuery = gson.fromJson(attributeObject.getValueString(), Map.class);
-                attributeValue = new ValueQuery(attributeObject.getValueString());
                 break;
             case "List":
                 List parsedListValue = gson.fromJson(attributeObject.getValueString(), List.class);
