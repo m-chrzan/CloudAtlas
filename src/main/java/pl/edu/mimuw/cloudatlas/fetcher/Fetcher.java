@@ -15,21 +15,6 @@ import com.google.gson.Gson;
 import pl.edu.mimuw.cloudatlas.model.*;
 
 public class Fetcher {
-    private static final Map<String, Type.PrimaryType> fetcherAttributes = Map.ofEntries(
-            Map.entry("cpu_load", Type.PrimaryType.DOUBLE),
-            Map.entry("free_disk", Type.PrimaryType.INT),
-            Map.entry("total_disk", Type.PrimaryType.INT),
-            Map.entry("free_ram", Type.PrimaryType.INT),
-            Map.entry("total_ram", Type.PrimaryType.INT),
-            Map.entry("free_swap", Type.PrimaryType.INT),
-            Map.entry("total_swap", Type.PrimaryType.INT),
-            Map.entry("num_processes", Type.PrimaryType.INT),
-            Map.entry("num_cores", Type.PrimaryType.INT),
-            Map.entry("kernel_ver", Type.PrimaryType.STRING),
-            Map.entry("logged_users", Type.PrimaryType.INT),
-            Map.entry("dns_names", Type.PrimaryType.LIST)
-    );
-
     private static final List<String> fetcherAttributeNames = List.of(
             "avg_load",
             "free_disk",
