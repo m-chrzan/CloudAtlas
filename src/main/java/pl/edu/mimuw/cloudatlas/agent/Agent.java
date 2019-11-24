@@ -12,6 +12,8 @@ import pl.edu.mimuw.cloudatlas.model.ZMI;
 public class Agent {
     public static void main(String[] args) {
         try {
+            Runtime.getRuntime().exec("./scripts/registry");
+            Thread.sleep(10000);
             ZMI root = Main.createTestHierarchy2();
             ApiImplementation api = new ApiImplementation(root);
             Api apiStub =
