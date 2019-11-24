@@ -172,6 +172,7 @@ public class ClientController {
         String currentTypeString = types.get(1);
         AttributeInput attributeInput = new AttributeInput();
         ArrayList<String> newTypes = new ArrayList<>(types.subList(1, types.size()));
+        Gson gson = new Gson();
 
         for (int i = 0; i < values.size(); i++) {
             if (currentTypeString.equals("List")) {
@@ -180,7 +181,7 @@ public class ClientController {
                 resultValue.add(parseSetAttributeValue((List) values.get(i), newTypes));
             } else {
                 attributeInput.setAttributeType(currentTypeString);
-                attributeInput.setValueString(values.get(i).toString());
+                attributeInput.setValueString(gson.toJson(values.get(i)));
                 resultValue.add(parseAttributeValue(attributeInput));
             }
         }
@@ -202,40 +203,51 @@ public class ClientController {
         return new ValueSet(resultValue, resultValue.iterator().next().getType());
     }
 
+    private Long parseIntegerAsLong(String value) {
+        Double doubleVal;
+
+        try {
+            doubleVal = Double.parseDouble(value);
+            return doubleVal.longValue();
+        } catch (NumberFormatException e) {
+            return Long.parseLong(value);
+        }
+    }
+
     private Value parseAttributeValue(AttributeInput attributeObject) throws Exception {
         Gson gson = new Gson();
         Value attributeValue = null;
 
         switch (attributeObject.getAttributeType()) {
             case "Boolean":
-                attributeValue = attributeObject.getValueString().toLowerCase().equals("true") ?
-                        new ValueBoolean(true) :
-                        new ValueBoolean(false);
+                if (attributeObject.getValueString().toLowerCase().equals("true")) {
+                    attributeValue = new ValueBoolean(true);
+                } else if (attributeObject.getValueString().toLowerCase().equals("false")) {
+                    attributeValue = new ValueBoolean(false);
+                } else {
+                    String errMsg = "Incorrect boolean value: " + attributeObject.getValueString();
+                    throw new UnsupportedOperationException(errMsg);
+                }
                 break;
             case "Double":
                 attributeValue = new ValueDouble(Double.parseDouble(attributeObject.getValueString()));
                 break;
             case "Int":
-                Double tempDouble = Double.parseDouble(attributeObject.getValueString());
-                attributeValue = new ValueInt(tempDouble.longValue());
+                attributeValue = new ValueInt(parseIntegerAsLong(attributeObject.getValueString()));
                 break;
             case "String":
                 attributeValue = new ValueString(attributeObject.getValueString());
                 break;
             case "Time":
-                attributeValue = new ValueTime(Long.parseLong(attributeObject.getValueString()));
+                attributeValue = new ValueTime(parseIntegerAsLong(attributeObject.getValueString()));
                 break;
             case "Duration":
-                attributeValue = new ValueDuration(attributeObject.getValueString());
+                attributeValue = new ValueDuration(parseIntegerAsLong(attributeObject.getValueString()));
                 break;
             case "Contact":
                 DataStringInput contactsString = new DataStringInput();
                 contactsString.setString(attributeObject.getValueString());
                 attributeValue = parseContactsString(contactsString).iterator().next();
-                break;
-            case "Query":
-                Map parsedQuery = gson.fromJson(attributeObject.getValueString(), Map.class);
-                attributeValue = new ValueQuery(attributeObject.getValueString());
                 break;
             case "List":
                 List parsedListValue = gson.fromJson(attributeObject.getValueString(), List.class);
