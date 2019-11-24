@@ -178,6 +178,17 @@ public class ClientController {
         return new ValueSet(resultValue, resultValue.iterator().next().getType());
     }
 
+    private Long parseIntegerAsLong(String value) {
+        Double doubleVal;
+
+        try {
+            doubleVal = Double.parseDouble(value);
+            return doubleVal.longValue();
+        } catch (NumberFormatException e) {
+            return Long.parseLong(value);
+        }
+    }
+
     private Value parseAttributeValue(AttributeInput attributeObject) throws Exception {
         Gson gson = new Gson();
         Value attributeValue = null;
@@ -197,17 +208,21 @@ public class ClientController {
                 attributeValue = new ValueDouble(Double.parseDouble(attributeObject.getValueString()));
                 break;
             case "Int":
-                Double tempDouble = Double.parseDouble(attributeObject.getValueString());
-                attributeValue = new ValueInt(tempDouble.longValue());
+                attributeValue = new ValueInt(parseIntegerAsLong(attributeObject.getValueString()));
                 break;
             case "String":
                 attributeValue = new ValueString(attributeObject.getValueString());
                 break;
             case "Time":
-                attributeValue = new ValueTime(Long.parseLong(attributeObject.getValueString()));
+                attributeValue = new ValueTime(parseIntegerAsLong(attributeObject.getValueString()));
                 break;
             case "Duration":
-                attributeValue = new ValueDuration(attributeObject.getValueString());
+                if (attributeObject.getValueString().matches("\\d+")) {
+                    attributeValue = new ValueDuration(parseIntegerAsLong(attributeObject.getValueString()));
+                } else {
+                    String valDuration = attributeObject.getValueString().trim();
+                    attributeValue = new ValueDuration(valDuration);
+                }
                 break;
             case "Contact":
                 DataStringInput contactsString = new DataStringInput();
