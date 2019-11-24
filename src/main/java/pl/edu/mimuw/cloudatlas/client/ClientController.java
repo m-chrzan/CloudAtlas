@@ -217,12 +217,7 @@ public class ClientController {
                 attributeValue = new ValueTime(parseIntegerAsLong(attributeObject.getValueString()));
                 break;
             case "Duration":
-                if (attributeObject.getValueString().matches("\\d+")) {
-                    attributeValue = new ValueDuration(parseIntegerAsLong(attributeObject.getValueString()));
-                } else {
-                    String valDuration = attributeObject.getValueString().trim();
-                    attributeValue = new ValueDuration(valDuration);
-                }
+                attributeValue = new ValueDuration(parseIntegerAsLong(attributeObject.getValueString()));
                 break;
             case "Contact":
                 DataStringInput contactsString = new DataStringInput();
