@@ -94,7 +94,6 @@ public class ClientController {
 
     private Set<ValueContact> parseContactsString(DataStringInput contactsInput) throws Exception {
         Gson gson = new Gson();
-        System.out.println(contactsInput);
         Map<String, ArrayList> contactStrings = gson.fromJson(contactsInput.getString(), Map.class);
         Set<ValueContact> contactObjects = new HashSet<ValueContact>();
         ArrayList<Double> cAddr;
