@@ -64,9 +64,14 @@ def get_data():
     kernel_ver = platform.release()
     logged_users = len(psutil.users())
 
-    external_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
-    hostname = socket.gethostbyaddr(external_ip)
-    dns_names = ([hostname[0]] + hostname[1])[:3]
+    try:
+        external_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
+        hostname = socket.gethostbyaddr(external_ip)
+        dns_names = ([hostname[0]] + hostname[1])[:3]
+    except Exception as e:
+        pass
+    else:
+        dns_names = []
 
     sys.stdout.write("[{},{},{},{},{},{},{},{},{},{},{},{}]\n".format(
         avg_load,
