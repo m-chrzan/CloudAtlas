@@ -47,7 +47,7 @@
                 data.addColumn('string', col);
             }
             jsonData.shift();
-            data.addRows(jsonData);
+            data.addRow(jsonData[0]);
 
             var table = new google.visualization.Table(document.getElementById('table_div'));
 
