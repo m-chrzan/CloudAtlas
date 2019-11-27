@@ -49,6 +49,7 @@ application {
 task runAgent(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.agent.Agent'
+    systemProperty 'java.rmi.server.hostname', 'khaki04'
 }
 
 task runClient(type: JavaExec) {
@@ -59,7 +60,7 @@ task runClient(type: JavaExec) {
 task runFetcher(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.fetcher.Fetcher'
-    args("localhost", 1099)
+    args("khaki04", 1099)
 }
 
 task runInterpreter(type: JavaExec) {

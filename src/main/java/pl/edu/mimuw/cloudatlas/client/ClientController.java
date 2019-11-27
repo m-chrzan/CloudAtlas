@@ -34,7 +34,7 @@ public class ClientController {
 
     ClientController() {
         try {
-            Registry registry = LocateRegistry.getRegistry("localhost");
+            Registry registry = LocateRegistry.getRegistry("khaki04");
             this.api = (Api) registry.lookup("Api");
         } catch (Exception e) {
             System.err.println("Client exception:");
