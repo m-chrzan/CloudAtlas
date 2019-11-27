@@ -10,8 +10,9 @@
 <body>
 
 <div th:replace="fragments/navbar :: navbar"></div>
-<div id="installQueryForm">
-    <h2 class="display-7">Install query</h2>
+
+<h4 class="d-flex justify-content-center mt-2">Install query</h4>
+<div id="installQueryForm" class="d-flex justify-content-center mt-2">
     <form action="#" th:action="@{/installQuery}" th:object="${queryObject}" method="post">
         <div class="form-group">
             <label for="InstallQueryName1">Enter query name</label>
@@ -20,13 +21,17 @@
         <div class="form-group">
             <label for="InstallTextarea1">Enter query</label>
             <textarea class="form-control" id="InstallTextarea1" rows="3" th:field="*{value}"></textarea>
+            <small id="attributeValueHelpBlock" class="form-text text-muted">
+                Enter query in a Json format. Example:
+                Query: { "&queryName" : "query" } <br>
+            </small>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
 
-<div id="uninstallQueryForm">
-    <h2 class="display-7">Uninstall query</h2>
+<h4 class="d-flex justify-content-center mt-5">Uninstall query</h4>
+<div id="uninstallQueryForm" class="d-flex justify-content-center mt-2">
     <form action="#" th:action="@{/uninstallQuery}" th:object="${queryObject}" method="post">
         <div class="form-group">
             <label for="UninstallQueryName1">Enter query name</label>
