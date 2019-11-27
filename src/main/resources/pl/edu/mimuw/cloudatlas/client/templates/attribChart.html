@@ -9,9 +9,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript">
-        google.charts.load('current', {'packages':['table']});
-        google.charts.load('current', {'packages':['corechart']});
+        google.charts.load('current', {'packages':['corechart', 'table', 'controls', 'charteditor']});
         google.charts.setOnLoadCallback(refreshChart());
+
+        var chartState = [];
 
         function refreshChart() {
             setInterval(getData, 5000);
@@ -29,16 +30,71 @@
         function drawChart(jsonData) {
             var data = google.visualization.arrayToDataTable(jsonData);
 
+            var columnsTable = new google.visualization.DataTable();
+            columnsTable.addColumn('number', 'colIndex');
+            columnsTable.addColumn('string', 'colLabel');
+            var initState= {selectedValues: []};
+
+            for (var i = 1; i < data.getNumberOfColumns(); i++) {
+                columnsTable.addRow([i, data.getColumnLabel(i)]);
+                initState.selectedValues.push(data.getColumnLabel(i));
+            }
+
+            if (chartState === undefined || chartState.length === 0) {
+                chartState = initState;
+            }
+
             var options = {
                 title: 'Attribute values',
                 hAxis: {title: 'Timestamp',  titleTextStyle: {color: '#333'}},
-                vAxis: {scaleType: 'log'},
                 interpolateNulls: true,
                 crosshair: {trigger: 'both', orientation: 'vertical'}
             };
 
-            var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-            chart.draw(data, options);
+            var chart  = new google.visualization.ChartWrapper({
+                chartType : 'LineChart',
+                containerId : 'programmatic_chart_div',
+                options : options,
+                dataTable : data
+            });
+
+            var columnFilter = new google.visualization.ControlWrapper({
+                controlType : 'CategoryFilter',
+                containerId : 'programmatic_control_div',
+                dataTable : columnsTable,
+                options: {
+                    filterColumnLabel: 'colLabel',
+                    ui : {
+                        label : 'Columns',
+                        allowTyping : false,
+                        allowMultiple : true,
+                        allowNone : false,
+                        selectedValuesLayout : 'below',
+                        cssClass : 'google-visualization-controls-categoryfilter'
+                    }
+                },
+                state : chartState
+            });
+
+            function drawChartHandler() {
+                var state = columnFilter.getState();
+                var row;
+                var columnIndices = [0];
+                for (var i = 0; i < state.selectedValues.length; i++) {
+                    row = columnsTable.getFilteredRows([{column: 1, value: state.selectedValues[i]}])[0];
+                    columnIndices.push(columnsTable.getValue(row, 0));
+                }
+                columnIndices.sort(function (a, b) {
+                    return (a - b);
+                });
+                chartState = state;
+                chart.setView({columns: columnIndices});
+                chart.draw();
+            }
+
+            google.visualization.events.addListener(columnFilter, 'statechange', drawChartHandler);
+            columnFilter.draw();
+            drawChartHandler();
         }
 
         function drawTable(jsonData) {
@@ -72,7 +128,11 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
-<div id="chart_div" style="width: 100%; height: 500px;"></div>
+<!--<div id="chart_div" style="width: 100%; height: 500px;"></div>-->
+<div id="programmatic_dashboard_div">
+    <div id="programmatic_control_div"></div>
+    <div id="programmatic_chart_div"></div>
+</div>
 <div id="table_div"></div>
 
 
