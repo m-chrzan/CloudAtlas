@@ -10,7 +10,9 @@
 <body>
 
 <div th:replace="fragments/navbar :: navbar"></div>
-<div id="queryForm">
+
+<h4 class="d-flex justify-content-center mt-2">Install fallback contacts</h4>
+<div id="queryForm" class="d-flex justify-content-center mt-2">
     <form action="#" th:action="@{/contacts}" th:object="${contactsObject}" method="post">
         <div class="form-group">
             <label for="Textarea1">Enter contacts</label>
