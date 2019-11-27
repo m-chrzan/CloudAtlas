@@ -14,6 +14,10 @@ plugins {
     id 'application'
 }
 
+ext.hostname = {
+    return System.getProperty("hostname") ?: "localhost"
+}
+
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
@@ -49,19 +53,19 @@ application {
 task runAgent(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.agent.Agent'
-    systemProperty 'java.rmi.server.hostname', System.getProperty('hostname')
+    systemProperty 'java.rmi.server.hostname', hostname()
 }
 
 task runClient(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.client.Client'
-    systemProperty 'agent_hostname', System.getProperty('hostname')
+    systemProperty 'agent_hostname', hostname()
 }
 
 task runFetcher(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.fetcher.Fetcher'
-    args(System.getProperty('hostname'), 1099)
+    args(hostname() , 1099)
 }
 
 task runInterpreter(type: JavaExec) {

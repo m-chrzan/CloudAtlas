@@ -2,6 +2,9 @@
 
 ## Running
 
+The agent, fetcher, and interpreter take an optional `-Dhostname=<agent's external hostname`
+argument, which defaults to `localhost`.
+
 ### API Agent
 
     # start rmiregistry
