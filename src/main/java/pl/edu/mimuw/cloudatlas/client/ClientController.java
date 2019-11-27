@@ -34,7 +34,8 @@ public class ClientController {
 
     ClientController() {
         try {
-            Registry registry = LocateRegistry.getRegistry("localhost");
+            String hostname = System.getProperty("agent_hostname");	
+            Registry registry = LocateRegistry.getRegistry(hostname);
             this.api = (Api) registry.lookup("Api");
         } catch (Exception e) {
             System.err.println("Client exception:");
