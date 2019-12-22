@@ -17,13 +17,16 @@ public class TimerScheduler {
 
     TimerScheduler() {
         this.timer = new Timer();
+        System.out.println("TimerScheduler instance initialized");
     }
 
     public void handle(TimerTask task, long delay, long period) {
         this.timer.scheduleAtFixedRate(task, delay, period);
+        System.out.println("Task with delay " + delay + " and period " + period + " scheduled");
     }
 
     public void handle(TimerTask task, long delay) {
         this.timer.schedule(task, delay);
+        System.out.println("Task with delay " + delay + " scheduled");
     }
 }
