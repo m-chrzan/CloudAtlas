@@ -13,22 +13,22 @@ public class AgentMessage {
         QUERY
     }
 
-    private String requestId;
+    private String messageId;
     private AgentModule destinationModule;
     private long timestamp;
 
-    public AgentMessage(String requestId, AgentModule destinationModule, long timestamp) {
-        this.requestId = requestId;
+    public AgentMessage(String messageId, AgentModule destinationModule, long timestamp) {
+        this.messageId = messageId;
         this.destinationModule = destinationModule;
         this.timestamp = timestamp;
     }
 
-    public String getRequestId() {
-        return requestId;
+    public String getMessageId() {
+        return messageId;
     }
 
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
     public AgentModule getDestinationModule() {

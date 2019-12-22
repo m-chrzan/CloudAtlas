@@ -3,12 +3,14 @@ package pl.edu.mimuw.cloudatlas.agent.message;
 import java.util.TimerTask;
 
 public class TimerSchedulerMessage extends AgentMessage {
-    long delay;
-    long baseTime;
-    TimerTask task;
+    private String requestId;
+    private long delay;
+    private long baseTime;
+    private TimerTask task;
 
-    public TimerSchedulerMessage(String requestId, AgentModule destinationModule, long timestamp, long delay, long baseTime, TimerTask task) {
-        super(requestId, destinationModule, timestamp);
+    public TimerSchedulerMessage(String messageId, AgentModule destinationModule, long timestamp, String requestId, long delay, long baseTime, TimerTask task) {
+        super(messageId, destinationModule, timestamp);
+        this.requestId = requestId;
         this.delay = delay;
         this.baseTime = baseTime;
         this.task = task;
@@ -37,4 +39,8 @@ public class TimerSchedulerMessage extends AgentMessage {
     public void setTask(TimerTask task) {
         this.task = task;
     }
+
+    public String getRequestId() { return requestId; }
+
+    public void setRequestId(String requestId) { this.requestId = requestId; }
 }
