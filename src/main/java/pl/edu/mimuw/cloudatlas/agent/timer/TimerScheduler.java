@@ -9,6 +9,8 @@ import java.util.TimerTask;
  *
  * Handle used to attach tasks to schedule
  * Tasks declared as inherited from TimerTask
+ *
+ * TODO: add request id and custom time
  */
 public class TimerScheduler {
     private Timer timer;
