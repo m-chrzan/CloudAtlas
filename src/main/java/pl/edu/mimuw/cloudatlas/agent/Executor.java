@@ -2,23 +2,25 @@ package pl.edu.mimuw.cloudatlas.agent;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import pl.edu.mimuw.cloudatlas.agent.message.AgentMessage;
+
 /*
  * Queues messages sent to a particular module and ensures they are eventually
  * handled.
  */
 public class Executor implements Runnable {
     private Module module;
-    private LinkedBlockingQueue<Event> events;
+    private LinkedBlockingQueue<AgentMessage> events;
 
     public Executor(Module module) {
         this.module = module;
-        this.events = new LinkedBlockingQueue<Event>();
+        this.events = new LinkedBlockingQueue<AgentMessage>();
     }
 
     public void run() {
         while (!Thread.currentThread().interrupted()) {
             try {
-                Event event = events.take();
+                AgentMessage event = events.take();
                 module.handle(event);
             } catch (InterruptedException e) {
                 System.out.println("Executor interrupted. Exiting loop.");
@@ -27,7 +29,7 @@ public class Executor implements Runnable {
         }
     }
 
-    public void addEvent(Event event) throws InterruptedException {
+    public void addMessage(AgentMessage event) throws InterruptedException {
         events.put(event);
     }
 }
