@@ -1,6 +1,5 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -10,6 +9,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import pl.edu.mimuw.cloudatlas.agent.message.AgentMessage;
+import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.interpreter.Main;
 import pl.edu.mimuw.cloudatlas.model.ZMI;

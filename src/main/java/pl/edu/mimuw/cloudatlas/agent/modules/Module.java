@@ -1,5 +1,6 @@
-package pl.edu.mimuw.cloudatlas.agent;
+package pl.edu.mimuw.cloudatlas.agent.modules;
 
+import pl.edu.mimuw.cloudatlas.agent.Executor;
 import pl.edu.mimuw.cloudatlas.agent.message.AgentMessage;
 
 /*
@@ -9,7 +10,7 @@ public abstract class Module {
     private AgentMessage.AgentModule moduleType;
     private Executor executor;
 
-    Module(AgentMessage.AgentModule moduleType) {
+    public Module(AgentMessage.AgentModule moduleType) {
         this.moduleType = moduleType;
     }
 

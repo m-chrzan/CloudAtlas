@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import pl.edu.mimuw.cloudatlas.agent.message.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.message.AgentMessage.AgentModule;
+import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 
 public class ExecutorTest {
     public class MessageCounterModule extends Module {
