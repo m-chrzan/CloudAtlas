@@ -1,6 +1,7 @@
 package pl.edu.mimuw.cloudatlas.agent.messages;
 
 public class AgentMessage {
+    public AgentModule correctType;
 
     public enum AgentModule {
         TIMER_SCHEDULER,
