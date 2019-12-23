@@ -9,6 +9,11 @@ import pl.edu.mimuw.cloudatlas.agent.message.AgentMessage.AgentModule;
 public class ExecutorTest {
     public class MessageCounterModule extends Module {
         public int counter = 0;
+
+        MessageCounterModule(AgentModule moduleType) {
+            super(moduleType);
+        }
+
         public void handle(AgentMessage m) {
             counter++;
         }
@@ -16,7 +21,7 @@ public class ExecutorTest {
 
     @Test
     public void testDoesntExecuteWhenNoMessages() throws Exception {
-        MessageCounterModule module = new MessageCounterModule();
+        MessageCounterModule module = new MessageCounterModule(AgentModule.UDP);
         Executor executor = new Executor(module);
         Thread thread = new Thread(executor);
         thread.start();
@@ -27,7 +32,7 @@ public class ExecutorTest {
 
     @Test
     public void testExecutesHandlerOnce() throws Exception {
-        MessageCounterModule module = new MessageCounterModule();
+        MessageCounterModule module = new MessageCounterModule(AgentModule.UDP);
         Executor executor = new Executor(module);
         executor.addMessage(new AgentMessage("", AgentModule.UDP, 0) {});
         Thread thread = new Thread(executor);
@@ -39,7 +44,7 @@ public class ExecutorTest {
 
     @Test
     public void testExecutesHandlerMultipleTimes() throws Exception {
-        MessageCounterModule module = new MessageCounterModule();
+        MessageCounterModule module = new MessageCounterModule(AgentModule.UDP);
         Executor executor = new Executor(module);
         executor.addMessage(new AgentMessage("", AgentModule.UDP, 0) {});
         executor.addMessage(new AgentMessage("", AgentModule.UDP, 0) {});
