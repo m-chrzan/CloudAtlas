@@ -11,16 +11,20 @@ import pl.edu.mimuw.cloudatlas.agent.message.AgentMessage;
 public class Executor implements Runnable {
     private Module module;
     private LinkedBlockingQueue<AgentMessage> events;
+    private EventBus eventBus;
 
     public Executor(Module module) {
         this.module = module;
+        this.module.setExecutor(this);
         this.events = new LinkedBlockingQueue<AgentMessage>();
     }
 
     public void run() {
+        System.out.println("Executor " + this.module.toString() + " running");
         while (!Thread.currentThread().interrupted()) {
             try {
                 AgentMessage event = events.take();
+                System.out.println("Executor " + this.module.toString() + " passed message to handle");
                 module.handle(event);
             } catch (InterruptedException e) {
                 System.out.println("Executor interrupted. Exiting loop.");
@@ -31,5 +35,13 @@ public class Executor implements Runnable {
 
     public void addMessage(AgentMessage event) throws InterruptedException {
         events.put(event);
+    }
+
+    public void passMessage(AgentMessage event) throws InterruptedException {
+        eventBus.addMessage(event);
+    }
+
+    public void setEventBus(EventBus eventBus) {
+        this.eventBus = eventBus;
     }
 }
