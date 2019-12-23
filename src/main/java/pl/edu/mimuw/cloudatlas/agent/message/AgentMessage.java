@@ -1,5 +1,7 @@
 package pl.edu.mimuw.cloudatlas.agent.message;
 
+import pl.edu.mimuw.cloudatlas.agent.Agent;
+
 public class AgentMessage {
 
     public enum AgentModule {
@@ -21,6 +23,12 @@ public class AgentMessage {
         this.messageId = messageId;
         this.destinationModule = destinationModule;
         this.timestamp = timestamp;
+    }
+
+    public AgentMessage(String messageId, AgentModule destinationModule) {
+        this.messageId = messageId;
+        this.destinationModule = destinationModule;
+        this.timestamp = System.currentTimeMillis() / 1000L;
     }
 
     public String getMessageId() {
