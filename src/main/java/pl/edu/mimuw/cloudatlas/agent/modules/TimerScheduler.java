@@ -4,7 +4,6 @@ import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.TimerSchedulerMessage;
 
 import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Initializes a timer within a constructor during its attachment to the executor

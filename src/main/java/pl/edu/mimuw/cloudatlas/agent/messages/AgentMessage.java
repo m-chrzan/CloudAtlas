@@ -1,7 +1,5 @@
 package pl.edu.mimuw.cloudatlas.agent.messages;
 
-import pl.edu.mimuw.cloudatlas.agent.Agent;
-
 public class AgentMessage {
 
     public enum AgentModule {
