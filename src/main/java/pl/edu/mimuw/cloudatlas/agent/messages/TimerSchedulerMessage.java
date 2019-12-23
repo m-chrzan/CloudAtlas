@@ -1,4 +1,4 @@
-package pl.edu.mimuw.cloudatlas.agent.message;
+package pl.edu.mimuw.cloudatlas.agent.messages;
 
 import java.util.TimerTask;
 

@@ -1,6 +1,6 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
-import pl.edu.mimuw.cloudatlas.agent.message.AgentMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 
 import java.util.HashMap;
 import java.util.Iterator;

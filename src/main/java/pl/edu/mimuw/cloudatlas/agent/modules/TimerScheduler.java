@@ -1,7 +1,7 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
-import pl.edu.mimuw.cloudatlas.agent.message.AgentMessage;
-import pl.edu.mimuw.cloudatlas.agent.message.TimerSchedulerMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.TimerSchedulerMessage;
 
 import java.util.Timer;
 import java.util.TimerTask;

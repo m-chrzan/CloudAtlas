@@ -1,7 +1,7 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import pl.edu.mimuw.cloudatlas.agent.Executor;
-import pl.edu.mimuw.cloudatlas.agent.message.AgentMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 
 /*
  * A Module is a (potentially stateful) event handler.

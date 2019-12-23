@@ -1,7 +1,7 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
 import org.junit.Test;
-import pl.edu.mimuw.cloudatlas.agent.message.AgentMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 
 import java.util.ArrayList;
