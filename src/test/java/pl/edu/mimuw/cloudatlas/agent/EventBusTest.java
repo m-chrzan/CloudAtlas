@@ -6,35 +6,47 @@ import pl.edu.mimuw.cloudatlas.agent.message.AgentMessage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class EventBusTest {
+import static org.junit.Assert.assertEquals;
 
-    public static HashMap<AgentMessage.AgentModule, Module> initializeTwoModules() {
+public class EventBusTest {
+    public abstract class MessageCounterModule extends Module {
+        public int counter = 0;
+
+        MessageCounterModule(AgentMessage.AgentModule moduleType) {
+            super(moduleType);
+        }
+    }
+
+    public HashMap<AgentMessage.AgentModule, Module> initializeTwoModules() {
         HashMap<AgentMessage.AgentModule, Module> modules = new HashMap<AgentMessage.AgentModule, Module>();
-        modules.put(AgentMessage.AgentModule.RMI, new Module(AgentMessage.AgentModule.RMI) {
+        modules.put(AgentMessage.AgentModule.RMI, new MessageCounterModule(AgentMessage.AgentModule.RMI) {
             @Override
             public void handle(AgentMessage event) throws InterruptedException {
                 System.out.println("Module 1 handle called");
                 sendMessage(new AgentMessage("1", AgentMessage.AgentModule.UDP));
+                counter ++;
             }
         });
 
-        modules.put(AgentMessage.AgentModule.UDP, new Module(AgentMessage.AgentModule.UDP) {
+        modules.put(AgentMessage.AgentModule.UDP, new MessageCounterModule(AgentMessage.AgentModule.UDP) {
             @Override
             public void handle(AgentMessage event) {
                 System.out.println("Module 2 handle called");
+                counter++;
             }
         });
 
         return modules;
     }
 
-    public static HashMap<AgentMessage.AgentModule, Module> initializeModule() {
+    public HashMap<AgentMessage.AgentModule, Module> initializeModule() {
         HashMap<AgentMessage.AgentModule, Module> modules = new HashMap<AgentMessage.AgentModule, Module>();
 
-        modules.put(AgentMessage.AgentModule.RMI, new Module(AgentMessage.AgentModule.RMI) {
+        modules.put(AgentMessage.AgentModule.RMI, new MessageCounterModule(AgentMessage.AgentModule.RMI) {
             @Override
             public void handle(AgentMessage event) {
                 System.out.println("Module 1 handle called");
+                counter++;
             }
         });
 
@@ -54,6 +66,7 @@ public class EventBusTest {
         Thread.sleep(1000);
         eventBusThread.interrupt();
         Agent.closeExecutors(executorThreads);
+        assertEquals(1, ((MessageCounterModule) modules.get(AgentMessage.AgentModule.RMI)).counter);
     }
 
     @Test
@@ -70,9 +83,11 @@ public class EventBusTest {
                 AgentMessage.AgentModule.RMI,
                 System.currentTimeMillis() / 1000L));
 
-        Thread.sleep(10000);
+        Thread.sleep(1000);
 
         eventBusThread.interrupt();
         Agent.closeExecutors(executorThreads);
+        assertEquals(1, ((MessageCounterModule) modules.get(AgentMessage.AgentModule.RMI)).counter);
+        assertEquals(1, ((MessageCounterModule) modules.get(AgentMessage.AgentModule.UDP)).counter);
     }
 }
