@@ -43,4 +43,9 @@ public class TimerSchedulerMessage extends AgentMessage {
     public String getRequestId() { return requestId; }
 
     public void setRequestId(String requestId) { this.requestId = requestId; }
+
+    @Override
+    public AgentModule getCorrectMessageType() {
+        return AgentModule.TIMER_SCHEDULER;
+    }
 }

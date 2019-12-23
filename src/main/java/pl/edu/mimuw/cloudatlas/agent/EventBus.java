@@ -43,13 +43,13 @@ public class EventBus implements Runnable {
     }
 
     public void routeMessage(AgentMessage msg) throws InterruptedException {
-        assert msg.correctType == msg.getDestinationModule();
+        assert msg.getCorrectMessageType() == msg.getDestinationModule();
         System.out.println("Event bus routing message");
         executors.get(msg.getDestinationModule()).addMessage(msg);
     }
 
     public void addMessage(AgentMessage msg) throws InterruptedException {
-        assert msg.correctType == msg.getDestinationModule();
+        assert msg.getCorrectMessageType() == msg.getDestinationModule();
         this.events.put(msg);
     }
 }

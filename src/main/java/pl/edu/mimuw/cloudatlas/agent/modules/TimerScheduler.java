@@ -13,18 +13,21 @@ import java.util.Timer;
  * Tasks declared as inherited from TimerTask
  *
  * TODO: add request id and custom time
+ * TODO: enable messaging from scheduled tasks
  */
 public class TimerScheduler extends Module {
     private Timer timer;
 
     public TimerScheduler(AgentMessage.AgentModule moduleType) {
         super(moduleType);
+        assert moduleType == AgentMessage.AgentModule.TIMER_SCHEDULER;
         this.timer = new Timer();
         System.out.println("TimerScheduler instance initialized");
     }
 
     @Override
     public void handle(AgentMessage event) throws InterruptedException {
+        assert event.getDestinationModule() == event.getCorrectMessageType();
         TimerSchedulerMessage timerEvent = (TimerSchedulerMessage) event;
         this.timer.schedule(timerEvent.getTask(), timerEvent.getDelay());
         System.out.println("Task with delay " + timerEvent.getDelay() + " scheduled");
