@@ -2,7 +2,7 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import pl.edu.mimuw.cloudatlas.agent.ApiImplementation;
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.TimerSchedulerMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.RMIMessage;
 import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.interpreter.Main;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
@@ -32,6 +32,6 @@ public class RMI extends Module {
         }
     }
 
-    public void handleTyped(AgentMessage event) throws InterruptedException {
+    public void handleTyped(RMIMessage event) throws InterruptedException {
     }
 }
