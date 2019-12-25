@@ -13,7 +13,6 @@ import java.util.Timer;
  * Tasks declared as inherited from TimerTask
  *
  * TODO: add request id and custom time
- * TODO: enable messaging from scheduled tasks
  */
 public class TimerScheduler extends Module {
     private Timer timer;
@@ -29,7 +28,20 @@ public class TimerScheduler extends Module {
     public void handle(AgentMessage event) throws InterruptedException {
         assert event.getDestinationModule() == event.getCorrectMessageType();
         TimerSchedulerMessage timerEvent = (TimerSchedulerMessage) event;
-        this.timer.schedule(timerEvent.getTask(), timerEvent.getDelay());
-        System.out.println("Task with delay " + timerEvent.getDelay() + " scheduled");
+        addTask(timerEvent);
+    }
+
+    public void addTask(TimerSchedulerMessage msg) {
+        TimerScheduledTask task = msg.getTask();
+        task.setScheduler(this);
+        this.timer.schedule(task, msg.getDelay());
+        System.out.println("Task with delay " + msg.getDelay() + " scheduled");
+    }
+
+    // TODO
+    public void removeTask(String requestId) {}
+
+    public void passMessageFromTask(AgentMessage msg) throws InterruptedException {
+        this.executor.passMessage(msg);
     }
 }
