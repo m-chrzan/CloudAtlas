@@ -10,7 +10,7 @@ import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduler;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-// TODO better task tests after enabling messaging from tasks
+// TODO better task tests with counters after enabling messaging from tasks
 // TODO add wrong message test with switched types
 
 public class SchedulerTest {
@@ -115,6 +115,45 @@ public class SchedulerTest {
                     }
                 }));
 
+
+        Thread.sleep(1000);
+    }
+
+    @Test
+    public void scheduleTwoMessagingTasks() throws InterruptedException {
+        TimerSchedulerMessage messageToSend = new TimerSchedulerMessage(
+                "0",
+                AgentMessage.AgentModule.TIMER_SCHEDULER,
+                System.currentTimeMillis() / 1000L,
+                "1",
+                20,
+                System.currentTimeMillis() / 1000L,
+                new TimerScheduledTask() {
+                    @Override
+                    public void run() {
+                        System.out.println("Task 2 executed");
+                    }
+                });
+
+        this.eventBus.addMessage(new TimerSchedulerMessage(
+                "0",
+                AgentMessage.AgentModule.TIMER_SCHEDULER,
+                System.currentTimeMillis() / 1000L,
+                "1",
+                10,
+                System.currentTimeMillis() / 1000L,
+                new TimerScheduledTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            this.sendMessage(messageToSend);
+                        } catch (InterruptedException e) {
+                            System.out.println("Task 1 message interrupted");
+                            e.printStackTrace();
+                        }
+                        System.out.println("Task 1 executed");
+                    }
+                }));
 
         Thread.sleep(1000);
     }
