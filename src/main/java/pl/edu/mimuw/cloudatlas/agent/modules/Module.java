@@ -7,8 +7,8 @@ import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
  * A Module is a (potentially stateful) event handler.
  */
 public abstract class Module {
-    private AgentMessage.AgentModule moduleType;
-    private Executor executor;
+    protected AgentMessage.AgentModule moduleType;
+    protected Executor executor;
 
     public Module(AgentMessage.AgentModule moduleType) {
         this.moduleType = moduleType;
