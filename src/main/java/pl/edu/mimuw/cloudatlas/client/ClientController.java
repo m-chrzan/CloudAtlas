@@ -13,16 +13,21 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.*;
 
-/*
-should enable reading attribute values stored by the agent
-installing and
-uninstalling queries, and
-setting fallback contacts.
-
-Apart from providing forms for queries and fallback contacts,
-and presenting the information fetched from the agent in a textual form (with automatic refreshment),
-plotting the attributes with numeric values as real-time graphs.
-*/
+/**
+ * APIs
+ * /
+ * /query - displays query submission form
+ * /installQuery - posts query installation data
+ * /uninstallQuery - posts query uninstallation data
+ * /contacts - GET - displays contacts submission form
+ * /contacts - POST - posts contacts installation data
+ * /attribs - GET - displays attribute submission form
+ * /attribs - POST - posts attribute submission data
+ * /values - GET - displays attributes values
+ * /values - POST - posts zone change data
+ * /attribNumValues - REST API to get numerical attribute values
+ * /attribAllValues - REST API to get all attribute values
+ */
 
 @Controller
 public class ClientController {
