@@ -30,6 +30,10 @@ public class Executor implements Runnable {
             } catch (InterruptedException e) {
                 System.out.println("Executor interrupted. Exiting loop.");
                 break;
+            } catch (Module.InvalidMessageType e) {
+                System.out.println("Executor got a message with type it can't handle");
+                System.out.println(e);
+                break;
             }
         }
     }

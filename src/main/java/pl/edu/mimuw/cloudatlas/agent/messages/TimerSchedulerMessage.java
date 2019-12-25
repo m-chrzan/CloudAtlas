@@ -1,6 +1,8 @@
 package pl.edu.mimuw.cloudatlas.agent.messages;
 
 import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduledTask;
+import pl.edu.mimuw.cloudatlas.agent.modules.Module;
+import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 
 public class TimerSchedulerMessage extends AgentMessage {
     private String requestId;
@@ -9,13 +11,12 @@ public class TimerSchedulerMessage extends AgentMessage {
     private TimerScheduledTask task;
 
     public TimerSchedulerMessage(String messageId,
-                                 AgentModule destinationModule,
                                  long timestamp,
                                  String requestId,
                                  long delay,
                                  long baseTime,
                                  TimerScheduledTask task) {
-        super(messageId, destinationModule, timestamp);
+        super(messageId, ModuleType.TIMER_SCHEDULER, timestamp);
         this.requestId = requestId;
         this.delay = delay;
         this.baseTime = baseTime;
@@ -48,10 +49,9 @@ public class TimerSchedulerMessage extends AgentMessage {
 
     public String getRequestId() { return requestId; }
 
-    public void setRequestId(String requestId) { this.requestId = requestId; }
-
-    @Override
-    public AgentModule getCorrectMessageType() {
-        return AgentModule.TIMER_SCHEDULER;
+    public void callMe(Module module) throws InterruptedException, Module.InvalidMessageType {
+        module.handleTyped(this);
     }
+
+    public void setRequestId(String requestId) { this.requestId = requestId; }
 }

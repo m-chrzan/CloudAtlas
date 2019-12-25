@@ -1,6 +1,7 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
+import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,18 +13,18 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class EventBus implements Runnable {
     private LinkedBlockingQueue<AgentMessage> events;
-    private HashMap<AgentMessage.AgentModule, Executor> executors;
+    private HashMap<ModuleType, Executor> executors;
 
     void setEventBusReference() {
         Iterator it = this.executors.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<AgentMessage.AgentModule, Executor> executorEntry =
-                    (Map.Entry<AgentMessage.AgentModule, Executor>) it.next();
+            Map.Entry<ModuleType, Executor> executorEntry =
+                    (Map.Entry<ModuleType, Executor>) it.next();
             executorEntry.getValue().setEventBus(this);
         }
     }
 
-    EventBus(HashMap<AgentMessage.AgentModule, Executor> executors) {
+    EventBus(HashMap<ModuleType, Executor> executors) {
         this.executors = executors;
         setEventBusReference();
         this.events = new LinkedBlockingQueue<AgentMessage>();
@@ -43,13 +44,11 @@ public class EventBus implements Runnable {
     }
 
     public void routeMessage(AgentMessage msg) throws InterruptedException {
-        assert msg.getCorrectMessageType() == msg.getDestinationModule();
         System.out.println("Event bus routing message");
         executors.get(msg.getDestinationModule()).addMessage(msg);
     }
 
     public void addMessage(AgentMessage msg) throws InterruptedException {
-        assert msg.getCorrectMessageType() == msg.getDestinationModule();
         this.events.put(msg);
     }
 }
