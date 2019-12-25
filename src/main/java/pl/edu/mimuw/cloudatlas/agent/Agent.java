@@ -1,8 +1,5 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,29 +7,15 @@ import java.util.Map;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
-import pl.edu.mimuw.cloudatlas.api.Api;
-import pl.edu.mimuw.cloudatlas.interpreter.Main;
-import pl.edu.mimuw.cloudatlas.model.ZMI;
+import pl.edu.mimuw.cloudatlas.agent.modules.RMI;
+import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduler;
 
 public class Agent {
 
-    public static void runRegistry() {
-        try {
-            ZMI root = Main.createTestHierarchy2();
-            ApiImplementation api = new ApiImplementation(root);
-            Api apiStub =
-                    (Api) UnicastRemoteObject.exportObject(api, 0);
-            Registry registry = LocateRegistry.getRegistry();
-            registry.rebind("Api", apiStub);
-            System.out.println("Agent: api bound");
-        } catch (Exception e) {
-            System.err.println("Agent registry initialization exception:");
-            e.printStackTrace();
-        }
-    }
-
     public static HashMap<AgentMessage.AgentModule, Module> initializeModules() {
         HashMap<AgentMessage.AgentModule, Module> modules = new HashMap<AgentMessage.AgentModule, Module>();
+        modules.put(AgentMessage.AgentModule.TIMER_SCHEDULER, new TimerScheduler(AgentMessage.AgentModule.TIMER_SCHEDULER));
+        modules.put(AgentMessage.AgentModule.RMI, new RMI(AgentMessage.AgentModule.RMI));
         // TODO add modules as we implement them
         return modules;
     }
@@ -90,7 +73,6 @@ public class Agent {
     }
 
     public static void main(String[] args) {
-        runRegistry();
         runModulesAsThreads();
     }
 }
