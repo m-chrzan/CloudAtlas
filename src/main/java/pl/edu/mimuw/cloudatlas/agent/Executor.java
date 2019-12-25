@@ -2,7 +2,8 @@ package pl.edu.mimuw.cloudatlas.agent;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-import pl.edu.mimuw.cloudatlas.agent.message.AgentMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
+import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 
 /*
  * Queues messages sent to a particular module and ensures they are eventually

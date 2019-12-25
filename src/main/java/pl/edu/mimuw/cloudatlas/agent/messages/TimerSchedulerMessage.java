@@ -1,14 +1,20 @@
-package pl.edu.mimuw.cloudatlas.agent.message;
+package pl.edu.mimuw.cloudatlas.agent.messages;
 
-import java.util.TimerTask;
+import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduledTask;
 
 public class TimerSchedulerMessage extends AgentMessage {
     private String requestId;
     private long delay;
     private long baseTime;
-    private TimerTask task;
+    private TimerScheduledTask task;
 
-    public TimerSchedulerMessage(String messageId, AgentModule destinationModule, long timestamp, String requestId, long delay, long baseTime, TimerTask task) {
+    public TimerSchedulerMessage(String messageId,
+                                 AgentModule destinationModule,
+                                 long timestamp,
+                                 String requestId,
+                                 long delay,
+                                 long baseTime,
+                                 TimerScheduledTask task) {
         super(messageId, destinationModule, timestamp);
         this.requestId = requestId;
         this.delay = delay;
@@ -32,15 +38,20 @@ public class TimerSchedulerMessage extends AgentMessage {
         this.baseTime = baseTime;
     }
 
-    public TimerTask getTask() {
+    public TimerScheduledTask getTask() {
         return task;
     }
 
-    public void setTask(TimerTask task) {
+    public void setTask(TimerScheduledTask task) {
         this.task = task;
     }
 
     public String getRequestId() { return requestId; }
 
     public void setRequestId(String requestId) { this.requestId = requestId; }
+
+    @Override
+    public AgentModule getCorrectMessageType() {
+        return AgentModule.TIMER_SCHEDULER;
+    }
 }

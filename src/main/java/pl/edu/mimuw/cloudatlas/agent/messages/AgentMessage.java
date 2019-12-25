@@ -1,8 +1,6 @@
-package pl.edu.mimuw.cloudatlas.agent.message;
+package pl.edu.mimuw.cloudatlas.agent.messages;
 
-import pl.edu.mimuw.cloudatlas.agent.Agent;
-
-public class AgentMessage {
+public abstract class AgentMessage {
 
     public enum AgentModule {
         TIMER_SCHEDULER,
@@ -30,6 +28,8 @@ public class AgentMessage {
         this.destinationModule = destinationModule;
         this.timestamp = System.currentTimeMillis() / 1000L;
     }
+
+    public abstract AgentModule getCorrectMessageType();
 
     public String getMessageId() {
         return messageId;
