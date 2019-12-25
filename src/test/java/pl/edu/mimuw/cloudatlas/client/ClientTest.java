@@ -56,15 +56,33 @@ public class ClientTest {
 
     @Test
     public void homeMessageCheck() throws Exception {
-        Thread.sleep(100);
         String response = this.restTemplate.getForObject("http://localhost:" + port + "/", String.class);
         assertThat(response, CoreMatchers.containsString("Welcome to CloudaAtlas client interface"));
     }
 
     @Test
     public void attributeValuesMessageCheck() throws Exception {
-        Thread.sleep(100);
         String response = this.restTemplate.getForObject("http://localhost:" + port + "/values", String.class);
         assertThat(response, CoreMatchers.containsString("Attribute values"));
+    }
+
+    @Test
+    public void queryInstallationCheck() throws Exception {
+        // TODO
+    }
+
+    @Test
+    public void queryUninstallationCheck() throws Exception {
+        // TODO
+    }
+
+    @Test
+    public void numericalRESTApiCheck() throws Exception {
+        // TODO
+    }
+
+    @Test
+    public void allValuesRESTApiCheck() throws Exception {
+        // TODO
     }
 }
