@@ -2,7 +2,7 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import pl.edu.mimuw.cloudatlas.agent.ApiImplementation;
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.TimerSchedulerMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.RMIMessage;
 import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.interpreter.Main;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
@@ -12,7 +12,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 public class RMI extends Module {
-    public RMI(AgentMessage.AgentModule moduleType) {
+    public RMI(ModuleType moduleType) {
         super(moduleType);
         runRegistry();
     }
@@ -32,8 +32,6 @@ public class RMI extends Module {
         }
     }
 
-    @Override
-    public void handle(AgentMessage event) throws InterruptedException {
-        assert event.getDestinationModule() == event.getCorrectMessageType();
+    public void handleTyped(RMIMessage event) throws InterruptedException {
     }
 }

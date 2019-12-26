@@ -2,6 +2,7 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.TimerSchedulerMessage;
+import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 
 import java.util.Timer;
 
@@ -17,17 +18,15 @@ import java.util.Timer;
 public class TimerScheduler extends Module {
     private Timer timer;
 
-    public TimerScheduler(AgentMessage.AgentModule moduleType) {
+    public TimerScheduler(ModuleType moduleType) {
         super(moduleType);
-        assert moduleType == AgentMessage.AgentModule.TIMER_SCHEDULER;
+        assert moduleType == ModuleType.TIMER_SCHEDULER;
         this.timer = new Timer();
         System.out.println("TimerScheduler instance initialized");
     }
 
     @Override
-    public void handle(AgentMessage event) throws InterruptedException {
-        assert event.getDestinationModule() == event.getCorrectMessageType();
-        TimerSchedulerMessage timerEvent = (TimerSchedulerMessage) event;
+    public void handleTyped(TimerSchedulerMessage timerEvent) throws InterruptedException {
         addTask(timerEvent);
     }
 

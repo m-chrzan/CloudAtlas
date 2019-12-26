@@ -1,35 +1,24 @@
 package pl.edu.mimuw.cloudatlas.agent.messages;
 
+import pl.edu.mimuw.cloudatlas.agent.modules.Module;
+import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
+
 public abstract class AgentMessage {
-
-    public enum AgentModule {
-        TIMER_SCHEDULER,
-        TIMER_GTP,
-        RMI,
-        UDP,
-        GOSSIP_IN,
-        GOSSIP_OUT,
-        STATE,
-        QUERY
-    }
-
     private String messageId;
-    private AgentModule destinationModule;
+    private ModuleType destinationModule;
     private long timestamp;
 
-    public AgentMessage(String messageId, AgentModule destinationModule, long timestamp) {
+    public AgentMessage(String messageId, ModuleType destinationModule, long timestamp) {
         this.messageId = messageId;
         this.destinationModule = destinationModule;
         this.timestamp = timestamp;
     }
 
-    public AgentMessage(String messageId, AgentModule destinationModule) {
+    public AgentMessage(String messageId, ModuleType destinationModule) {
         this.messageId = messageId;
         this.destinationModule = destinationModule;
         this.timestamp = System.currentTimeMillis() / 1000L;
     }
-
-    public abstract AgentModule getCorrectMessageType();
 
     public String getMessageId() {
         return messageId;
@@ -39,13 +28,15 @@ public abstract class AgentMessage {
         this.messageId = messageId;
     }
 
-    public AgentModule getDestinationModule() {
+    public ModuleType getDestinationModule() {
         return destinationModule;
     }
 
-    public void setDestinationModule(AgentModule destinationModule) {
+    public void setDestinationModule(ModuleType destinationModule) {
         this.destinationModule = destinationModule;
     }
+
+    public abstract void callMe(Module module) throws InterruptedException, Module.InvalidMessageType;
 
     public long getTimestamp() {
         return timestamp;
