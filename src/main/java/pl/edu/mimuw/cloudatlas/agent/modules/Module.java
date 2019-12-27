@@ -3,7 +3,9 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 import pl.edu.mimuw.cloudatlas.agent.Executor;
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.TimerSchedulerMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.RMIMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.StanikMessage;
 
 /*
  * A Module is a (potentially stateful) event handler.
@@ -32,6 +34,14 @@ public abstract class Module {
 
     public void handleTyped(RMIMessage message) throws InterruptedException, InvalidMessageType {
         throw new InvalidMessageType("Got an RMIMessage in module " + moduleType.toString());
+    }
+
+    public void handleTyped(StanikMessage message) throws InterruptedException, InvalidMessageType {
+        throw new InvalidMessageType("Got a StanikMessage in module " + moduleType.toString());
+    }
+
+    public void handleTyped(ResponseMessage message) throws InterruptedException, InvalidMessageType {
+        throw new InvalidMessageType("Got a ResponseMessage in module " + moduleType.toString());
     }
 
     public void setExecutor(Executor executor) {
