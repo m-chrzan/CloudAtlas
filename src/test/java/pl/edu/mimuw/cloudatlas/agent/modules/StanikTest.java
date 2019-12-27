@@ -7,11 +7,13 @@ import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.GetHierarchyMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.HierarchyMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
 import pl.edu.mimuw.cloudatlas.agent.MockExecutor;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueInt;
+import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 import org.junit.Before;
@@ -64,5 +66,41 @@ public class StanikTest {
         HierarchyMessage newReceivedMessage = (HierarchyMessage) executor.messagesToPass.poll();
         AttributesMap newAttributes = newReceivedMessage.getZMI().getAttributes();
         assertNull(newAttributes.getOrNull("foo"));
+    }
+
+    @Test
+    public void updateRootAttributes() throws Exception {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("foo", new ValueInt(1337l));
+        attributes.add("bar", new ValueString("baz"));
+        UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/", attributes);
+        stanik.handleTyped(message);
+        AttributesMap actualAttributes = stanik.getHierarchy().getAttributes();
+        assertEquals(2, countAttributes(actualAttributes));
+        assertEquals(new ValueInt(1337l), actualAttributes.get("foo"));
+        assertEquals(new ValueString("baz"), actualAttributes.get("bar"));
+    }
+
+    @Test
+    public void updateWithNewZone() throws Exception {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("foo", new ValueInt(1337l));
+        attributes.add("bar", new ValueString("baz"));
+        attributes.add("name", new ValueString("new"));
+        UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
+        stanik.handleTyped(message);
+        AttributesMap actualAttributes = stanik.getHierarchy().findDescendant("/new").getAttributes();
+        assertEquals(3, countAttributes(actualAttributes));
+        assertEquals(new ValueInt(1337l), actualAttributes.getOrNull("foo"));
+        assertEquals(new ValueString("baz"), actualAttributes.getOrNull("bar"));
+    }
+
+    public int countAttributes(AttributesMap attributes) {
+        int count = 0;
+        for (Entry<Attribute, Value> attribute : attributes) {
+            count++;
+        }
+
+        return count;
     }
 }

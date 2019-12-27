@@ -111,6 +111,23 @@ public class ZMI implements Cloneable, Serializable {
         return descendant;
     }
 
+    public boolean descendantExists(PathName path) {
+        try {
+            findDescendant(path);
+            return true;
+        } catch (NoSuchZoneException e) {
+            return false;
+        }
+    }
+
+    /*
+     * Convenient version of findDescendant that takes String representation of
+     * path.
+     */
+    public ZMI findDescendant(String pathString) throws NoSuchZoneException {
+        return findDescendant(new PathName(pathString));
+    }
+
     /**
      * Gets the list of sons of this ZMI. Modifying a value in the returned list will cause an exception.
      *
