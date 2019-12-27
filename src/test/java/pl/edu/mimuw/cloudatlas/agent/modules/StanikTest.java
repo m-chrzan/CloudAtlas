@@ -9,7 +9,9 @@ import pl.edu.mimuw.cloudatlas.agent.messages.HierarchyMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
 import pl.edu.mimuw.cloudatlas.agent.MockExecutor;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
+import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.Value;
+import pl.edu.mimuw.cloudatlas.model.ValueInt;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 import org.junit.Before;
@@ -45,5 +47,22 @@ public class StanikTest {
             break;
         }
         assertTrue(empty);
+    }
+
+    @Test
+    public void hierarchyIsDeepCopy() throws Exception {
+        GetHierarchyMessage message = new GetHierarchyMessage("test_msg", 0, ModuleType.TEST, 42);
+        stanik.handleTyped(message);
+        HierarchyMessage receivedMessage = (HierarchyMessage) executor.messagesToPass.poll();
+        assertNotNull(receivedMessage);
+        AttributesMap attributes = receivedMessage.getZMI().getAttributes();
+        assertNull(attributes.getOrNull("foo"));
+        attributes.add("foo", new ValueInt(1337l));
+
+        GetHierarchyMessage newMessage = new GetHierarchyMessage("test_msg2", 123, ModuleType.TEST, 43);
+        stanik.handleTyped(newMessage);
+        HierarchyMessage newReceivedMessage = (HierarchyMessage) executor.messagesToPass.poll();
+        AttributesMap newAttributes = newReceivedMessage.getZMI().getAttributes();
+        assertNull(newAttributes.getOrNull("foo"));
     }
 }
