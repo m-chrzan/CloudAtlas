@@ -95,6 +95,24 @@ public class StanikTest {
         assertEquals(new ValueString("baz"), actualAttributes.getOrNull("bar"));
     }
 
+    @Test
+    public void updateWithRemovedAttributes() throws Exception {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("foo", new ValueInt(1337l));
+        attributes.add("bar", new ValueString("baz"));
+        UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/", attributes);
+        stanik.handleTyped(message);
+
+        AttributesMap newAttributes = new AttributesMap();
+        newAttributes.add("foo", new ValueInt(1338l));
+        UpdateAttributesMessage newMessage = new UpdateAttributesMessage("test_msg2", 0, "/", newAttributes);
+        stanik.handleTyped(newMessage);
+
+        AttributesMap actualAttributes = stanik.getHierarchy().getAttributes();
+        assertEquals(1, countAttributes(actualAttributes));
+        assertEquals(new ValueInt(1338l), actualAttributes.getOrNull("foo"));
+    }
+
     public int countAttributes(AttributesMap attributes) {
         int count = 0;
         for (Entry<Attribute, Value> attribute : attributes) {
