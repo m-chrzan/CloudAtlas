@@ -1,20 +1,22 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map.Entry;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.GetHierarchyMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.HierarchyMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StanikMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
-import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
+import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.PathName;
 import pl.edu.mimuw.cloudatlas.model.Type;
 import pl.edu.mimuw.cloudatlas.model.TypePrimitive;
 import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueBoolean;
+import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
@@ -27,17 +29,19 @@ public class Stanik extends Module {
     }
 
     private ZMI hierarchy;
+    private HashMap<Attribute, Entry<ValueQuery, ValueTime>> queries;
 
     public Stanik() {
         super(ModuleType.STATE);
         hierarchy = new ZMI();
+        queries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
         hierarchy.getAttributes().add("timestamp", new ValueTime(0l));
     }
 
     public void handleTyped(StanikMessage message) throws InterruptedException, InvalidMessageType {
         switch(message.getType()) {
-            case GET_HIERARCHY:
-                handleGetHierarchy((GetHierarchyMessage) message);
+            case GET_STATE:
+                handleGetState((GetStateMessage) message);
                 break;
             case UPDATE_ATTRIBUTES:
                 handleUpdateAttributes((UpdateAttributesMessage) message);
@@ -47,8 +51,8 @@ public class Stanik extends Module {
         }
     }
 
-    public void handleGetHierarchy(GetHierarchyMessage message) throws InterruptedException {
-        HierarchyMessage response = new HierarchyMessage("", message.getRequestingModule(), 0, message.getRequestId(), hierarchy.clone());
+    public void handleGetState(GetStateMessage message) throws InterruptedException {
+        StateMessage response = new StateMessage("", message.getRequestingModule(), 0, message.getRequestId(), hierarchy.clone(), (HashMap<Attribute, Entry<ValueQuery, ValueTime>>) queries.clone());
         sendMessage(response);
     }
 
@@ -140,5 +144,9 @@ public class Stanik extends Module {
 
     public ZMI getHierarchy() {
         return hierarchy;
+    }
+
+    public HashMap<Attribute, Entry<ValueQuery, ValueTime>> getQueries() {
+        return queries;
     }
 }

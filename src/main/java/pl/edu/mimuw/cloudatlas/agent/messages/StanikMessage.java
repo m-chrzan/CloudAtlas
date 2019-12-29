@@ -5,7 +5,7 @@ import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 
 public abstract class StanikMessage extends AgentMessage {
     public enum Type {
-        GET_HIERARCHY,
+        GET_STATE,
         UPDATE_ATTRIBUTES
     }
 

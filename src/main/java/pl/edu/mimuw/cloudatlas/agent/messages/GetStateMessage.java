@@ -2,12 +2,12 @@ package pl.edu.mimuw.cloudatlas.agent.messages;
 
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 
-public class GetHierarchyMessage extends StanikMessage {
+public class GetStateMessage extends StanikMessage {
     private ModuleType requestingModule;
     private long requestId;
 
-    public GetHierarchyMessage(String messageId, long timestamp, ModuleType requestingModule, long requestId) {
-        super(messageId, timestamp, Type.GET_HIERARCHY);
+    public GetStateMessage(String messageId, long timestamp, ModuleType requestingModule, long requestId) {
+        super(messageId, timestamp, Type.GET_STATE);
         this.requestingModule = requestingModule;
         this.requestId = requestId;
     }

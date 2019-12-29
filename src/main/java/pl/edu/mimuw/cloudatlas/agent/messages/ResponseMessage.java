@@ -5,7 +5,7 @@ import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 
 public abstract class ResponseMessage extends AgentMessage {
     public enum Type {
-        HIERARCHY
+        STATE
     }
 
     Type type;
