@@ -8,5 +8,7 @@ public enum ModuleType {
     GOSSIP_IN,
     GOSSIP_OUT,
     STATE,
-    QUERY
+    QUERY,
+    // for testing
+    TEST
 }
