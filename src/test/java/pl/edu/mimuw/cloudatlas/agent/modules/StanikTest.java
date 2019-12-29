@@ -2,6 +2,8 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -10,6 +12,7 @@ import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
 import pl.edu.mimuw.cloudatlas.agent.MockExecutor;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
@@ -140,6 +143,61 @@ public class StanikTest {
         assertEquals(2, iterableSize(actualAttributes));
         assertEquals(new ValueInt(1337l), actualAttributes.getOrNull("foo"));
         assertEquals(new ValueTime("2012/12/21 04:20:00.000"), actualAttributes.getOrNull("timestamp"));
+    }
+
+    @Test
+    public void addQuery() throws Exception {
+        HashMap<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
+        queries.put(new Attribute("&query"), new SimpleImmutableEntry(new ValueQuery("SELECT 1 AS one"), new ValueTime(42l)));
+        UpdateQueriesMessage message = new UpdateQueriesMessage("test_msg", 0, queries);
+        stanik.handleTyped(message);
+
+        HashMap<Attribute, Entry<ValueQuery, ValueTime>> actualQueries = stanik.getQueries();
+        assertEquals(1, iterableSize(actualQueries.keySet()));
+        assertTrue(actualQueries.containsKey(new Attribute("&query")));
+        Entry<ValueQuery, ValueTime> timestampedQuery = actualQueries.get(new Attribute("&query"));
+        assertEquals(new ValueTime(42l), timestampedQuery.getValue());
+        assertEquals(new ValueQuery("SELECT 1 AS one"), timestampedQuery.getKey());
+    }
+
+    @Test
+    public void updateQueries() throws Exception {
+        HashMap<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
+        queries.put(new Attribute("&query1"), new SimpleImmutableEntry(new ValueQuery("SELECT 1 AS one"), new ValueTime(42l)));
+        queries.put(new Attribute("&query3"), new SimpleImmutableEntry(new ValueQuery("SELECT 23 AS x"), new ValueTime(43l)));
+        queries.put(new Attribute("&query4"), new SimpleImmutableEntry(new ValueQuery("SELECT 1000 AS foo"), new ValueTime(43l)));
+        UpdateQueriesMessage message = new UpdateQueriesMessage("test_msg", 0, queries);
+        stanik.handleTyped(message);
+
+        HashMap<Attribute, Entry<ValueQuery, ValueTime>> otherQueries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
+        otherQueries.put(new Attribute("&query1"), new SimpleImmutableEntry(new ValueQuery("SELECT 2 AS one"), new ValueTime(41l)));
+        otherQueries.put(new Attribute("&query2"), new SimpleImmutableEntry(new ValueQuery("SELECT 42 AS answer"), new ValueTime(39l)));
+        otherQueries.put(new Attribute("&query3"), new SimpleImmutableEntry(new ValueQuery("SELECT 17 AS y"), new ValueTime(44l)));
+        UpdateQueriesMessage otherMessage = new UpdateQueriesMessage("test_msg", 0, otherQueries);
+        stanik.handleTyped(otherMessage);
+
+        HashMap<Attribute, Entry<ValueQuery, ValueTime>> actualQueries = stanik.getQueries();
+        assertEquals(4, iterableSize(actualQueries.keySet()));
+        assertTrue(actualQueries.containsKey(new Attribute("&query1")));
+        assertTrue(actualQueries.containsKey(new Attribute("&query2")));
+        assertTrue(actualQueries.containsKey(new Attribute("&query3")));
+        assertTrue(actualQueries.containsKey(new Attribute("&query4")));
+
+        Entry<ValueQuery, ValueTime> timestampedQuery1 = actualQueries.get(new Attribute("&query1"));
+        assertEquals(new ValueTime(42l), timestampedQuery1.getValue());
+        assertEquals(new ValueQuery("SELECT 1 AS one"), timestampedQuery1.getKey());
+
+        Entry<ValueQuery, ValueTime> timestampedQuery2 = actualQueries.get(new Attribute("&query2"));
+        assertEquals(new ValueTime(39l), timestampedQuery2.getValue());
+        assertEquals(new ValueQuery("SELECT 42 AS answer"), timestampedQuery2.getKey());
+
+        Entry<ValueQuery, ValueTime> timestampedQuery3 = actualQueries.get(new Attribute("&query3"));
+        assertEquals(new ValueTime(44l), timestampedQuery3.getValue());
+        assertEquals(new ValueQuery("SELECT 17 AS y"), timestampedQuery3.getKey());
+
+        Entry<ValueQuery, ValueTime> timestampedQuery4 = actualQueries.get(new Attribute("&query4"));
+        assertEquals(new ValueTime(43l), timestampedQuery4.getValue());
+        assertEquals(new ValueQuery("SELECT 1000 AS foo"), timestampedQuery4.getKey());
     }
 
     public <T> int iterableSize(Iterable<T> iterable) {

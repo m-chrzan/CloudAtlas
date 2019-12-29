@@ -9,6 +9,7 @@ import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StanikMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.PathName;
@@ -46,6 +47,9 @@ public class Stanik extends Module {
             case UPDATE_ATTRIBUTES:
                 handleUpdateAttributes((UpdateAttributesMessage) message);
                 break;
+            case UPDATE_QUERIES:
+                handleUpdateQueries((UpdateQueriesMessage) message);
+                break;
             default:
                 throw new InvalidMessageType("This type of message cannot be handled by Stanik");
         }
@@ -71,6 +75,17 @@ public class Stanik extends Module {
             System.out.println("ERROR: invalid UpdateAttributesMessage " + e.getMessage());
         } catch (ZMI.NoSuchZoneException e) {
             System.out.println("ERROR: zone should exist after being added");
+        }
+    }
+
+    public void handleUpdateQueries(UpdateQueriesMessage message) {
+        for (Entry<Attribute, Entry<ValueQuery, ValueTime>> entry : message.getQueries().entrySet()) {
+            Attribute attribute = entry.getKey();
+            ValueTime timestamp = entry.getValue().getValue();
+            Entry<ValueQuery, ValueTime> currentTimestampedQuery = queries.get(attribute);
+            if (currentTimestampedQuery == null || valueLower(currentTimestampedQuery.getValue(), timestamp)) {
+                queries.put(entry.getKey(), entry.getValue());
+            }
         }
     }
 
