@@ -3,6 +3,7 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 import pl.edu.mimuw.cloudatlas.agent.Executor;
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.TimerSchedulerMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.QurnikMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.RMIMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StanikMessage;
@@ -30,6 +31,10 @@ public abstract class Module {
 
     public void handleTyped(TimerSchedulerMessage message) throws InterruptedException, InvalidMessageType {
         throw new InvalidMessageType("Got a TimerSchedulerMessage in module " + moduleType.toString());
+    }
+
+    public void handleTyped(QurnikMessage message) throws InterruptedException, InvalidMessageType {
+        throw new InvalidMessageType("Got a QurnikMessage in module " + moduleType.toString());
     }
 
     public void handleTyped(RMIMessage message) throws InterruptedException, InvalidMessageType {

@@ -12,6 +12,7 @@ import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
+import pl.edu.mimuw.cloudatlas.model.AttributesUtil;
 import pl.edu.mimuw.cloudatlas.model.PathName;
 import pl.edu.mimuw.cloudatlas.model.Type;
 import pl.edu.mimuw.cloudatlas.model.TypePrimitive;
@@ -67,7 +68,7 @@ public class Stanik extends Module {
             ZMI zone = hierarchy.findDescendant(message.getPathName());
             AttributesMap attributes = zone.getAttributes();
             if (valueLower(attributes.get("timestamp"), message.getAttributes().get("timestamp"))) {
-                transferAttributes(message.getAttributes(), attributes);
+                AttributesUtil.transferAttributes(message.getAttributes(), attributes);
             } else {
                 System.out.println("DEBUG: not applying update with older attributes");
             }
@@ -125,21 +126,6 @@ public class Stanik extends Module {
 
     private boolean valueNonNullOfType(Value value, Type type) {
         return value != null && !value.isNull() && value.getType().isCompatible(type);
-    }
-
-    private void transferAttributes(AttributesMap fromAttributes, AttributesMap toAttributes) {
-        Iterator<Entry<Attribute, Value>> iterator = toAttributes.iterator();
-        while (iterator.hasNext()) {
-            Entry<Attribute, Value> entry = iterator.next();
-            Attribute attribute = entry.getKey();
-            Value newValue = fromAttributes.getOrNull(attribute);
-            if (newValue == null) {
-                iterator.remove();
-            }
-        }
-        for (Entry<Attribute, Value> entry : fromAttributes) {
-            toAttributes.addOrChange(entry.getKey(), entry.getValue());
-        }
     }
 
     private void addMissingZones(PathName path) {

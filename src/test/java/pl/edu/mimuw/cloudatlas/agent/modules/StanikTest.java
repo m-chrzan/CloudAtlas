@@ -1,7 +1,5 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +14,7 @@ import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
 import pl.edu.mimuw.cloudatlas.agent.MockExecutor;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
+import pl.edu.mimuw.cloudatlas.model.TestUtil;
 import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueInt;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
@@ -32,7 +31,7 @@ public class StanikTest {
     private MockExecutor executor;
 
     @Before
-    public void setupEventBus() {
+    public void setupLocals() {
         stanik = new Stanik();
         executor = new MockExecutor(stanik);
     }
@@ -50,9 +49,9 @@ public class StanikTest {
         ZMI zmi = stateMessage.getZMI();
         assertNull(zmi.getFather());
         assertTrue(zmi.getSons().isEmpty());
-        assertEquals(1, iterableSize(zmi.getAttributes()));
+        assertEquals(1, TestUtil.iterableSize(zmi.getAttributes()));
         Map<Attribute, Entry<ValueQuery, ValueTime>> queries = stateMessage.getQueries();
-        assertEquals(0, iterableSize(queries.keySet()));
+        assertEquals(0, TestUtil.iterableSize(queries.keySet()));
     }
 
     @Test
@@ -81,7 +80,7 @@ public class StanikTest {
         UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/", attributes);
         stanik.handleTyped(message);
         AttributesMap actualAttributes = stanik.getHierarchy().getAttributes();
-        assertEquals(3, iterableSize(actualAttributes));
+        assertEquals(3, TestUtil.iterableSize(actualAttributes));
         assertEquals(new ValueInt(1337l), actualAttributes.get("foo"));
         assertEquals(new ValueString("baz"), actualAttributes.get("bar"));
         assertEquals(new ValueTime("2012/12/21 04:20:00.000"), actualAttributes.getOrNull("timestamp"));
@@ -97,7 +96,7 @@ public class StanikTest {
         UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
         stanik.handleTyped(message);
         AttributesMap actualAttributes = stanik.getHierarchy().findDescendant("/new").getAttributes();
-        assertEquals(4, iterableSize(actualAttributes));
+        assertEquals(4, TestUtil.iterableSize(actualAttributes));
         assertEquals(new ValueInt(1337l), actualAttributes.getOrNull("foo"));
         assertEquals(new ValueString("baz"), actualAttributes.getOrNull("bar"));
         assertEquals(new ValueString("new"), actualAttributes.getOrNull("name"));
@@ -120,7 +119,7 @@ public class StanikTest {
         stanik.handleTyped(newMessage);
 
         AttributesMap actualAttributes = stanik.getHierarchy().getAttributes();
-        assertEquals(2, iterableSize(actualAttributes));
+        assertEquals(2, TestUtil.iterableSize(actualAttributes));
         assertEquals(new ValueInt(1338l), actualAttributes.getOrNull("foo"));
         assertEquals(new ValueTime("2012/12/21 04:20:42.000"), actualAttributes.getOrNull("timestamp"));
     }
@@ -140,7 +139,7 @@ public class StanikTest {
         stanik.handleTyped(newMessage);
 
         AttributesMap actualAttributes = stanik.getHierarchy().getAttributes();
-        assertEquals(2, iterableSize(actualAttributes));
+        assertEquals(2, TestUtil.iterableSize(actualAttributes));
         assertEquals(new ValueInt(1337l), actualAttributes.getOrNull("foo"));
         assertEquals(new ValueTime("2012/12/21 04:20:00.000"), actualAttributes.getOrNull("timestamp"));
     }
@@ -153,7 +152,7 @@ public class StanikTest {
         stanik.handleTyped(message);
 
         HashMap<Attribute, Entry<ValueQuery, ValueTime>> actualQueries = stanik.getQueries();
-        assertEquals(1, iterableSize(actualQueries.keySet()));
+        assertEquals(1, TestUtil.iterableSize(actualQueries.keySet()));
         assertTrue(actualQueries.containsKey(new Attribute("&query")));
         Entry<ValueQuery, ValueTime> timestampedQuery = actualQueries.get(new Attribute("&query"));
         assertEquals(new ValueTime(42l), timestampedQuery.getValue());
@@ -177,7 +176,7 @@ public class StanikTest {
         stanik.handleTyped(otherMessage);
 
         HashMap<Attribute, Entry<ValueQuery, ValueTime>> actualQueries = stanik.getQueries();
-        assertEquals(4, iterableSize(actualQueries.keySet()));
+        assertEquals(4, TestUtil.iterableSize(actualQueries.keySet()));
         assertTrue(actualQueries.containsKey(new Attribute("&query1")));
         assertTrue(actualQueries.containsKey(new Attribute("&query2")));
         assertTrue(actualQueries.containsKey(new Attribute("&query3")));
@@ -198,14 +197,5 @@ public class StanikTest {
         Entry<ValueQuery, ValueTime> timestampedQuery4 = actualQueries.get(new Attribute("&query4"));
         assertEquals(new ValueTime(43l), timestampedQuery4.getValue());
         assertEquals(new ValueQuery("SELECT 1000 AS foo"), timestampedQuery4.getKey());
-    }
-
-    public <T> int iterableSize(Iterable<T> iterable) {
-        int count = 0;
-        for (T attribute : iterable) {
-            count++;
-        }
-
-        return count;
     }
 }
