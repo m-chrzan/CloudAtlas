@@ -4,7 +4,6 @@ import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -16,10 +15,7 @@ public class EventBus implements Runnable {
     private HashMap<ModuleType, Executor> executors;
 
     void setEventBusReference() {
-        Iterator it = this.executors.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<ModuleType, Executor> executorEntry =
-                    (Map.Entry<ModuleType, Executor>) it.next();
+        for (Map.Entry<ModuleType, Executor> executorEntry : this.executors.entrySet()) {
             executorEntry.getValue().setEventBus(this);
         }
     }

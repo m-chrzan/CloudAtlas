@@ -2,7 +2,6 @@ package pl.edu.mimuw.cloudatlas.agent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
@@ -27,11 +26,8 @@ public class Agent {
     public static HashMap<ModuleType, Executor> initializeExecutors(
             HashMap<ModuleType, Module> modules) {
         HashMap<ModuleType, Executor> executors = new HashMap<ModuleType, Executor>();
-        Iterator it = modules.entrySet().iterator();
 
-        while (it.hasNext()) {
-            Map.Entry<ModuleType, Module> moduleEntry =
-                    (Map.Entry<ModuleType, Module>) it.next();
+        for (Map.Entry<ModuleType, Module> moduleEntry : modules.entrySet()) {
             Module module = moduleEntry.getValue();
             Executor executor = new Executor(module);
             executors.put(moduleEntry.getKey(), executor);
@@ -42,11 +38,8 @@ public class Agent {
 
     public static ArrayList<Thread>  initializeExecutorThreads(HashMap<ModuleType, Executor> executors) {
         ArrayList<Thread> executorThreads = new ArrayList<Thread>();
-        Iterator it = executors.entrySet().iterator();
 
-        while (it.hasNext()) {
-            Map.Entry<ModuleType, Executor> executorEntry =
-                    (Map.Entry<ModuleType, Executor>) it.next();
+        for (Map.Entry<ModuleType, Executor> executorEntry : executors.entrySet()) {
             Thread thread = new Thread(executorEntry.getValue());
             thread.setDaemon(true);
             System.out.println("Initializing executor " + executorEntry.getKey());
