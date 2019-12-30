@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.RemoveZMIMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StanikMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
@@ -21,6 +22,7 @@ import pl.edu.mimuw.cloudatlas.model.ValueBoolean;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
+import pl.edu.mimuw.cloudatlas.model.ValueUtils;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 public class Stanik extends Module {
@@ -45,6 +47,9 @@ public class Stanik extends Module {
             case GET_STATE:
                 handleGetState((GetStateMessage) message);
                 break;
+            case REMOVE_ZMI:
+                handleRemoveZMI((RemoveZMIMessage) message);
+                break;
             case UPDATE_ATTRIBUTES:
                 handleUpdateAttributes((UpdateAttributesMessage) message);
                 break;
@@ -57,8 +62,28 @@ public class Stanik extends Module {
     }
 
     public void handleGetState(GetStateMessage message) throws InterruptedException {
-        StateMessage response = new StateMessage("", message.getRequestingModule(), 0, message.getRequestId(), hierarchy.clone(), (HashMap<Attribute, Entry<ValueQuery, ValueTime>>) queries.clone());
+        StateMessage response = new StateMessage(
+            "",
+            message.getRequestingModule(),
+            0,
+            message.getRequestId(),
+            hierarchy.clone(),
+            (HashMap<Attribute, Entry<ValueQuery, ValueTime>>) queries.clone()
+        );
         sendMessage(response);
+    }
+
+    public void handleRemoveZMI(RemoveZMIMessage message) {
+        try {
+            ZMI zmi = hierarchy.findDescendant(new PathName(message.getPathName()));
+            if (ValueUtils.valueLower(zmi.getAttributes().getOrNull("timestamp"), message.getRemovalTimestamp())) {
+                zmi.getFather().removeSon(zmi);
+            } else {
+                System.out.println("DEBUG: not removing zone with fresher timestamp than removal");
+            }
+        } catch (ZMI.NoSuchZoneException e) {
+            System.out.println("DEBUG: trying to remove zone that doesn't exist");
+        }
     }
 
     public void handleUpdateAttributes(UpdateAttributesMessage message) {
@@ -67,7 +92,7 @@ public class Stanik extends Module {
             addMissingZones(new PathName(message.getPathName()));
             ZMI zone = hierarchy.findDescendant(message.getPathName());
             AttributesMap attributes = zone.getAttributes();
-            if (valueLower(attributes.get("timestamp"), message.getAttributes().get("timestamp"))) {
+            if (ValueUtils.valueLower(attributes.get("timestamp"), message.getAttributes().get("timestamp"))) {
                 AttributesUtil.transferAttributes(message.getAttributes(), attributes);
             } else {
                 System.out.println("DEBUG: not applying update with older attributes");
@@ -84,14 +109,10 @@ public class Stanik extends Module {
             Attribute attribute = entry.getKey();
             ValueTime timestamp = entry.getValue().getValue();
             Entry<ValueQuery, ValueTime> currentTimestampedQuery = queries.get(attribute);
-            if (currentTimestampedQuery == null || valueLower(currentTimestampedQuery.getValue(), timestamp)) {
+            if (currentTimestampedQuery == null || ValueUtils.valueLower(currentTimestampedQuery.getValue(), timestamp)) {
                 queries.put(entry.getKey(), entry.getValue());
             }
         }
-    }
-
-    private boolean valueLower(Value a, Value b) {
-        return ((ValueBoolean) a.isLowerThan(b)).getValue();
     }
 
     private void validateUpdateAttributesMessage(UpdateAttributesMessage message) throws InvalidUpdateAttributesMessage {

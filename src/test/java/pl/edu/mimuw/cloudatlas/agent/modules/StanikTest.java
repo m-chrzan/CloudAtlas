@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.RemoveZMIMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
@@ -197,5 +198,42 @@ public class StanikTest {
         Entry<ValueQuery, ValueTime> timestampedQuery4 = actualQueries.get(new Attribute("&query4"));
         assertEquals(new ValueTime(43l), timestampedQuery4.getValue());
         assertEquals(new ValueQuery("SELECT 1000 AS foo"), timestampedQuery4.getKey());
+    }
+
+    @Test
+    public void removeZMI() throws Exception {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("foo", new ValueInt(1337l));
+        attributes.add("bar", new ValueString("baz"));
+        attributes.add("name", new ValueString("new"));
+        attributes.add("timestamp", new ValueTime(42l));
+        UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
+        stanik.handleTyped(message);
+
+        RemoveZMIMessage removeMessage = new RemoveZMIMessage("test_msg2", 0, "/new", new ValueTime(43l));
+        stanik.handleTyped(removeMessage);
+        boolean noSuchZone = false;
+        try {
+            stanik.getHierarchy().findDescendant("/new");
+        } catch (ZMI.NoSuchZoneException e) {
+            noSuchZone = true;
+        }
+        assertTrue(noSuchZone);
+    }
+
+    @Test
+    public void dontRemoveZMIIfTimestampOlder() throws Exception {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("foo", new ValueInt(1337l));
+        attributes.add("bar", new ValueString("baz"));
+        attributes.add("name", new ValueString("new"));
+        attributes.add("timestamp", new ValueTime(42l));
+        UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
+        stanik.handleTyped(message);
+
+        RemoveZMIMessage removeMessage = new RemoveZMIMessage("test_msg2", 0, "/new", new ValueTime(41l));
+        stanik.handleTyped(removeMessage);
+
+        stanik.getHierarchy().findDescendant("/new");
     }
 }

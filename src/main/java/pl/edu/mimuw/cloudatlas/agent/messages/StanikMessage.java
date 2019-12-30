@@ -6,6 +6,7 @@ import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 public abstract class StanikMessage extends AgentMessage {
     public enum Type {
         GET_STATE,
+        REMOVE_ZMI,
         UPDATE_ATTRIBUTES,
         UPDATE_QUERIES
     }
