@@ -15,6 +15,7 @@ import pl.edu.mimuw.cloudatlas.interpreter.InterpreterException;
 import pl.edu.mimuw.cloudatlas.interpreter.QueryResult;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
+import pl.edu.mimuw.cloudatlas.model.AttributesUtil;
 import pl.edu.mimuw.cloudatlas.model.PathName;
 import pl.edu.mimuw.cloudatlas.model.TypePrimitive;
 import pl.edu.mimuw.cloudatlas.model.Value;
@@ -92,8 +93,10 @@ public class Qurnik extends Module {
             if (!currentPath.toString().equals("/")) {
                 newAttributes.add("name", new ValueString(currentPath.getSingletonName()));
             }
-            long currentTime = System.currentTimeMillis() / 1000;
+            long currentTime = System.currentTimeMillis();
             newAttributes.add("timestamp", new ValueTime(currentTime));
+
+            AttributesUtil.transferAttributes(newAttributes, zmi.getAttributes());
 
             UpdateAttributesMessage message = new UpdateAttributesMessage("", currentTime, currentPath.toString(), newAttributes);
             sendMessage(message);
