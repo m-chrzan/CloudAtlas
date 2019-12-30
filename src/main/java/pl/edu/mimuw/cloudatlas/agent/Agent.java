@@ -1,22 +1,45 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import pl.edu.mimuw.cloudatlas.agent.ApiImplementation;
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 import pl.edu.mimuw.cloudatlas.agent.modules.Qurnik;
-import pl.edu.mimuw.cloudatlas.agent.modules.RMI;
+import pl.edu.mimuw.cloudatlas.agent.modules.Remik;
 import pl.edu.mimuw.cloudatlas.agent.modules.Stanik;
 import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduler;
+import pl.edu.mimuw.cloudatlas.api.Api;
+import pl.edu.mimuw.cloudatlas.interpreter.Main;
+import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 public class Agent {
+    private static EventBus eventBus;
+
+    public static void runRegistry() {
+        try {
+            ZMI root = Main.createTestHierarchy2();
+            ApiImplementation api = new ApiImplementation(root);
+            Api apiStub =
+                    (Api) UnicastRemoteObject.exportObject(api, 0);
+            Registry registry = LocateRegistry.getRegistry();
+            registry.rebind("Api", apiStub);
+            System.out.println("Agent: api bound");
+        } catch (Exception e) {
+            System.err.println("Agent registry initialization exception:");
+            e.printStackTrace();
+        }
+    }
 
     public static HashMap<ModuleType, Module> initializeModules() {
         HashMap<ModuleType, Module> modules = new HashMap<ModuleType, Module>();
         modules.put(ModuleType.TIMER_SCHEDULER, new TimerScheduler(ModuleType.TIMER_SCHEDULER));
-        modules.put(ModuleType.RMI, new RMI(ModuleType.RMI));
+        modules.put(ModuleType.RMI, new Remik());
         modules.put(ModuleType.STATE, new Stanik());
         modules.put(ModuleType.QUERY, new Qurnik());
         // TODO add modules as we implement them
@@ -61,7 +84,8 @@ public class Agent {
         HashMap<ModuleType, Executor> executors = initializeExecutors(modules);
         ArrayList<Thread> executorThreads = initializeExecutorThreads(executors);
 
-        Thread eventBusThread = new Thread(new EventBus(executors));
+        eventBus = new EventBus(executors);
+        Thread eventBusThread = new Thread(eventBus);
         System.out.println("Initializing event bus");
         eventBusThread.start();
 
@@ -71,5 +95,6 @@ public class Agent {
 
     public static void main(String[] args) {
         runModulesAsThreads();
+        runRegistry();
     }
 }

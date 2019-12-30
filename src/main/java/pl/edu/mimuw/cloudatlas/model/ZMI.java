@@ -219,8 +219,12 @@ public class ZMI implements Cloneable, Serializable {
      * @return a <code>PathName</code> object representing this zone
      */
     public PathName getPathName() {
-        String name = ((ValueString)getAttributes().get("name")).getValue();
-        return getFather() == null? PathName.ROOT : getFather().getPathName().levelDown(name);
+        if (getFather() == null) {
+            return PathName.ROOT;
+        } else {
+            String name = ((ValueString)getAttributes().get("name")).getValue();
+            return getFather().getPathName().levelDown(name);
+        }
     }
 
     public static ZMI deserialize(InputStream in) {

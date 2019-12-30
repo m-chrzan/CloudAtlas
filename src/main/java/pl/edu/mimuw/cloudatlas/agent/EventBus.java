@@ -20,6 +20,10 @@ public class EventBus implements Runnable {
         }
     }
 
+    // Allows for testing with a mock EventBus
+    protected EventBus() {
+    }
+
     EventBus(HashMap<ModuleType, Executor> executors) {
         this.executors = executors;
         setEventBusReference();
