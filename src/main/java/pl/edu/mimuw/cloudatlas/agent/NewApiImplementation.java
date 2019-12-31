@@ -18,6 +18,7 @@ import java.util.regex.Matcher;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.RequestStateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.SetAttributeMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
 import pl.edu.mimuw.cloudatlas.interpreter.Interpreter;
@@ -128,48 +129,13 @@ public class NewApiImplementation implements Api {
     }
 
     public void setAttributeValue(String zoneName, String attributeName, Value value) throws RemoteException {
-        /*
         try {
-            ZMI zmi = root.findDescendant(new PathName(zoneName));
-            zmi.getAttributes().addOrChange(new Attribute(attributeName), value);
-            executeAllQueries(root);
-        } catch (ZMI.NoSuchZoneException e) {
-            throw new RemoteException("Zone not found", e);
+            SetAttributeMessage message = new SetAttributeMessage("", 0, zoneName, new Attribute(attributeName), value, new ValueTime(System.currentTimeMillis()));
+            eventBus.addMessage(message);
+        } catch (Exception e) {
+            System.out.println("ERROR: failed to set attribute");
+            throw new RemoteException("Failed to set attribute", e);
         }
-        */
-    }
-
-    private void executeAllQueries(ZMI zmi) {
-        /*
-        if(!zmi.getSons().isEmpty()) {
-            for(ZMI son : zmi.getSons()) {
-                executeAllQueries(son);
-            }
-
-            Interpreter interpreter = new Interpreter(zmi);
-            for (ValueQuery query : getQueries(zmi)) {
-                try {
-                    List<QueryResult> result = interpreter.interpretProgram(query.getQuery());
-                    for(QueryResult r : result) {
-                        zmi.getAttributes().addOrChange(r.getName(), r.getValue());
-                    }
-                } catch(InterpreterException exception) {}
-            }
-        }
-        */
-    }
-
-    private Set<ValueQuery> getQueries(ZMI zmi) {
-        Set<ValueQuery> querySet = new HashSet<ValueQuery>();
-        /*
-        for (Map.Entry<Attribute, Value> attribute : zmi.getAttributes()) {
-            if (attribute.getValue().getType().getPrimaryType() == Type.PrimaryType.QUERY) {
-                querySet.add((ValueQuery) attribute.getValue());
-            }
-        }
-        */
-
-        return querySet;
     }
 
     public void setFallbackContacts(Set<ValueContact> contacts) throws RemoteException {

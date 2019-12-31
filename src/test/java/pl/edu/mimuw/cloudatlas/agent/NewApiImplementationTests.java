@@ -16,12 +16,14 @@ import pl.edu.mimuw.cloudatlas.Container;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.RequestStateMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.SetAttributeMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StanikMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.TestUtil;
+import pl.edu.mimuw.cloudatlas.model.ValueInt;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
@@ -174,15 +176,27 @@ public class NewApiImplementationTests {
         assertTrue(timestamp <= timeAfter);
     }
 
-    /*
     @Test
     public void testSetAttributeValueChange() throws Exception {
-        Value numProcesses = new ValueInt(42l);
+        ValueInt numProcesses = new ValueInt(42l);
+        long timeBefore = System.currentTimeMillis();
         api.setAttributeValue("/uw/khaki13", "num_processes", numProcesses);
-        AttributesMap attributes = api.getZoneAttributeValues("/uw/khaki13");
-        assertEquals(numProcesses, attributes.get("num_processes"));
+        long timeAfter = System.currentTimeMillis();
+
+        assertEquals(1, eventBus.events.size());
+        AgentMessage message = eventBus.events.take();
+        assertEquals(ModuleType.STATE, message.getDestinationModule());
+        StanikMessage stanikMessage = (StanikMessage) message;
+        assertEquals(StanikMessage.Type.SET_ATTRIBUTE, stanikMessage.getType());
+        SetAttributeMessage setMessage = (SetAttributeMessage) stanikMessage;
+        assertEquals(new Attribute("num_processes"), setMessage.getAttribute());
+        assertEquals(new ValueInt(42l), setMessage.getValue());
+        long timestamp = setMessage.getUpdateTimestamp().getValue();
+        assertTrue(timeBefore <= timestamp);
+        assertTrue(timestamp <= timeAfter);
     }
 
+    /*
     @Test
     public void testSetAttributeValueAdd() throws Exception {
         Value numProcesses = new ValueInt(42l);
