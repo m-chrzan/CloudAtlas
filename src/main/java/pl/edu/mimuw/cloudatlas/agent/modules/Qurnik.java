@@ -80,13 +80,15 @@ public class Qurnik extends Module {
             Interpreter interpreter = new Interpreter(zmi);
             AttributesMap newAttributes = new AttributesMap();
             for (ValueQuery query : queries) {
-                try {
-                    List<QueryResult> result = interpreter.interpretProgram(query.getQuery());
-                    for(QueryResult r : result) {
-                        newAttributes.addOrChange(r.getName(), r.getValue());
+                if (query != null) {
+                    try {
+                        List<QueryResult> result = interpreter.interpretProgram(query.getQuery());
+                        for(QueryResult r : result) {
+                            newAttributes.addOrChange(r.getName(), r.getValue());
+                        }
+                    } catch(InterpreterException exception) {
+                        System.out.println("ERROR: thrown while running interpreter: " + exception.getMessage());
                     }
-                } catch(InterpreterException exception) {
-                    System.out.println("ERROR: thrown while running interpreter: " + exception.getMessage());
                 }
             }
 

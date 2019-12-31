@@ -16,6 +16,7 @@ import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.TestUtil;
 import pl.edu.mimuw.cloudatlas.model.ValueInt;
+import pl.edu.mimuw.cloudatlas.model.ValueNull;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
@@ -196,6 +197,53 @@ public class QurnikTest {
         assertEquals(new ValueInt(5l), attributes2.getOrNull("z"));
         assertEquals(new ValueInt(260l), attributes2.getOrNull("a"));
         assertEquals(new ValueInt(3108l), attributes2.getOrNull("b"));
+        long timestamp2 = ((ValueTime) attributes2.getOrNull("timestamp")).getValue();
+        assertTrue(timeBefore <= timestamp2);
+        assertTrue(timestamp2 <= timeAfter);
+    }
+
+    @Test
+    public void ignoresNullQueries() throws Exception {
+        ZMI root = setupSampleHierarchy();
+
+        Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
+        queries.put(new Attribute("&query1"), new SimpleImmutableEntry(
+                    new ValueQuery("SELECT 1 AS one"),
+                    new ValueTime(42l)
+                )
+        );
+        queries.put(new Attribute("&query2"), new SimpleImmutableEntry(
+                    null,
+                    new ValueTime(43l)
+                )
+        );
+        queries.put(new Attribute("&query3"), new SimpleImmutableEntry(
+                    new ValueQuery("SELECT 2 AS two"),
+                    new ValueTime(44l)
+                )
+        );
+        StateMessage message = new StateMessage("", ModuleType.QUERY, 0, 0, root, queries);
+        long timeBefore = System.currentTimeMillis();
+        qurnik.handleTyped(message);
+        long timeAfter = System.currentTimeMillis();
+
+        UpdateAttributesMessage message1 = (UpdateAttributesMessage) executor.messagesToPass.take();
+        assertEquals("/uw", message1.getPathName());
+        AttributesMap attributes1 = message1.getAttributes();
+        assertEquals(4, TestUtil.iterableSize(attributes1));
+        assertEquals(new ValueInt(1l), attributes1.getOrNull("one"));
+        assertEquals(new ValueInt(2l), attributes1.getOrNull("two"));
+        long timestamp1 = ((ValueTime) attributes1.getOrNull("timestamp")).getValue();
+        assertTrue(timeBefore <= timestamp1);
+        assertTrue(timestamp1 <= timeAfter);
+
+        UpdateAttributesMessage message2 = (UpdateAttributesMessage) executor.messagesToPass.take();
+        assertEquals("/", message2.getPathName());
+        AttributesMap attributes2 = message2.getAttributes();
+        System.out.println("got attributes " + attributes2.toString());
+        assertEquals(3, TestUtil.iterableSize(attributes2));
+        assertEquals(new ValueInt(1l), attributes2.getOrNull("one"));
+        assertEquals(new ValueInt(2l), attributes2.getOrNull("two"));
         long timestamp2 = ((ValueTime) attributes2.getOrNull("timestamp")).getValue();
         assertTrue(timeBefore <= timestamp2);
         assertTrue(timestamp2 <= timeAfter);
