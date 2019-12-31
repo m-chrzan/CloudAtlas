@@ -6,15 +6,19 @@ import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.hasItems;
 
 import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import pl.edu.mimuw.cloudatlas.Container;
-import pl.edu.mimuw.cloudatlas.model.ZMI;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.RequestStateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
+import pl.edu.mimuw.cloudatlas.model.AttributesMap;
+import pl.edu.mimuw.cloudatlas.model.ValueString;
+import pl.edu.mimuw.cloudatlas.model.ValueTime;
+import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 public class NewApiImplementationTests {
     private NewApiImplementation api;
@@ -46,7 +50,6 @@ public class NewApiImplementationTests {
 
         ZMI root = new ZMI();
         StateMessage responseMessage = new StateMessage("", ModuleType.RMI, 0, 0, root, null);
-
         requestMessage.getFuture().complete(responseMessage);
 
         apiThread.join(100);
@@ -56,14 +59,72 @@ public class NewApiImplementationTests {
         assertThat(zoneSet, hasItems("/"));
     }
 
-    /*
     @Test
-    public void testRootGetZoneAttributeValue() throws Exception {
-        AttributesMap rootAttributes = api.getZoneAttributeValues("/");
-        assertEquals(new ValueInt(0l), rootAttributes.get("level"));
-        assertEquals(ValueNull.getInstance(), rootAttributes.get("name"));
+    public void testRootGetZoneAttributeValues() throws Exception {
+        final Container<AttributesMap> attributes = new Container();
+        final Container<Exception> exceptionContainer = new Container();
+        Thread apiThread = new Thread(() -> {
+            try {
+                attributes.thing = api.getZoneAttributeValues("/");
+            } catch (Exception e) {
+                exceptionContainer.thing = e;
+            }
+        });
+        apiThread.start();
+
+        AgentMessage message = eventBus.events.poll(100, TimeUnit.MILLISECONDS);
+        assertNotNull(message);
+        assertEquals(ModuleType.RMI, message.getDestinationModule());
+        RequestStateMessage requestMessage = (RequestStateMessage) message;
+
+        ZMI zmi = new ZMI();
+        zmi.getAttributes().add("timestamp", new ValueTime(42l));
+        StateMessage response = new StateMessage("", ModuleType.RMI, 0, 0, zmi, new HashMap());
+        requestMessage.getFuture().complete(response);
+
+        apiThread.join(100);
+        assertFalse(apiThread.isAlive());
+        assertNull(exceptionContainer.thing);
+
+        assertEquals(new ValueTime(42l), attributes.thing.getOrNull("timestamp"));
     }
 
+    @Test
+    public void testGetZoneAttributeValues() throws Exception {
+        final Container<AttributesMap> attributes = new Container();
+        final Container<Exception> exceptionContainer = new Container();
+        Thread apiThread = new Thread(() -> {
+            try {
+                attributes.thing = api.getZoneAttributeValues("/son");
+            } catch (Exception e) {
+                exceptionContainer.thing = e;
+            }
+        });
+        apiThread.start();
+
+        AgentMessage message = eventBus.events.poll(100, TimeUnit.MILLISECONDS);
+        assertNotNull(message);
+        assertEquals(ModuleType.RMI, message.getDestinationModule());
+        RequestStateMessage requestMessage = (RequestStateMessage) message;
+
+        ZMI zmi = new ZMI();
+        zmi.getAttributes().add("timestamp", new ValueTime(42l));
+        ZMI son = new ZMI(zmi);
+        zmi.addSon(son);
+        son.getAttributes().add("name", new ValueString("son"));
+        son.getAttributes().add("timestamp", new ValueTime(43l));
+        StateMessage response = new StateMessage("", ModuleType.RMI, 0, 0, zmi, new HashMap());
+        requestMessage.getFuture().complete(response);
+
+        apiThread.join(100);
+        assertFalse(apiThread.isAlive());
+        assertNull(exceptionContainer.thing);
+
+        assertEquals(new ValueTime(43l), attributes.thing.getOrNull("timestamp"));
+        assertEquals(new ValueString("son"), attributes.thing.getOrNull("name"));
+    }
+
+    /*
     @Test
     public void testIntermediateGetZoneAttributeValue() throws Exception {
         AttributesMap attributes = api.getZoneAttributeValues("/uw");

@@ -70,17 +70,23 @@ public class NewApiImplementation implements Api {
     }
 
     public AttributesMap getZoneAttributeValues(String zoneName) throws RemoteException {
-        /*
+        CompletableFuture<ResponseMessage> responseFuture = new CompletableFuture();
+        RequestStateMessage message = new RequestStateMessage("", 0, responseFuture);
         try {
-            ZMI zmi = root.findDescendant(new PathName(zoneName));
-            return zmi.getAttributes();
-        } catch (ZMI.NoSuchZoneException e) {
-            throw new RemoteException("Zone not found", e);
-        }
-        */
+            eventBus.addMessage(message);
+            ResponseMessage response = responseFuture.get();
 
-        // placeholder
-        return new AttributesMap();
+            if (response.getType() == ResponseMessage.Type.STATE) {
+                StateMessage stateMessage = (StateMessage) response;
+                return stateMessage.getZMI().findDescendant(zoneName).getAttributes();
+            } else {
+                System.out.println("ERROR: getZoneSet didn't receive a StateMessage");
+                throw new Exception("Failed to retrieve zone set");
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR: exception caught in getZoneSet");
+            throw new RemoteException(e.getMessage());
+        }
     }
 
     public void installQuery(String name, String queryCode) throws RemoteException {
