@@ -8,15 +8,22 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import java.util.concurrent.TimeUnit;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import pl.edu.mimuw.cloudatlas.Container;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.RequestStateMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.StanikMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
+import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
+import pl.edu.mimuw.cloudatlas.model.TestUtil;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
+import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
 
@@ -124,42 +131,29 @@ public class NewApiImplementationTests {
         assertEquals(new ValueString("son"), attributes.thing.getOrNull("name"));
     }
 
-    /*
-    @Test
-    public void testIntermediateGetZoneAttributeValue() throws Exception {
-        AttributesMap attributes = api.getZoneAttributeValues("/uw");
-        assertEquals(new ValueInt(1l), attributes.get("level"));
-        assertEquals(new ValueString("uw"), attributes.get("name"));
-    }
-
-    @Test
-    public void testLeafGetZoneAttributeValue() throws Exception {
-        AttributesMap attributes = api.getZoneAttributeValues("/pjwstk/whatever01");
-        assertEquals(new ValueInt(2l), attributes.get("level"));
-        assertEquals(new ValueString("whatever01"), attributes.get("name"));
-        assertEquals(new ValueString("/pjwstk/whatever01"), attributes.get("owner"));
-        assertEquals(new ValueTime("2012/11/09 21:12:00.000"), attributes.get("timestamp"));
-        assertEquals(new ValueInt(1l), attributes.get("cardinality"));
-        assertEquals(new ValueTime("2012/10/18 07:03:00.000"), attributes.get("creation"));
-        assertEquals(new ValueDouble(0.1), attributes.get("cpu_usage"));
-        assertEquals(new ValueInt(7l), attributes.get("num_cores"));
-        assertEquals(new ValueInt(215l), attributes.get("num_processes"));
-
-        List<Value> phpModules = new ArrayList<Value>();
-        phpModules.add(new ValueString("rewrite"));
-        assertEquals(new ValueList(phpModules, TypePrimitive.STRING), attributes.get("php_modules"));
-    }
-
     @Test
     public void testInstallQuery() throws Exception {
         String name = "&query";
         String queryCode = "SELECT 1 AS one";
+        long timeBefore = System.currentTimeMillis();
         api.installQuery(name, queryCode);
-        assertAttributeInZmiEquals(name, new ValueQuery(queryCode), "/");
-        assertAttributeInZmiEquals(name, new ValueQuery(queryCode), "/uw");
-        assertAttributeInZmiEquals(name, new ValueQuery(queryCode), "/pjwstk");
+        long timeAfter = System.currentTimeMillis();
+
+        assertEquals(1, eventBus.events.size());
+        AgentMessage message = eventBus.events.take();
+        assertEquals(ModuleType.STATE, message.getDestinationModule());
+        StanikMessage stanikMessage = (StanikMessage) message;
+        assertEquals(StanikMessage.Type.UPDATE_QUERIES, stanikMessage.getType());
+        UpdateQueriesMessage updateMessage = (UpdateQueriesMessage) stanikMessage;
+        Map<Attribute, Entry<ValueQuery, ValueTime>> queries = updateMessage.getQueries();
+        assertEquals(1, TestUtil.iterableSize(queries.keySet()));
+        assertEquals(new ValueQuery("SELECT 1 AS one"), queries.get(new Attribute("&query")).getKey());
+        long timestamp = queries.get(new Attribute("&query")).getValue().getValue();
+        assertTrue(timeBefore <= timestamp);
+        assertTrue(timestamp <= timeAfter);
     }
 
+    /*
     @Test
     public void testInstallQueryRuns() throws Exception {
         api.installQuery("&query", "SELECT 1 AS one");

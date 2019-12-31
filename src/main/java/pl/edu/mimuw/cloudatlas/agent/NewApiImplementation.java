@@ -6,8 +6,11 @@ import java.rmi.RemoteException;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.List;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -16,6 +19,7 @@ import java.util.regex.Matcher;
 import pl.edu.mimuw.cloudatlas.agent.messages.RequestStateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
 import pl.edu.mimuw.cloudatlas.interpreter.Interpreter;
 import pl.edu.mimuw.cloudatlas.interpreter.InterpreterException;
 import pl.edu.mimuw.cloudatlas.interpreter.Main;
@@ -25,9 +29,10 @@ import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.PathName;
 import pl.edu.mimuw.cloudatlas.model.ValueContact;
 import pl.edu.mimuw.cloudatlas.model.Value;
+import pl.edu.mimuw.cloudatlas.model.ValueNull;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueSet;
-import pl.edu.mimuw.cloudatlas.model.ValueNull;
+import pl.edu.mimuw.cloudatlas.model.ValueTime;
 import pl.edu.mimuw.cloudatlas.model.Type;
 import pl.edu.mimuw.cloudatlas.model.TypePrimitive;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
@@ -90,7 +95,6 @@ public class NewApiImplementation implements Api {
     }
 
     public void installQuery(String name, String queryCode) throws RemoteException {
-        /*
         Pattern queryNamePattern = Pattern.compile("&[a-zA-Z][\\w_]*");
         Matcher matcher = queryNamePattern.matcher(name);
         if (!matcher.matches()) {
@@ -99,23 +103,14 @@ public class NewApiImplementation implements Api {
         try {
             ValueQuery query = new ValueQuery(queryCode);
             Attribute attributeName = new Attribute(name);
-            installQueryInHierarchy(root, attributeName, query);
-            executeAllQueries(root);
+            ValueTime timestamp = new ValueTime(System.currentTimeMillis());
+            Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
+            queries.put(attributeName, new SimpleImmutableEntry(query, timestamp));
+            UpdateQueriesMessage message = new UpdateQueriesMessage("", 0, queries);
+            eventBus.addMessage(message);
         } catch (Exception e) {
             throw new RemoteException("Failed to install query", e);
         }
-        */
-    }
-
-    private void installQueryInHierarchy(ZMI zmi, Attribute queryName, ValueQuery query) {
-        /*
-        if (!zmi.getSons().isEmpty()) {
-            zmi.getAttributes().addOrChange(queryName, query);
-            for (ZMI son : zmi.getSons()) {
-                installQueryInHierarchy(son, queryName, query);
-            }
-        }
-        */
     }
 
     public void uninstallQuery(String queryName) throws RemoteException {
