@@ -153,50 +153,28 @@ public class NewApiImplementationTests {
         assertTrue(timestamp <= timeAfter);
     }
 
-    /*
-    @Test
-    public void testInstallQueryRuns() throws Exception {
-        api.installQuery("&query", "SELECT 1 AS one");
-        assertAttributeInZmiEquals("one", new ValueInt(1l), "/");
-        assertAttributeInZmiEquals("one", new ValueInt(1l), "/uw");
-        assertAttributeInZmiEquals("one", new ValueInt(1l), "/pjwstk");
-    }
-
-    @Test
-    public void testInstallQueryRuns2() throws Exception {
-        api.installQuery("&query", "SELECT sum(num_processes) AS num_processes");
-        assertAttributeInZmiEquals("num_processes", new ValueInt(362l), "/uw");
-        assertAttributeInZmiEquals("num_processes", new ValueInt(437l), "/pjwstk");
-        assertAttributeInZmiEquals("num_processes", new ValueInt(799l), "/");
-    }
-
-    @Test
-    public void testInstallQueryWithInvalidNameFails() throws Exception {
-        String name = "query";
-        String queryCode = "SELECT 1 AS one";
-        try {
-            api.installQuery(name, queryCode);
-            assertTrue("should have thrown", false);
-        } catch (Exception e) {
-            assertEquals("Invalid query identifier", e.getMessage());
-        }
-    }
-
-    public void assertAttributeInZmiEquals(String attribute, Value expected, String zmiPath) throws Exception {
-        AttributesMap attributes = api.getZoneAttributeValues(zmiPath);
-        assertEquals(expected, attributes.get(attribute));
-    }
-
     @Test
     public void testUninstallQuery() throws Exception {
         String name = "&query";
-        String queryCode = "SELECT 1 AS one";
-        api.installQuery(name, queryCode);
+        long timeBefore = System.currentTimeMillis();
         api.uninstallQuery(name);
-        AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
-        assertNull(attributes.getOrNull(name));
+        long timeAfter = System.currentTimeMillis();
+
+        assertEquals(1, eventBus.events.size());
+        AgentMessage message = eventBus.events.take();
+        assertEquals(ModuleType.STATE, message.getDestinationModule());
+        StanikMessage stanikMessage = (StanikMessage) message;
+        assertEquals(StanikMessage.Type.UPDATE_QUERIES, stanikMessage.getType());
+        UpdateQueriesMessage updateMessage = (UpdateQueriesMessage) stanikMessage;
+        Map<Attribute, Entry<ValueQuery, ValueTime>> queries = updateMessage.getQueries();
+        assertEquals(1, TestUtil.iterableSize(queries.keySet()));
+        assertNull(queries.get(new Attribute("&query")).getKey());
+        long timestamp = queries.get(new Attribute("&query")).getValue().getValue();
+        assertTrue(timeBefore <= timestamp);
+        assertTrue(timestamp <= timeAfter);
     }
 
+    /*
     @Test
     public void testSetAttributeValueChange() throws Exception {
         Value numProcesses = new ValueInt(42l);

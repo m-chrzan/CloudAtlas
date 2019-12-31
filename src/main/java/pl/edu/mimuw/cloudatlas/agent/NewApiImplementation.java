@@ -114,18 +114,17 @@ public class NewApiImplementation implements Api {
     }
 
     public void uninstallQuery(String queryName) throws RemoteException {
-        // uninstallQueryInHierarchy(root, new Attribute(queryName));
-    }
-
-    private void uninstallQueryInHierarchy(ZMI zmi, Attribute queryName) {
-        /*
-        if (!zmi.getSons().isEmpty()) {
-            zmi.getAttributes().remove(queryName);
-            for (ZMI son : zmi.getSons()) {
-                uninstallQueryInHierarchy(son, queryName);
-            }
+        try {
+            Attribute attributeName = new Attribute(queryName);
+            ValueTime timestamp = new ValueTime(System.currentTimeMillis());
+            Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
+            queries.put(attributeName, new SimpleImmutableEntry(null, timestamp));
+            UpdateQueriesMessage message = new UpdateQueriesMessage("", 0, queries);
+            eventBus.addMessage(message);
+        } catch (Exception e) {
+            System.out.println("ERROR: failed to remove query");
+            throw new RemoteException("Failed to uninstall query", e);
         }
-        */
     }
 
     public void setAttributeValue(String zoneName, String attributeName, Value value) throws RemoteException {
