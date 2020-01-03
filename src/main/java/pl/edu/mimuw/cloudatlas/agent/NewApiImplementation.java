@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-
 import pl.edu.mimuw.cloudatlas.agent.messages.RequestStateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.SetAttributeMessage;

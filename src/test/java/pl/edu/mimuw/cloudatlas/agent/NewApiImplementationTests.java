@@ -195,24 +195,4 @@ public class NewApiImplementationTests {
         assertTrue(timeBefore <= timestamp);
         assertTrue(timestamp <= timeAfter);
     }
-
-    /*
-    @Test
-    public void testSetAttributeValueAdd() throws Exception {
-        Value numProcesses = new ValueInt(42l);
-        api.setAttributeValue("/uw/khaki13", "an_attribute", numProcesses);
-        AttributesMap attributes = api.getZoneAttributeValues("/uw/khaki13");
-        assertEquals(numProcesses, attributes.get("an_attribute"));
-    }
-
-    @Test
-    public void testSetAttributeValueRunsQueries() throws Exception {
-        api.installQuery("&query", "SELECT sum(num_processes) AS num_processes");
-        Value numProcesses = new ValueInt(42l);
-        api.setAttributeValue("/uw/khaki13", "num_processes", numProcesses);
-        assertAttributeInZmiEquals("num_processes", new ValueInt(297l), "/uw");
-        assertAttributeInZmiEquals("num_processes", new ValueInt(437l), "/pjwstk");
-        assertAttributeInZmiEquals("num_processes", new ValueInt(734l), "/");
-    }
-    */
 }

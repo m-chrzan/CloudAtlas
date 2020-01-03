@@ -89,9 +89,6 @@ public class Agent {
         Thread eventBusThread = new Thread(eventBus);
         System.out.println("Initializing event bus");
         eventBusThread.start();
-
-        // System.out.println("Closing executors");
-        // closeExecutors(executorThreads);
     }
 
     private static void initZones() {
