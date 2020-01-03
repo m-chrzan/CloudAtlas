@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import pl.edu.mimuw.cloudatlas.agent.ApiImplementation;
+import pl.edu.mimuw.cloudatlas.agent.NewApiImplementation;
+import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 import pl.edu.mimuw.cloudatlas.agent.modules.Qurnik;
@@ -16,6 +17,7 @@ import pl.edu.mimuw.cloudatlas.agent.modules.Stanik;
 import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduler;
 import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.interpreter.Main;
+import pl.edu.mimuw.cloudatlas.model.PathName;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 public class Agent {
@@ -23,8 +25,7 @@ public class Agent {
 
     public static void runRegistry() {
         try {
-            ZMI root = Main.createTestHierarchy2();
-            ApiImplementation api = new ApiImplementation(root);
+            NewApiImplementation api = new NewApiImplementation(eventBus);
             Api apiStub =
                     (Api) UnicastRemoteObject.exportObject(api, 0);
             Registry registry = LocateRegistry.getRegistry();
@@ -89,12 +90,37 @@ public class Agent {
         System.out.println("Initializing event bus");
         eventBusThread.start();
 
-        System.out.println("Closing executors");
-        closeExecutors(executorThreads);
+        // System.out.println("Closing executors");
+        // closeExecutors(executorThreads);
+    }
+
+    private static void initZones() {
+        try {
+            ZMI root = Main.createTestHierarchy2();
+            addZoneAndChildren(root, new PathName(""));
+            System.out.println("Initialized with test hierarchy");
+        } catch (Exception e) {
+            System.out.println("ERROR: failed to create test hierarchy");
+        }
+    }
+
+    private static void addZoneAndChildren(ZMI zmi, PathName pathName) {
+        try {
+            System.out.println("trying to add " + pathName.toString());
+            UpdateAttributesMessage message = new UpdateAttributesMessage("", 0, pathName.toString(), zmi.getAttributes());
+            System.out.println("added it!");
+            eventBus.addMessage(message);
+            for (ZMI son : zmi.getSons()) {
+                addZoneAndChildren(son, pathName.levelDown(son.getAttributes().getOrNull("name").toString()));
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR: failed to add zone");
+        }
     }
 
     public static void main(String[] args) {
         runModulesAsThreads();
         runRegistry();
+        initZones();
     }
 }
