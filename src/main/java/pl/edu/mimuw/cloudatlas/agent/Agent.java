@@ -1,22 +1,46 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import pl.edu.mimuw.cloudatlas.agent.NewApiImplementation;
+import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 import pl.edu.mimuw.cloudatlas.agent.modules.Qurnik;
-import pl.edu.mimuw.cloudatlas.agent.modules.RMI;
+import pl.edu.mimuw.cloudatlas.agent.modules.Remik;
 import pl.edu.mimuw.cloudatlas.agent.modules.Stanik;
 import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduler;
+import pl.edu.mimuw.cloudatlas.api.Api;
+import pl.edu.mimuw.cloudatlas.interpreter.Main;
+import pl.edu.mimuw.cloudatlas.model.PathName;
+import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 public class Agent {
+    private static EventBus eventBus;
+
+    public static void runRegistry() {
+        try {
+            NewApiImplementation api = new NewApiImplementation(eventBus);
+            Api apiStub =
+                    (Api) UnicastRemoteObject.exportObject(api, 0);
+            Registry registry = LocateRegistry.getRegistry();
+            registry.rebind("Api", apiStub);
+            System.out.println("Agent: api bound");
+        } catch (Exception e) {
+            System.err.println("Agent registry initialization exception:");
+            e.printStackTrace();
+        }
+    }
 
     public static HashMap<ModuleType, Module> initializeModules() {
         HashMap<ModuleType, Module> modules = new HashMap<ModuleType, Module>();
         modules.put(ModuleType.TIMER_SCHEDULER, new TimerScheduler(ModuleType.TIMER_SCHEDULER));
-        modules.put(ModuleType.RMI, new RMI(ModuleType.RMI));
+        modules.put(ModuleType.RMI, new Remik());
         modules.put(ModuleType.STATE, new Stanik());
         modules.put(ModuleType.QUERY, new Qurnik());
         // TODO add modules as we implement them
@@ -61,15 +85,39 @@ public class Agent {
         HashMap<ModuleType, Executor> executors = initializeExecutors(modules);
         ArrayList<Thread> executorThreads = initializeExecutorThreads(executors);
 
-        Thread eventBusThread = new Thread(new EventBus(executors));
+        eventBus = new EventBus(executors);
+        Thread eventBusThread = new Thread(eventBus);
         System.out.println("Initializing event bus");
         eventBusThread.start();
+    }
 
-        System.out.println("Closing executors");
-        closeExecutors(executorThreads);
+    private static void initZones() {
+        try {
+            ZMI root = Main.createTestHierarchy2();
+            addZoneAndChildren(root, new PathName(""));
+            System.out.println("Initialized with test hierarchy");
+        } catch (Exception e) {
+            System.out.println("ERROR: failed to create test hierarchy");
+        }
+    }
+
+    private static void addZoneAndChildren(ZMI zmi, PathName pathName) {
+        try {
+            System.out.println("trying to add " + pathName.toString());
+            UpdateAttributesMessage message = new UpdateAttributesMessage("", 0, pathName.toString(), zmi.getAttributes());
+            System.out.println("added it!");
+            eventBus.addMessage(message);
+            for (ZMI son : zmi.getSons()) {
+                addZoneAndChildren(son, pathName.levelDown(son.getAttributes().getOrNull("name").toString()));
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR: failed to add zone");
+        }
     }
 
     public static void main(String[] args) {
         runModulesAsThreads();
+        runRegistry();
+        initZones();
     }
 }

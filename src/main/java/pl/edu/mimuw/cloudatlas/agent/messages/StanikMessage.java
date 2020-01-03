@@ -7,6 +7,7 @@ public abstract class StanikMessage extends AgentMessage {
     public enum Type {
         GET_STATE,
         REMOVE_ZMI,
+        SET_ATTRIBUTE,
         UPDATE_ATTRIBUTES,
         UPDATE_QUERIES
     }

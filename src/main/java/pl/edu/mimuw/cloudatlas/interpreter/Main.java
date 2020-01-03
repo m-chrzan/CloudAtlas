@@ -277,16 +277,19 @@ public class Main {
         ZMI root = new ZMI();
         root.getAttributes().add("level", new ValueInt(0l));
         root.getAttributes().add("name", new ValueString(null));
+        root.getAttributes().add("timestamp", new ValueTime(10l));
 
         ZMI uw = new ZMI(root);
         root.addSon(uw);
         uw.getAttributes().add("level", new ValueInt(1l));
         uw.getAttributes().add("name", new ValueString("uw"));
+        uw.getAttributes().add("timestamp", new ValueTime(10l));
 
         ZMI pjwstk = new ZMI(root);
         root.addSon(pjwstk);
         pjwstk.getAttributes().add("level", new ValueInt(1l));
         pjwstk.getAttributes().add("name", new ValueString("pjwstk"));
+        pjwstk.getAttributes().add("timestamp", new ValueTime(10l));
 
         ZMI violet07 = new ZMI(uw);
         uw.addSon(violet07);

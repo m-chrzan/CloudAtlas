@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.RemoveZMIMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.SetAttributeMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StanikMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
@@ -49,6 +50,9 @@ public class Stanik extends Module {
             case REMOVE_ZMI:
                 handleRemoveZMI((RemoveZMIMessage) message);
                 break;
+            case SET_ATTRIBUTE:
+                handleSetAttribte((SetAttributeMessage) message);
+                break;
             case UPDATE_ATTRIBUTES:
                 handleUpdateAttributes((UpdateAttributesMessage) message);
                 break;
@@ -82,6 +86,27 @@ public class Stanik extends Module {
             }
         } catch (ZMI.NoSuchZoneException e) {
             System.out.println("DEBUG: trying to remove zone that doesn't exist");
+        }
+    }
+
+    /*
+     * Always adds the new attribute.
+     * The zone must already exist.
+     * The zone's timestamp will be the maximum of its current timestamp or the
+     * timestamp provided with the new value.
+     */
+    public void handleSetAttribte(SetAttributeMessage message) {
+        try {
+            ZMI zmi = hierarchy.findDescendant(new PathName(message.getPathName()));
+            ValueTime updateTimestamp = message.getUpdateTimestamp();
+            ValueTime currentTimestamp = (ValueTime) zmi.getAttributes().getOrNull("timestamp");
+            if (ValueUtils.valueLower(currentTimestamp, updateTimestamp)) {
+                zmi.getAttributes().addOrChange("timestamp", updateTimestamp);
+            }
+
+            zmi.getAttributes().addOrChange(message.getAttribute(), message.getValue());
+        } catch (ZMI.NoSuchZoneException e) {
+            System.out.println("DEBUG: trying to set attribute in zone that doesn't exist");
         }
     }
 

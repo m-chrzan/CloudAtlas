@@ -4,8 +4,8 @@ import pl.edu.mimuw.cloudatlas.agent.Executor;
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.TimerSchedulerMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.QurnikMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.RemikMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.RMIMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StanikMessage;
 
 /*
@@ -37,8 +37,8 @@ public abstract class Module {
         throw new InvalidMessageType("Got a QurnikMessage in module " + moduleType.toString());
     }
 
-    public void handleTyped(RMIMessage message) throws InterruptedException, InvalidMessageType {
-        throw new InvalidMessageType("Got an RMIMessage in module " + moduleType.toString());
+    public void handleTyped(RemikMessage message) throws InterruptedException, InvalidMessageType {
+        throw new InvalidMessageType("Got a RemikMessage in module " + moduleType.toString());
     }
 
     public void handleTyped(StanikMessage message) throws InterruptedException, InvalidMessageType {

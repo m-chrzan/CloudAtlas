@@ -7,9 +7,10 @@ import java.util.Map.Entry;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.RemoveZMIMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.SetAttributeMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
 import pl.edu.mimuw.cloudatlas.agent.MockExecutor;
@@ -235,5 +236,60 @@ public class StanikTest {
         stanik.handleTyped(removeMessage);
 
         stanik.getHierarchy().findDescendant("/new");
+    }
+
+    @Test
+    public void setOldAttribute() throws Exception {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("foo", new ValueInt(1337l));
+        attributes.add("name", new ValueString("new"));
+        attributes.add("timestamp", new ValueTime(42l));
+        UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
+        stanik.handleTyped(message);
+
+        SetAttributeMessage setMessage = new SetAttributeMessage("test_msg2", 0, "/new", new Attribute("foo"), new ValueInt(43l), new ValueTime(40l));
+        stanik.handleTyped(setMessage);
+
+        AttributesMap actualAttributes = stanik.getHierarchy().findDescendant("/new").getAttributes();
+        assertEquals(3, TestUtil.iterableSize(actualAttributes));
+        assertEquals(new ValueInt(43l), actualAttributes.getOrNull("foo"));
+        assertEquals(new ValueTime(42l), actualAttributes.getOrNull("timestamp"));
+    }
+
+    @Test
+    public void setOldAttribute2() throws Exception {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("foo", new ValueInt(1337l));
+        attributes.add("name", new ValueString("new"));
+        attributes.add("timestamp", new ValueTime(42l));
+        UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
+        stanik.handleTyped(message);
+
+        SetAttributeMessage setMessage = new SetAttributeMessage("test_msg2", 0, "/new", new Attribute("foo"), new ValueInt(43l), new ValueTime(43l));
+        stanik.handleTyped(setMessage);
+
+        AttributesMap actualAttributes = stanik.getHierarchy().findDescendant("/new").getAttributes();
+        assertEquals(3, TestUtil.iterableSize(actualAttributes));
+        assertEquals(new ValueInt(43l), actualAttributes.getOrNull("foo"));
+        assertEquals(new ValueTime(43l), actualAttributes.getOrNull("timestamp"));
+    }
+
+    @Test
+    public void setNewAttribute() throws Exception {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("foo", new ValueInt(1337l));
+        attributes.add("name", new ValueString("new"));
+        attributes.add("timestamp", new ValueTime(42l));
+        UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
+        stanik.handleTyped(message);
+
+        SetAttributeMessage setMessage = new SetAttributeMessage("test_msg2", 0, "/new", new Attribute("bar"), new ValueInt(43l), new ValueTime(43l));
+        stanik.handleTyped(setMessage);
+
+        AttributesMap actualAttributes = stanik.getHierarchy().findDescendant("/new").getAttributes();
+        assertEquals(4, TestUtil.iterableSize(actualAttributes));
+        assertEquals(new ValueInt(1337l), actualAttributes.getOrNull("foo"));
+        assertEquals(new ValueInt(43l), actualAttributes.getOrNull("bar"));
+        assertEquals(new ValueTime(43l), actualAttributes.getOrNull("timestamp"));
     }
 }
