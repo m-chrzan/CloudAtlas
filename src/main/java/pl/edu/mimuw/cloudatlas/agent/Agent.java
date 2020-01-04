@@ -6,14 +6,19 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import pl.edu.mimuw.cloudatlas.agent.NewApiImplementation;
+import pl.edu.mimuw.cloudatlas.agent.messages.RunQueriesMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.TimerSchedulerMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 import pl.edu.mimuw.cloudatlas.agent.modules.Qurnik;
 import pl.edu.mimuw.cloudatlas.agent.modules.Remik;
 import pl.edu.mimuw.cloudatlas.agent.modules.Stanik;
+import pl.edu.mimuw.cloudatlas.agent.modules.RecursiveScheduledTask;
+import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduledTask;
 import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduler;
 import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.interpreter.Main;
@@ -101,11 +106,30 @@ public class Agent {
         }
     }
 
+    private static void startQueries(long queriesPeriod) {
+        Supplier<TimerScheduledTask> taskSupplier = () ->
+            new TimerScheduledTask() {
+                public void run() {
+                    try {
+                        sendMessage(new RunQueriesMessage("", 0));
+                    } catch (InterruptedException e) {
+                        System.out.println("Interrupted while triggering queries");
+                    }
+                }
+            };
+
+        TimerScheduledTask timerTask = new RecursiveScheduledTask(queriesPeriod, taskSupplier);
+
+        try {
+            eventBus.addMessage(new TimerSchedulerMessage("", 0, "", queriesPeriod, 0, timerTask));
+        } catch (InterruptedException e) {
+            System.out.println("Interrupted while starting queries");
+        }
+    }
+
     private static void addZoneAndChildren(ZMI zmi, PathName pathName) {
         try {
-            System.out.println("trying to add " + pathName.toString());
             UpdateAttributesMessage message = new UpdateAttributesMessage("", 0, pathName.toString(), zmi.getAttributes());
-            System.out.println("added it!");
             eventBus.addMessage(message);
             for (ZMI son : zmi.getSons()) {
                 addZoneAndChildren(son, pathName.levelDown(son.getAttributes().getOrNull("name").toString()));
@@ -119,5 +143,7 @@ public class Agent {
         runModulesAsThreads();
         runRegistry();
         initZones();
+        // TODO: make query period confiurable with config file and from tests
+        startQueries(100l);
     }
 }

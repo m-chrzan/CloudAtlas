@@ -38,6 +38,8 @@ public class AgentIntegrationTest {
     private static Process registryProcess;
     private static Process agentProcess;
 
+    private static final long queriesInterval = 100;
+
     private static Registry registry;
     private static Api api;
 
@@ -118,9 +120,10 @@ public class AgentIntegrationTest {
         String name = "&query";
         String queryCode = "SELECT 1 AS one";
         api.installQuery(name, queryCode);
-        // TODO: test this eventually runs
-        // AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
-        // assertEquals(new ValueInt(1l), attributes.get("one"));
+
+        Thread.sleep(queriesInterval * 2);
+        AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
+        assertEquals(new ValueInt(1l), attributes.getOrNull("one"));
     }
 
     @Test
