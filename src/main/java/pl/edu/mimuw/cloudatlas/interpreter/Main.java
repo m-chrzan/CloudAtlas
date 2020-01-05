@@ -50,6 +50,7 @@ import pl.edu.mimuw.cloudatlas.model.ValueList;
 import pl.edu.mimuw.cloudatlas.model.ValueSet;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
+import pl.edu.mimuw.cloudatlas.model.ValueUtils;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 public class Main {
@@ -274,29 +275,31 @@ public class Main {
 
         List<Value> list;
 
+        ValueTime time = ValueUtils.currentTime();
+
         ZMI root = new ZMI();
         root.getAttributes().add("level", new ValueInt(0l));
         root.getAttributes().add("name", new ValueString(null));
-        root.getAttributes().add("timestamp", new ValueTime(10l));
+        root.getAttributes().add("timestamp", time);
 
         ZMI uw = new ZMI(root);
         root.addSon(uw);
         uw.getAttributes().add("level", new ValueInt(1l));
         uw.getAttributes().add("name", new ValueString("uw"));
-        uw.getAttributes().add("timestamp", new ValueTime(10l));
+        uw.getAttributes().add("timestamp", time);
 
         ZMI pjwstk = new ZMI(root);
         root.addSon(pjwstk);
         pjwstk.getAttributes().add("level", new ValueInt(1l));
         pjwstk.getAttributes().add("name", new ValueString("pjwstk"));
-        pjwstk.getAttributes().add("timestamp", new ValueTime(10l));
+        pjwstk.getAttributes().add("timestamp", time);
 
         ZMI violet07 = new ZMI(uw);
         uw.addSon(violet07);
         violet07.getAttributes().add("level", new ValueInt(2l));
         violet07.getAttributes().add("name", new ValueString("violet07"));
         violet07.getAttributes().add("owner", new ValueString("/uw/violet07"));
-        violet07.getAttributes().add("timestamp", new ValueTime("2012/11/09 18:00:00.000"));
+        violet07.getAttributes().add("timestamp", time);
         list = Arrays.asList(new Value[] {
             violet07Contact, khaki31Contact, khaki13Contact
         });
@@ -322,7 +325,7 @@ public class Main {
         khaki31.getAttributes().add("level", new ValueInt(2l));
         khaki31.getAttributes().add("name", new ValueString("khaki31"));
         khaki31.getAttributes().add("owner", new ValueString("/uw/khaki31"));
-        khaki31.getAttributes().add("timestamp", new ValueTime("2012/11/09 20:03:00.000"));
+        khaki31.getAttributes().add("timestamp", time);
         list = Arrays.asList(new Value[] {
             violet08Contact
         });
@@ -348,7 +351,7 @@ public class Main {
         khaki13.getAttributes().add("level", new ValueInt(2l));
         khaki13.getAttributes().add("name", new ValueString("khaki13"));
         khaki13.getAttributes().add("owner", new ValueString("/uw/khaki13"));
-        khaki13.getAttributes().add("timestamp", new ValueTime("2012/11/09 21:03:00.000"));
+        khaki13.getAttributes().add("timestamp", time);
         list = Arrays.asList(new Value[] {
             khaki14Contact, khaki32Contact
         });
@@ -372,7 +375,7 @@ public class Main {
         whatever01.getAttributes().add("level", new ValueInt(2l));
         whatever01.getAttributes().add("name", new ValueString("whatever01"));
         whatever01.getAttributes().add("owner", new ValueString("/pjwstk/whatever01"));
-        whatever01.getAttributes().add("timestamp", new ValueTime("2012/11/09 21:12:00.000"));
+        whatever01.getAttributes().add("timestamp", time);
         list = Arrays.asList(new Value[] {
             whatever02Contact,
         });
@@ -396,7 +399,7 @@ public class Main {
         whatever02.getAttributes().add("level", new ValueInt(2l));
         whatever02.getAttributes().add("name", new ValueString("whatever02"));
         whatever02.getAttributes().add("owner", new ValueString("/pjwstk/whatever02"));
-        whatever02.getAttributes().add("timestamp", new ValueTime("2012/11/09 21:13:00.000"));
+        whatever02.getAttributes().add("timestamp", time);
         list = Arrays.asList(new Value[] {
             whatever01Contact,
         });

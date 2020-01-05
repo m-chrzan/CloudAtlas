@@ -95,7 +95,8 @@ public class AgentIntegrationTest {
         assertEquals(new ValueInt(2l), attributes.get("level"));
         assertEquals(new ValueString("whatever01"), attributes.get("name"));
         assertEquals(new ValueString("/pjwstk/whatever01"), attributes.get("owner"));
-        assertEquals(new ValueTime("2012/11/09 21:12:00.000"), attributes.get("timestamp"));
+        long timestamp = ((ValueTime) attributes.get("timestamp")).getValue();
+        assertTrue(timestamp <= System.currentTimeMillis());
         assertEquals(new ValueInt(1l), attributes.get("cardinality"));
         assertEquals(new ValueTime("2012/10/18 07:03:00.000"), attributes.get("creation"));
         assertEquals(new ValueDouble(0.1), attributes.get("cpu_usage"));

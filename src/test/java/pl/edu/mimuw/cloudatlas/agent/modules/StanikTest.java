@@ -157,7 +157,7 @@ public class StanikTest {
     public void dontApplyWithStaleTimestamp() throws Exception {
         AttributesMap attributes = new AttributesMap();
         attributes.add("foo", new ValueInt(1337l));
-        attributes.add("timestamp", new ValueTime("2012/12/21 04:20:00.000"));
+        attributes.add("timestamp", (ValueTime) testTime.subtract(new ValueDuration(61 * 1000l)));
         attributes.add("name", new ValueString("new"));
         UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
         stanik.handleTyped(message);
