@@ -8,4 +8,8 @@ public class ValueUtils {
     public static boolean valueLower(Value a, Value b) {
         return ((ValueBoolean) a.isLowerThan(b)).getValue();
     }
+
+    public static ValueTime currentTime() {
+        return new ValueTime(System.currentTimeMillis());
+    }
 }

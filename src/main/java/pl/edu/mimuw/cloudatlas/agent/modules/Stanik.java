@@ -34,12 +34,14 @@ public class Stanik extends Module {
 
     private ZMI hierarchy;
     private HashMap<Attribute, Entry<ValueQuery, ValueTime>> queries;
+    private long freshnessPeriod;
 
     public Stanik() {
         super(ModuleType.STATE);
         hierarchy = new ZMI();
         queries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
         hierarchy.getAttributes().add("timestamp", new ValueTime(0l));
+        freshnessPeriod = 60 * 1000;
     }
 
     public void handleTyped(StanikMessage message) throws InterruptedException, InvalidMessageType {
@@ -113,13 +115,20 @@ public class Stanik extends Module {
     public void handleUpdateAttributes(UpdateAttributesMessage message) {
         try {
             validateUpdateAttributesMessage(message);
-            addMissingZones(new PathName(message.getPathName()));
-            ZMI zone = hierarchy.findDescendant(message.getPathName());
-            AttributesMap attributes = zone.getAttributes();
-            if (ValueUtils.valueLower(attributes.get("timestamp"), message.getAttributes().get("timestamp"))) {
-                AttributesUtil.transferAttributes(message.getAttributes(), attributes);
+            if (!ValueUtils.valueLower(
+                        message.getAttributes().get("timestamp"),
+                        new ValueTime(System.currentTimeMillis() - freshnessPeriod)
+            )) {
+                addMissingZones(new PathName(message.getPathName()));
+                ZMI zone = hierarchy.findDescendant(message.getPathName());
+                AttributesMap attributes = zone.getAttributes();
+                if (ValueUtils.valueLower(attributes.get("timestamp"), message.getAttributes().get("timestamp"))) {
+                    AttributesUtil.transferAttributes(message.getAttributes(), attributes);
+                } else {
+                    System.out.println("DEBUG: not applying update with older attributes");
+                }
             } else {
-                System.out.println("DEBUG: not applying update with older attributes");
+                System.out.println("DEBUG: not applying update with stale attributes");
             }
         } catch (InvalidUpdateAttributesMessage e) {
             System.out.println("ERROR: invalid UpdateAttributesMessage " + e.getMessage());
