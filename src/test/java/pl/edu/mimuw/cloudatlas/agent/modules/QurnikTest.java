@@ -76,7 +76,8 @@ public class QurnikTest {
         UpdateAttributesMessage updateAttributesMessage = (UpdateAttributesMessage) stanikMessage;
         assertEquals("/", updateAttributesMessage.getPathName());
         AttributesMap updatedAttributes = updateAttributesMessage.getAttributes();
-        assertEquals(2, TestUtil.iterableSize(updatedAttributes));
+        assertEquals(3, TestUtil.iterableSize(updatedAttributes));
+        assertEquals(new ValueString(null), updatedAttributes.getOrNull("name"));
         assertEquals(new ValueInt(1l), updatedAttributes.getOrNull("one"));
         long timestamp = ((ValueTime) updatedAttributes.getOrNull("timestamp")).getValue();
         assertTrue(timeBefore <= timestamp);
@@ -191,7 +192,8 @@ public class QurnikTest {
         assertEquals("/", message2.getPathName());
         AttributesMap attributes2 = message2.getAttributes();
         System.out.println("got attributes " + attributes2.toString());
-        assertEquals(6, TestUtil.iterableSize(attributes2));
+        assertEquals(7, TestUtil.iterableSize(attributes2));
+        assertEquals(new ValueString(null), attributes2.getOrNull("name"));
         assertEquals(new ValueInt(67l), attributes2.getOrNull("x"));
         assertEquals(new ValueInt(100l), attributes2.getOrNull("y"));
         assertEquals(new ValueInt(5l), attributes2.getOrNull("z"));
@@ -241,7 +243,8 @@ public class QurnikTest {
         assertEquals("/", message2.getPathName());
         AttributesMap attributes2 = message2.getAttributes();
         System.out.println("got attributes " + attributes2.toString());
-        assertEquals(3, TestUtil.iterableSize(attributes2));
+        assertEquals(4, TestUtil.iterableSize(attributes2));
+        assertEquals(new ValueString(null), attributes2.getOrNull("name"));
         assertEquals(new ValueInt(1l), attributes2.getOrNull("one"));
         assertEquals(new ValueInt(2l), attributes2.getOrNull("two"));
         long timestamp2 = ((ValueTime) attributes2.getOrNull("timestamp")).getValue();

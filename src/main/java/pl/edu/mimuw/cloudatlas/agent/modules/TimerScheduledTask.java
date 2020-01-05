@@ -5,7 +5,7 @@ import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import java.util.TimerTask;
 
 public abstract class TimerScheduledTask extends TimerTask {
-    private TimerScheduler scheduler;
+    protected TimerScheduler scheduler;
 
     public abstract void run();
 

@@ -94,6 +94,8 @@ public class Qurnik extends Module {
 
             if (!currentPath.toString().equals("/")) {
                 newAttributes.add("name", new ValueString(currentPath.getSingletonName()));
+            } else {
+                newAttributes.add("name", new ValueString(null));
             }
             long currentTime = System.currentTimeMillis();
             newAttributes.add("timestamp", new ValueTime(currentTime));
