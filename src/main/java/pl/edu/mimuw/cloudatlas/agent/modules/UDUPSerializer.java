@@ -12,6 +12,8 @@ import java.io.ByteArrayOutputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 /**
@@ -69,24 +71,32 @@ public class UDUPSerializer {
         kryo.register(ValueList.class, new Serializer() {
             @Override
             public void write(Kryo kryo, Output output, Object object) {
-
+                ValueList vl = (ValueList) object;
+                kryo.writeObject(output, ((TypeCollection) vl.getType()).getElementType());
+                kryo.writeObject(output, vl.getValue());
             }
 
             @Override
             public Object read(Kryo kryo, Input input, Class type) {
-                return null;
+                Type t = kryo.readObject(input, Type.class);
+                ArrayList list = kryo.readObject(input, ArrayList.class);
+                return new ValueList(list, t);
             }
         });
 
         kryo.register(ValueSet.class, new Serializer() {
             @Override
             public void write(Kryo kryo, Output output, Object object) {
-
+                ValueSet vs = (ValueSet) object;
+                kryo.writeObject(output, ((TypeCollection) vs.getType()).getElementType());
+                kryo.writeObject(output, vs.getValue());
             }
 
             @Override
             public Object read(Kryo kryo, Input input, Class type) {
-                return null;
+                Type t = kryo.readObject(input, Type.class);
+                HashSet set = kryo.readObject(input, HashSet.class);
+                return new ValueSet(set, t);
             }
         });
 
