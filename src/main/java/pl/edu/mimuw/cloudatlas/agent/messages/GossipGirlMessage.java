@@ -5,7 +5,10 @@ import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 
 public abstract class GossipGirlMessage extends AgentMessage {
     public enum Type {
-        INITIATE
+        ATTRIBUTES,
+        HEJKA,
+        INITIATE,
+        NO_CO_TAM
     }
 
     private Type type;
