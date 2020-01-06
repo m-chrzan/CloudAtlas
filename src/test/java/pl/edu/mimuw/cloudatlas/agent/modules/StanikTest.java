@@ -35,10 +35,11 @@ public class StanikTest {
     private Stanik stanik;
     private MockExecutor executor;
     private ValueTime testTime;
+    private static final long freshnessPeriod = 1000;
 
     @Before
     public void setupLocals() {
-        stanik = new Stanik();
+        stanik = new Stanik(freshnessPeriod);
         executor = new MockExecutor(stanik);
         testTime = ValueUtils.currentTime();
     }
@@ -157,11 +158,35 @@ public class StanikTest {
     public void dontApplyWithStaleTimestamp() throws Exception {
         AttributesMap attributes = new AttributesMap();
         attributes.add("foo", new ValueInt(1337l));
-        attributes.add("timestamp", (ValueTime) testTime.subtract(new ValueDuration(61 * 1000l)));
+        attributes.add("timestamp", (ValueTime) testTime.subtract(new ValueDuration(freshnessPeriod + 100)));
         attributes.add("name", new ValueString("new"));
         UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
         stanik.handleTyped(message);
 
+        assertFalse(stanik.getHierarchy().descendantExists(new PathName("/new")));
+    }
+
+    @Test
+    public void zoneRemovedAfterFreshnessPeriod() throws Exception {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("foo", new ValueInt(1337l));
+        attributes.add("timestamp", testTime);
+        attributes.add("name", new ValueString("new"));
+        UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
+        stanik.handleTyped(message);
+        Thread.sleep(freshnessPeriod + 100);
+
+        AttributesMap attributes2 = new AttributesMap();
+        attributes2.add("timestamp", ValueUtils.currentTime());
+        UpdateAttributesMessage message2 = new UpdateAttributesMessage("test_msg", 0, "/", attributes2);
+        stanik.handleTyped(message2);
+
+        GetStateMessage getStateMessage = new GetStateMessage("", 0, ModuleType.TEST, 0);
+        stanik.handleTyped(getStateMessage);
+
+        StateMessage newReceivedMessage = (StateMessage) executor.messagesToPass.poll();
+        assertNotNull(newReceivedMessage);
+        assertFalse(newReceivedMessage.getZMI().descendantExists(new PathName("/new")));
         assertFalse(stanik.getHierarchy().descendantExists(new PathName("/new")));
     }
 

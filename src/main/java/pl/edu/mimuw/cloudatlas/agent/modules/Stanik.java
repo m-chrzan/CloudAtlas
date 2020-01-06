@@ -1,6 +1,8 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
@@ -19,6 +21,7 @@ import pl.edu.mimuw.cloudatlas.model.Type;
 import pl.edu.mimuw.cloudatlas.model.TypePrimitive;
 import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueBoolean;
+import pl.edu.mimuw.cloudatlas.model.ValueDuration;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
@@ -36,12 +39,16 @@ public class Stanik extends Module {
     private HashMap<Attribute, Entry<ValueQuery, ValueTime>> queries;
     private long freshnessPeriod;
 
-    public Stanik() {
+    public Stanik(long freshnessPeriod) {
         super(ModuleType.STATE);
         hierarchy = new ZMI();
         queries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
         hierarchy.getAttributes().add("timestamp", new ValueTime(0l));
-        freshnessPeriod = 60 * 1000;
+        this.freshnessPeriod = freshnessPeriod;
+    }
+
+    public Stanik() {
+        this(60 * 1000);
     }
 
     public void handleTyped(StanikMessage message) throws InterruptedException, InvalidMessageType {
@@ -67,6 +74,7 @@ public class Stanik extends Module {
     }
 
     public void handleGetState(GetStateMessage message) throws InterruptedException {
+        pruneHierarchy();
         StateMessage response = new StateMessage(
             "",
             message.getRequestingModule(),
@@ -76,6 +84,38 @@ public class Stanik extends Module {
             (HashMap<Attribute, Entry<ValueQuery, ValueTime>>) queries.clone()
         );
         sendMessage(response);
+    }
+
+    private void pruneHierarchy() {
+        ValueTime now = ValueUtils.currentTime();
+        pruneZMI(hierarchy, now);
+    }
+
+    private boolean pruneZMI(ZMI zmi, ValueTime time) {
+        Value timestamp = zmi.getAttributes().get("timestamp");
+
+        List<ZMI> sonsToRemove = new LinkedList();
+        if (ValueUtils.valueLower(timestamp, time.subtract(new ValueDuration(freshnessPeriod)))) {
+            if (zmi.getFather() != null) {
+                return true;
+            }
+        } else {
+            for (ZMI son : zmi.getSons()) {
+                if (pruneZMI(son, time)) {
+                    sonsToRemove.add(son);
+                }
+            }
+        }
+
+        for (ZMI son : sonsToRemove) {
+            zmi.removeSon(son);
+        }
+
+        if (zmi.getSons().isEmpty()) {
+            return true;
+        }
+
+        return false;
     }
 
     public void handleRemoveZMI(RemoveZMIMessage message) {
