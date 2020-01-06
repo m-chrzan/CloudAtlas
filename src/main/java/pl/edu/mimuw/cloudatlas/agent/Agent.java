@@ -1,5 +1,8 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -12,14 +15,8 @@ import pl.edu.mimuw.cloudatlas.agent.NewApiImplementation;
 import pl.edu.mimuw.cloudatlas.agent.messages.RunQueriesMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.TimerSchedulerMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
+import pl.edu.mimuw.cloudatlas.agent.modules.*;
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
-import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
-import pl.edu.mimuw.cloudatlas.agent.modules.Qurnik;
-import pl.edu.mimuw.cloudatlas.agent.modules.Remik;
-import pl.edu.mimuw.cloudatlas.agent.modules.Stanik;
-import pl.edu.mimuw.cloudatlas.agent.modules.RecursiveScheduledTask;
-import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduledTask;
-import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduler;
 import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.interpreter.Main;
 import pl.edu.mimuw.cloudatlas.model.PathName;
@@ -49,6 +46,11 @@ public class Agent {
         Long freshnessPeriod = new Long(System.getProperty("freshness_period"));
         modules.put(ModuleType.STATE, new Stanik(freshnessPeriod));
         modules.put(ModuleType.QUERY, new Qurnik());
+        try {
+            modules.put(ModuleType.UDP, new UDUP(InetAddress.getByName("127.0.0.1"), 5988, 5000, 20000));
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         // TODO add modules as we implement them
         return modules;
     }
