@@ -37,7 +37,9 @@ public class UDUPServer {
             if (packet.getLength() == this.bufSize) {
                 this.addPartialMessageAndCheckSerialization(packet.getAddress(), packet.getData());
             } else  {
-                if (msg.getDestinationModule() != ModuleType.UDP) {
+                if (msg.getContent().getDestinationModule() == ModuleType.TEST) {
+                    System.out.println("UDP server: test message received");
+                } else if (msg.getContent().getDestinationModule() != ModuleType.UDP) {
                     this.udp.sendMessage(msg.getContent());
                 }
             }
