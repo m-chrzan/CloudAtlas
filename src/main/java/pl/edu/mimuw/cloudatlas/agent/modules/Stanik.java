@@ -94,6 +94,8 @@ public class Stanik extends Module {
     private boolean pruneZMI(ZMI zmi, ValueTime time) {
         Value timestamp = zmi.getAttributes().get("timestamp");
 
+        boolean isLeaf = zmi.getSons().isEmpty();
+
         List<ZMI> sonsToRemove = new LinkedList();
         if (ValueUtils.valueLower(timestamp, time.subtract(new ValueDuration(freshnessPeriod)))) {
             if (zmi.getFather() != null) {
@@ -111,7 +113,7 @@ public class Stanik extends Module {
             zmi.removeSon(son);
         }
 
-        if (zmi.getSons().isEmpty()) {
+        if (!isLeaf && zmi.getSons().isEmpty()) {
             return true;
         }
 
