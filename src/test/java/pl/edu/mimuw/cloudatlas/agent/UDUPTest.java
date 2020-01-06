@@ -1,7 +1,6 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
 import org.junit.*;
-import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UDUPMessage;
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
@@ -25,29 +24,27 @@ public class UDUPTest {
             System.out.println("Starting udp1");
 
             udp1 = new UDUP(
-                    ModuleType.UDP,
                     InetAddress.getByName("127.0.0.2"),
                     5999,
-                    1000,
                     5000,
-                    20000);
+                    1000);
 
             System.out.println("Starting udp2");
 
             udp2 = new UDUP(
-                    ModuleType.UDP,
                     InetAddress.getByName("127.0.0.3"),
                     5999,
-                    1000,
                     5000,
-                    20000);
+                    1000);
+
+            UDUPMessage testContent = new UDUPMessage();
+            testContent.setDestinationModule(ModuleType.TEST);
 
             msg1 = new UDUPMessage(
-                    "1",
+                    "udup1",
                     new ValueContact(new PathName("/udp2"), InetAddress.getByName("127.0.0.3")),
-                    null, //new GetStateMessage("getstate1", 0, ModuleType.UDP, 1),
-                    0,
-                    "conv1");
+                    testContent
+            );
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -66,16 +63,9 @@ public class UDUPTest {
             } else {
                 udp1.handle(msg1);
                 Thread.sleep(10000);
-                UDUPMessage conv = udp2.fetchConversation("conv1");
-                if (!conv.getConversationId().equals("conv1")) {
-                    testSuccess = false;
-                }
             }
         } catch (InterruptedException | Module.InvalidMessageType e) {
             e.printStackTrace();
-            testSuccess = false;
-        } catch (UDUP.InvalidConversation invalidConversation) {
-            System.out.println("Invalid conversation");
             testSuccess = false;
         }
 
