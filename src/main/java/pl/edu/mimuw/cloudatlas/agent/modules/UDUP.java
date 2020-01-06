@@ -1,19 +1,10 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-import com.google.common.primitives.Bytes;
-import pl.edu.mimuw.cloudatlas.agent.EventBus;
 import pl.edu.mimuw.cloudatlas.agent.messages.UDUPMessage;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -32,37 +23,28 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *  due to ValueContact design
  */
 
+// TODO set server port in global config - must be the same everywhere
+// TODO same with buffer size
+
 public class UDUP extends Module implements Runnable {
-    public class InvalidConversation extends Exception {
-        public InvalidConversation(String message) { super(message); }
-    }
-
-    public class InvalidContact extends Exception {
-        public InvalidContact(String message) { super(message); }
-    }
-
     private UDUPClient client;
     private UDUPServer server;
-    private HashMap<String, UDUPMessage> currentConversations; // TODO find blocking one
     private final AtomicBoolean running;
 
-    public UDUP(ModuleType moduleType,
-                InetAddress serverAddr,
+    public UDUP(InetAddress serverAddr,
                 int serverPort,
-                int retryTimeout,
-                int retriesCount,
+                int timeout,
                 int bufferSize) {
-        super(moduleType);
-        this.currentConversations = new HashMap<>();
-        this.running = new AtomicBoolean(true);
+        super(ModuleType.UDP);
+        this.running = new AtomicBoolean(false);
         try {
-            this.client = new UDUPClient(this, serverPort, retryTimeout, retriesCount, bufferSize);
+            this.client = new UDUPClient(this, serverPort, bufferSize);
             this.server = new UDUPServer(this, serverAddr, serverPort, bufferSize);
-        } catch (SocketException | UnknownHostException e) {
+            this.running.getAndSet(true);
+        } catch (SocketException e) {
             e.printStackTrace();
             this.client.close();
             this.server.close();
-            this.running.getAndSet(false);
         }
     }
 
@@ -80,41 +62,12 @@ public class UDUP extends Module implements Runnable {
     }
 
     public void handleTyped(UDUPMessage event) throws InterruptedException {
-//        System.out.println("UDP sending message " + event.getContent().getMessageId());
-        this.client.sendMessage(event);
-    }
-
-    // also used for updating
-    public void addConversation(UDUPMessage msg) {
-        this.currentConversations.put(msg.getConversationId(), msg);
-    }
-
-    public UDUPMessage fetchConversation(String conversationId) throws InvalidConversation {
-        UDUPMessage ret = this.currentConversations.get(conversationId);
-        if (ret == null) {
-            throw new InvalidConversation("Conversation does not exist");
-        } else {
-            return ret;
+        System.out.println("UDP sending message " + event.getContent().getMessageId());
+        try {
+            this.client.sendMessage(event);
+        } catch (IOException e) {
+            System.out.println("UDP send message failed");
+            e.printStackTrace();
         }
     }
-
-    // TODO add conversation removal
-    public void removeConversation(String conversationId) {
-        this.currentConversations.remove(conversationId);
-    }
-
-    public UDUPMessage deserialize(ByteArrayInputStream in) {
-        Kryo kryo = new Kryo();
-        Input kryoInput = new Input(in);
-        UDUPMessage msg = kryo.readObject(kryoInput, UDUPMessage.class);
-        return msg;
-    }
-
-    public void serialize(ByteArrayOutputStream out, UDUPMessage msg) {
-        Kryo kryo = new Kryo();
-        Output kryoOut = new Output(out);
-        kryo.writeObject(kryoOut, msg);
-        kryoOut.flush();
-    }
-
 }
