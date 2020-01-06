@@ -2,6 +2,7 @@ package pl.edu.mimuw.cloudatlas.agent.messages;
 
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
+import pl.edu.mimuw.cloudatlas.agent.modules.Remik;
 
 public abstract class RemikMessage extends AgentMessage {
     public enum Type {
@@ -14,6 +15,8 @@ public abstract class RemikMessage extends AgentMessage {
         super(messageId, ModuleType.RMI, timestamp);
         this.type = type;
     }
+
+    public RemikMessage() {}
 
     public Type getType() {
         return type;

@@ -19,6 +19,8 @@ public class StateMessage extends ResponseMessage {
         this.queries = queries;
     }
 
+    public StateMessage() {}
+
     public ZMI getZMI() {
         return zmi;
     }

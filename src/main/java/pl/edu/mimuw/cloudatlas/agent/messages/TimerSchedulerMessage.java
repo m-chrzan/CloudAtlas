@@ -23,6 +23,8 @@ public class TimerSchedulerMessage extends AgentMessage {
         this.task = task;
     }
 
+    public TimerSchedulerMessage() {}
+
     public long getDelay() {
         return delay;
     }

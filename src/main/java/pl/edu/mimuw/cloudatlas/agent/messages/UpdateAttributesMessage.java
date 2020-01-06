@@ -13,6 +13,8 @@ public class UpdateAttributesMessage extends StanikMessage {
         this.attributes = attributes;
     }
 
+    public UpdateAttributesMessage() {}
+
     public String getPathName() {
         return pathName;
     }

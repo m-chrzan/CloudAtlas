@@ -12,6 +12,8 @@ public class GetStateMessage extends StanikMessage {
         this.requestId = requestId;
     }
 
+    public GetStateMessage() {}
+
     public ModuleType getRequestingModule() {
         return requestingModule;
     }

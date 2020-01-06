@@ -6,4 +6,6 @@ public class RunQueriesMessage extends QurnikMessage {
     public RunQueriesMessage(String messageId, long timestamp) {
         super(messageId, timestamp, Type.RUN_QUERIES);
     }
+
+    public RunQueriesMessage() {}
 }

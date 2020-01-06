@@ -19,6 +19,8 @@ public class SetAttributeMessage extends StanikMessage {
         this.updateTimestamp = updateTimestamp;
     }
 
+    public SetAttributeMessage() {}
+
     public String getPathName() {
         return pathName;
     }

@@ -20,9 +20,7 @@ public class UDUPMessage extends AgentMessage {
         this.content = content;
     }
 
-    public UDUPMessage() {
-        super("", ModuleType.UDP);
-    }
+    public UDUPMessage() {}
 
     @Override
     public void callMe(Module module) throws InterruptedException, Module.InvalidMessageType {
