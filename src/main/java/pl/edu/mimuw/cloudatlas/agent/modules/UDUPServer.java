@@ -31,12 +31,11 @@ public class UDUPServer {
         System.out.println("UDP " + this.address + " received packet from " + packet.getAddress());
 
         if (packet.getOffset() == 0) {
-            UDUPMessage msg = this.serializer.deserialize(packet.getData());
-            System.out.println("UDP received message " + msg.getContent().getMessageId());
-
             if (packet.getLength() == this.bufSize) {
                 this.addPartialMessageAndCheckSerialization(packet.getAddress(), packet.getData());
             } else  {
+                UDUPMessage msg = this.serializer.deserialize(packet.getData());
+                System.out.println("UDP received message " + msg.getContent().getMessageId());
                 if (msg.getContent().getDestinationModule() == ModuleType.TEST) {
                     System.out.println("UDP server: test message received");
                 } else if (msg.getContent().getDestinationModule() != ModuleType.UDP) {
