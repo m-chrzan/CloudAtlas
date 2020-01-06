@@ -7,23 +7,21 @@ import pl.edu.mimuw.cloudatlas.model.ValueContact;
 public class UDUPMessage extends AgentMessage {
     private ValueContact contact;
     private AgentMessage content;
-    private int retry;
-    private String conversationId;
 
-    public UDUPMessage(String messageId, long timestamp, ValueContact contact, AgentMessage content, int retry, String conversationId) {
+    public UDUPMessage(String messageId, long timestamp, ValueContact contact, AgentMessage content) {
         super(messageId, ModuleType.UDP, timestamp);
         this.contact = contact;
         this.content = content;
-        this.retry = retry;
-        this.conversationId = conversationId;
     }
 
-    public UDUPMessage(String messageId, ValueContact contact, AgentMessage content, int retry, String conversationId) {
+    public UDUPMessage(String messageId, ValueContact contact, AgentMessage content) {
         super(messageId, ModuleType.UDP);
         this.contact = contact;
         this.content = content;
-        this.retry = retry;
-        this.conversationId = conversationId;
+    }
+
+    public UDUPMessage() {
+        super("", ModuleType.UDP);
     }
 
     @Override
@@ -39,23 +37,9 @@ public class UDUPMessage extends AgentMessage {
         this.content = content;
     }
 
-    public int getRetry() {
-        return retry;
-    }
-
-    public String getConversationId() {
-        return conversationId;
-    }
-
-    public void setRetry(int retry) { this.retry = retry; }
-
     public ValueContact getContact() { return contact; }
 
     public void setContact(ValueContact contact) {
         this.contact = contact;
-    }
-
-    public void setConversationId(String conversationId) {
-        this.conversationId = conversationId;
     }
 }
