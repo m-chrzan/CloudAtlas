@@ -1,6 +1,8 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
@@ -19,6 +21,7 @@ import pl.edu.mimuw.cloudatlas.model.Type;
 import pl.edu.mimuw.cloudatlas.model.TypePrimitive;
 import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueBoolean;
+import pl.edu.mimuw.cloudatlas.model.ValueDuration;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
@@ -34,12 +37,18 @@ public class Stanik extends Module {
 
     private ZMI hierarchy;
     private HashMap<Attribute, Entry<ValueQuery, ValueTime>> queries;
+    private long freshnessPeriod;
 
-    public Stanik() {
+    public Stanik(long freshnessPeriod) {
         super(ModuleType.STATE);
         hierarchy = new ZMI();
         queries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
         hierarchy.getAttributes().add("timestamp", new ValueTime(0l));
+        this.freshnessPeriod = freshnessPeriod;
+    }
+
+    public Stanik() {
+        this(60 * 1000);
     }
 
     public void handleTyped(StanikMessage message) throws InterruptedException, InvalidMessageType {
@@ -65,6 +74,7 @@ public class Stanik extends Module {
     }
 
     public void handleGetState(GetStateMessage message) throws InterruptedException {
+        pruneHierarchy();
         StateMessage response = new StateMessage(
             "",
             message.getRequestingModule(),
@@ -74,6 +84,40 @@ public class Stanik extends Module {
             (HashMap<Attribute, Entry<ValueQuery, ValueTime>>) queries.clone()
         );
         sendMessage(response);
+    }
+
+    private void pruneHierarchy() {
+        ValueTime now = ValueUtils.currentTime();
+        pruneZMI(hierarchy, now);
+    }
+
+    private boolean pruneZMI(ZMI zmi, ValueTime time) {
+        Value timestamp = zmi.getAttributes().get("timestamp");
+
+        boolean isLeaf = zmi.getSons().isEmpty();
+
+        List<ZMI> sonsToRemove = new LinkedList();
+        if (ValueUtils.valueLower(timestamp, time.subtract(new ValueDuration(freshnessPeriod)))) {
+            if (zmi.getFather() != null) {
+                return true;
+            }
+        } else {
+            for (ZMI son : zmi.getSons()) {
+                if (pruneZMI(son, time)) {
+                    sonsToRemove.add(son);
+                }
+            }
+        }
+
+        for (ZMI son : sonsToRemove) {
+            zmi.removeSon(son);
+        }
+
+        if (!isLeaf && zmi.getSons().isEmpty()) {
+            return true;
+        }
+
+        return false;
     }
 
     public void handleRemoveZMI(RemoveZMIMessage message) {
@@ -113,13 +157,20 @@ public class Stanik extends Module {
     public void handleUpdateAttributes(UpdateAttributesMessage message) {
         try {
             validateUpdateAttributesMessage(message);
-            addMissingZones(new PathName(message.getPathName()));
-            ZMI zone = hierarchy.findDescendant(message.getPathName());
-            AttributesMap attributes = zone.getAttributes();
-            if (ValueUtils.valueLower(attributes.get("timestamp"), message.getAttributes().get("timestamp"))) {
-                AttributesUtil.transferAttributes(message.getAttributes(), attributes);
+            if (!ValueUtils.valueLower(
+                        message.getAttributes().get("timestamp"),
+                        new ValueTime(System.currentTimeMillis() - freshnessPeriod)
+            )) {
+                addMissingZones(new PathName(message.getPathName()));
+                ZMI zone = hierarchy.findDescendant(message.getPathName());
+                AttributesMap attributes = zone.getAttributes();
+                if (ValueUtils.valueLower(attributes.get("timestamp"), message.getAttributes().get("timestamp"))) {
+                    AttributesUtil.transferAttributes(message.getAttributes(), attributes);
+                } else {
+                    System.out.println("DEBUG: not applying update with older attributes");
+                }
             } else {
-                System.out.println("DEBUG: not applying update with older attributes");
+                System.out.println("DEBUG: not applying update with stale attributes");
             }
         } catch (InvalidUpdateAttributesMessage e) {
             System.out.println("ERROR: invalid UpdateAttributesMessage " + e.getMessage());

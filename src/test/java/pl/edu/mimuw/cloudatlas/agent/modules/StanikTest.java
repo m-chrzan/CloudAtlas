@@ -16,12 +16,15 @@ import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
 import pl.edu.mimuw.cloudatlas.agent.MockExecutor;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
+import pl.edu.mimuw.cloudatlas.model.PathName;
 import pl.edu.mimuw.cloudatlas.model.TestUtil;
 import pl.edu.mimuw.cloudatlas.model.Value;
+import pl.edu.mimuw.cloudatlas.model.ValueDuration;
 import pl.edu.mimuw.cloudatlas.model.ValueInt;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
+import pl.edu.mimuw.cloudatlas.model.ValueUtils;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 import org.junit.Before;
@@ -31,11 +34,14 @@ import static org.junit.Assert.*;
 public class StanikTest {
     private Stanik stanik;
     private MockExecutor executor;
+    private ValueTime testTime;
+    private static final long freshnessPeriod = 1000;
 
     @Before
     public void setupLocals() {
-        stanik = new Stanik();
+        stanik = new Stanik(freshnessPeriod);
         executor = new MockExecutor(stanik);
+        testTime = ValueUtils.currentTime();
     }
 
     @Test
@@ -78,14 +84,14 @@ public class StanikTest {
         AttributesMap attributes = new AttributesMap();
         attributes.add("foo", new ValueInt(1337l));
         attributes.add("bar", new ValueString("baz"));
-        attributes.add("timestamp", new ValueTime("2012/12/21 04:20:00.000"));
+        attributes.add("timestamp", testTime);
         UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/", attributes);
         stanik.handleTyped(message);
         AttributesMap actualAttributes = stanik.getHierarchy().getAttributes();
         assertEquals(3, TestUtil.iterableSize(actualAttributes));
         assertEquals(new ValueInt(1337l), actualAttributes.get("foo"));
         assertEquals(new ValueString("baz"), actualAttributes.get("bar"));
-        assertEquals(new ValueTime("2012/12/21 04:20:00.000"), actualAttributes.getOrNull("timestamp"));
+        assertEquals(testTime, actualAttributes.getOrNull("timestamp"));
     }
 
     @Test
@@ -94,7 +100,7 @@ public class StanikTest {
         attributes.add("foo", new ValueInt(1337l));
         attributes.add("bar", new ValueString("baz"));
         attributes.add("name", new ValueString("new"));
-        attributes.add("timestamp", new ValueTime("2012/12/21 04:20:00.000"));
+        attributes.add("timestamp", testTime);
         UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
         stanik.handleTyped(message);
         AttributesMap actualAttributes = stanik.getHierarchy().findDescendant("/new").getAttributes();
@@ -102,7 +108,7 @@ public class StanikTest {
         assertEquals(new ValueInt(1337l), actualAttributes.getOrNull("foo"));
         assertEquals(new ValueString("baz"), actualAttributes.getOrNull("bar"));
         assertEquals(new ValueString("new"), actualAttributes.getOrNull("name"));
-        assertEquals(new ValueTime("2012/12/21 04:20:00.000"), actualAttributes.getOrNull("timestamp"));
+        assertEquals(testTime, actualAttributes.getOrNull("timestamp"));
     }
 
     @Test
@@ -111,11 +117,12 @@ public class StanikTest {
         attributes.add("foo", new ValueInt(1337l));
         attributes.add("bar", new ValueString("baz"));
         UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/", attributes);
-        attributes.add("timestamp", new ValueTime("2012/12/21 04:20:00.000"));
+        attributes.add("timestamp", testTime);
         stanik.handleTyped(message);
 
         AttributesMap newAttributes = new AttributesMap();
-        newAttributes.add("timestamp", new ValueTime("2012/12/21 04:20:42.000"));
+        ValueTime newTime = (ValueTime) testTime.addValue(new ValueDuration(1l));
+        newAttributes.add("timestamp", newTime);
         newAttributes.add("foo", new ValueInt(1338l));
         UpdateAttributesMessage newMessage = new UpdateAttributesMessage("test_msg2", 0, "/", newAttributes);
         stanik.handleTyped(newMessage);
@@ -123,27 +130,64 @@ public class StanikTest {
         AttributesMap actualAttributes = stanik.getHierarchy().getAttributes();
         assertEquals(2, TestUtil.iterableSize(actualAttributes));
         assertEquals(new ValueInt(1338l), actualAttributes.getOrNull("foo"));
-        assertEquals(new ValueTime("2012/12/21 04:20:42.000"), actualAttributes.getOrNull("timestamp"));
+        assertEquals(newTime, actualAttributes.getOrNull("timestamp"));
     }
 
     @Test
     public void dontApplyUpdateWithOlderTimestamp() throws Exception {
         AttributesMap attributes = new AttributesMap();
         attributes.add("foo", new ValueInt(1337l));
-        attributes.add("timestamp", new ValueTime("2012/12/21 04:20:00.000"));
+        attributes.add("timestamp", testTime);
         UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/", attributes);
         stanik.handleTyped(message);
 
         AttributesMap oldAttributes = new AttributesMap();
         oldAttributes.add("foo", new ValueInt(1336l));
-        oldAttributes.add("timestamp", new ValueTime("2012/12/21 04:19:00.000"));
+        ValueTime olderTime = (ValueTime) testTime.subtract(new ValueDuration(1l));
+        oldAttributes.add("timestamp", olderTime);
         UpdateAttributesMessage newMessage = new UpdateAttributesMessage("test_msg2", 0, "/", oldAttributes);
         stanik.handleTyped(newMessage);
 
         AttributesMap actualAttributes = stanik.getHierarchy().getAttributes();
         assertEquals(2, TestUtil.iterableSize(actualAttributes));
         assertEquals(new ValueInt(1337l), actualAttributes.getOrNull("foo"));
-        assertEquals(new ValueTime("2012/12/21 04:20:00.000"), actualAttributes.getOrNull("timestamp"));
+        assertEquals(testTime, actualAttributes.getOrNull("timestamp"));
+    }
+
+    @Test
+    public void dontApplyWithStaleTimestamp() throws Exception {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("foo", new ValueInt(1337l));
+        attributes.add("timestamp", (ValueTime) testTime.subtract(new ValueDuration(freshnessPeriod + 100)));
+        attributes.add("name", new ValueString("new"));
+        UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
+        stanik.handleTyped(message);
+
+        assertFalse(stanik.getHierarchy().descendantExists(new PathName("/new")));
+    }
+
+    @Test
+    public void zoneRemovedAfterFreshnessPeriod() throws Exception {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("foo", new ValueInt(1337l));
+        attributes.add("timestamp", testTime);
+        attributes.add("name", new ValueString("new"));
+        UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
+        stanik.handleTyped(message);
+        Thread.sleep(freshnessPeriod + 100);
+
+        AttributesMap attributes2 = new AttributesMap();
+        attributes2.add("timestamp", ValueUtils.currentTime());
+        UpdateAttributesMessage message2 = new UpdateAttributesMessage("test_msg", 0, "/", attributes2);
+        stanik.handleTyped(message2);
+
+        GetStateMessage getStateMessage = new GetStateMessage("", 0, ModuleType.TEST, 0);
+        stanik.handleTyped(getStateMessage);
+
+        StateMessage newReceivedMessage = (StateMessage) executor.messagesToPass.poll();
+        assertNotNull(newReceivedMessage);
+        assertFalse(newReceivedMessage.getZMI().descendantExists(new PathName("/new")));
+        assertFalse(stanik.getHierarchy().descendantExists(new PathName("/new")));
     }
 
     @Test
@@ -207,19 +251,14 @@ public class StanikTest {
         attributes.add("foo", new ValueInt(1337l));
         attributes.add("bar", new ValueString("baz"));
         attributes.add("name", new ValueString("new"));
-        attributes.add("timestamp", new ValueTime(42l));
+        attributes.add("timestamp", testTime);
         UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
         stanik.handleTyped(message);
 
-        RemoveZMIMessage removeMessage = new RemoveZMIMessage("test_msg2", 0, "/new", new ValueTime(43l));
+        RemoveZMIMessage removeMessage = new RemoveZMIMessage("test_msg2", 0, "/new", (ValueTime) testTime.addValue(new ValueDuration(1l)));
         stanik.handleTyped(removeMessage);
-        boolean noSuchZone = false;
-        try {
-            stanik.getHierarchy().findDescendant("/new");
-        } catch (ZMI.NoSuchZoneException e) {
-            noSuchZone = true;
-        }
-        assertTrue(noSuchZone);
+
+        assertFalse(stanik.getHierarchy().descendantExists(new PathName("/new")));
     }
 
     @Test
@@ -228,11 +267,11 @@ public class StanikTest {
         attributes.add("foo", new ValueInt(1337l));
         attributes.add("bar", new ValueString("baz"));
         attributes.add("name", new ValueString("new"));
-        attributes.add("timestamp", new ValueTime(42l));
+        attributes.add("timestamp", testTime);
         UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
         stanik.handleTyped(message);
 
-        RemoveZMIMessage removeMessage = new RemoveZMIMessage("test_msg2", 0, "/new", new ValueTime(41l));
+        RemoveZMIMessage removeMessage = new RemoveZMIMessage("test_msg2", 0, "/new", (ValueTime) testTime.subtract(new ValueDuration(1l)));
         stanik.handleTyped(removeMessage);
 
         stanik.getHierarchy().findDescendant("/new");
@@ -243,17 +282,17 @@ public class StanikTest {
         AttributesMap attributes = new AttributesMap();
         attributes.add("foo", new ValueInt(1337l));
         attributes.add("name", new ValueString("new"));
-        attributes.add("timestamp", new ValueTime(42l));
+        attributes.add("timestamp", testTime);
         UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
         stanik.handleTyped(message);
 
-        SetAttributeMessage setMessage = new SetAttributeMessage("test_msg2", 0, "/new", new Attribute("foo"), new ValueInt(43l), new ValueTime(40l));
+        SetAttributeMessage setMessage = new SetAttributeMessage("test_msg2", 0, "/new", new Attribute("foo"), new ValueInt(43l), (ValueTime) testTime.subtract(new ValueDuration(1l)));
         stanik.handleTyped(setMessage);
 
         AttributesMap actualAttributes = stanik.getHierarchy().findDescendant("/new").getAttributes();
         assertEquals(3, TestUtil.iterableSize(actualAttributes));
         assertEquals(new ValueInt(43l), actualAttributes.getOrNull("foo"));
-        assertEquals(new ValueTime(42l), actualAttributes.getOrNull("timestamp"));
+        assertEquals(testTime, actualAttributes.getOrNull("timestamp"));
     }
 
     @Test
@@ -261,17 +300,18 @@ public class StanikTest {
         AttributesMap attributes = new AttributesMap();
         attributes.add("foo", new ValueInt(1337l));
         attributes.add("name", new ValueString("new"));
-        attributes.add("timestamp", new ValueTime(42l));
+        attributes.add("timestamp", testTime);
         UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
         stanik.handleTyped(message);
 
-        SetAttributeMessage setMessage = new SetAttributeMessage("test_msg2", 0, "/new", new Attribute("foo"), new ValueInt(43l), new ValueTime(43l));
+        ValueTime newTime = (ValueTime) testTime.addValue(new ValueDuration(1l));
+        SetAttributeMessage setMessage = new SetAttributeMessage("test_msg2", 0, "/new", new Attribute("foo"), new ValueInt(43l), newTime);
         stanik.handleTyped(setMessage);
 
         AttributesMap actualAttributes = stanik.getHierarchy().findDescendant("/new").getAttributes();
         assertEquals(3, TestUtil.iterableSize(actualAttributes));
         assertEquals(new ValueInt(43l), actualAttributes.getOrNull("foo"));
-        assertEquals(new ValueTime(43l), actualAttributes.getOrNull("timestamp"));
+        assertEquals(newTime, actualAttributes.getOrNull("timestamp"));
     }
 
     @Test
@@ -279,17 +319,18 @@ public class StanikTest {
         AttributesMap attributes = new AttributesMap();
         attributes.add("foo", new ValueInt(1337l));
         attributes.add("name", new ValueString("new"));
-        attributes.add("timestamp", new ValueTime(42l));
+        attributes.add("timestamp", testTime);
         UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
         stanik.handleTyped(message);
 
-        SetAttributeMessage setMessage = new SetAttributeMessage("test_msg2", 0, "/new", new Attribute("bar"), new ValueInt(43l), new ValueTime(43l));
+        ValueTime newTime = (ValueTime) testTime.addValue(new ValueDuration(1l));
+        SetAttributeMessage setMessage = new SetAttributeMessage("test_msg2", 0, "/new", new Attribute("bar"), new ValueInt(43l), newTime);
         stanik.handleTyped(setMessage);
 
         AttributesMap actualAttributes = stanik.getHierarchy().findDescendant("/new").getAttributes();
         assertEquals(4, TestUtil.iterableSize(actualAttributes));
         assertEquals(new ValueInt(1337l), actualAttributes.getOrNull("foo"));
         assertEquals(new ValueInt(43l), actualAttributes.getOrNull("bar"));
-        assertEquals(new ValueTime(43l), actualAttributes.getOrNull("timestamp"));
+        assertEquals(newTime, actualAttributes.getOrNull("timestamp"));
     }
 }

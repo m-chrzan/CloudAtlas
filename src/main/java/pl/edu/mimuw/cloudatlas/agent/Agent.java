@@ -46,7 +46,8 @@ public class Agent {
         HashMap<ModuleType, Module> modules = new HashMap<ModuleType, Module>();
         modules.put(ModuleType.TIMER_SCHEDULER, new TimerScheduler(ModuleType.TIMER_SCHEDULER));
         modules.put(ModuleType.RMI, new Remik());
-        modules.put(ModuleType.STATE, new Stanik());
+        Long freshnessPeriod = new Long(System.getProperty("freshness_period"));
+        modules.put(ModuleType.STATE, new Stanik(freshnessPeriod));
         modules.put(ModuleType.QUERY, new Qurnik());
         // TODO add modules as we implement them
         return modules;

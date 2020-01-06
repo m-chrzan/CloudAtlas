@@ -18,6 +18,10 @@ ext.hostname = {
     return System.getProperty("hostname") ?: "localhost"
 }
 
+ext.freshnessPeriod = {
+    return System.getProperty("freshnessPeriod") ?: 60 * 1000
+}
+
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
@@ -56,6 +60,7 @@ task runAgent(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.agent.Agent'
     systemProperty 'java.rmi.server.hostname', hostname()
+    systemProperty 'freshness_period', freshnessPeriod()
 }
 
 task runClient(type: JavaExec) {
