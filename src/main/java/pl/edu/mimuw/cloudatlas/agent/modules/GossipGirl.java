@@ -69,8 +69,8 @@ public class GossipGirl extends Module {
                         "",
                         0,
                         state.gossipId,
-                        getZoneTimestamps(message.getZMI()),
-                        getQueryTimestamps(message.getQueries())
+                        state.getZoneTimestampsToSend(),
+                        state.getQueryTimestampsToSend()
                 );
                 UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, hejka);
                 sendMessage(udupMessage);
@@ -96,13 +96,4 @@ public class GossipGirl extends Module {
             System.out.println("ERROR: GossipGirl got state for a nonexistent gossip");
         }
     }
-
-    public Map<PathName, ValueTime> getZoneTimestamps(ZMI root) {
-        return new HashMap();
-    }
-
-    public Map<Attribute, ValueTime> getQueryTimestamps(Map<Attribute, Entry<ValueQuery, ValueTime>> queries) {
-        return new HashMap();
-    }
-
 }

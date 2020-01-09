@@ -1,5 +1,7 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -95,8 +97,61 @@ public class GossipGirlState {
         }
     }
 
+    public Map<PathName, ValueTime> getZoneTimestampsToSend() {
+        Map<PathName, ValueTime> timestamps = new HashMap();
+        collectZoneTimestamps(timestamps, hierarchy, theirContact.getName());
+        return timestamps;
+    }
+
+    public Map<Attribute, ValueTime> getQueryTimestampsToSend() {
+        Map<Attribute, ValueTime> queryTimestamps= new HashMap();
+        for (Entry<Attribute, Entry<ValueQuery, ValueTime>> query : queries.entrySet()) {
+            queryTimestamps.put(query.getKey(), query.getValue().getValue());
+        }
+
+        return queryTimestamps;
+    }
+
     public List<ZMI> getZMIsToSend() {
         return new LinkedList();
+    }
+
+    public void collectZoneTimestamps(Map<PathName, ValueTime> timestamps, ZMI currentZMI, PathName recipientPath) {
+        for (ZMI zmi : currentZMI.getSons()) {
+            if (interestedIn(recipientPath, zmi.getPathName())) {
+                ValueTime timestamp = (ValueTime) zmi.getAttributes().getOrNull("timestamp");
+                if (timestamp != null) {
+                    timestamps.put(zmi.getPathName(), timestamp);
+                } else {
+                    System.out.println("ERROR: collectZoneTimestamps encountered a zone with no timestamp");
+                }
+            } else {
+                collectZoneTimestamps(timestamps, zmi, recipientPath);
+            }
+        }
+    }
+
+    public boolean interestedIn(PathName recipientPath, PathName zmiPath) {
+        return isPrefix(zmiPath.levelUp(), recipientPath) && !isPrefix(zmiPath, recipientPath);
+    }
+
+    public boolean isPrefix(PathName prefix, PathName path) {
+        List<String> prefixComponents = prefix.getComponents();
+        List<String> pathComponents = path.getComponents();
+
+        if (prefixComponents.size() > pathComponents.size()) {
+            return false;
+        }
+
+        Iterator<String> prefixIterator = prefixComponents.iterator();
+        Iterator<String> pathIterator = pathComponents.iterator();
+
+        while (prefixIterator.hasNext()) {
+            if (!prefixIterator.next().equals(pathIterator.next())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void sentInfo() {
