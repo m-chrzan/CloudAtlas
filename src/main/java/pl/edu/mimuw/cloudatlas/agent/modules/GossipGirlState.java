@@ -1,5 +1,6 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -13,6 +14,7 @@ import pl.edu.mimuw.cloudatlas.model.PathName;
 import pl.edu.mimuw.cloudatlas.model.ValueContact;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
+import pl.edu.mimuw.cloudatlas.model.ValueUtils;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 public class GossipGirlState {
@@ -113,7 +115,35 @@ public class GossipGirlState {
     }
 
     public List<ZMI> getZMIsToSend() {
-        return new LinkedList();
+        List<ZMI> zmis = new LinkedList();
+        for (Entry<PathName, ValueTime> timestampedPath : getZoneTimestampsToSend().entrySet()) {
+            ValueTime theirTimestamp = theirZoneTimestamps.get(timestampedPath.getKey());
+            if (theirTimestamp == null || ValueUtils.valueLower(theirTimestamp, timestampedPath.getValue())) {
+                System.out.println("going to send " + timestampedPath.getKey().toString());
+                try {
+                    zmis.add(hierarchy.findDescendant(timestampedPath.getKey()));
+                } catch (ZMI.NoSuchZoneException e) {
+                    System.out.println("ERROR: didn't find a zone we wanted to send in getZMIsToSend");
+                }
+            }
+        }
+        return zmis;
+    }
+
+    public List<Entry<Attribute, ValueQuery>> getQueriesToSend() {
+        List<Entry<Attribute, ValueQuery>> queryList = new LinkedList();
+        for (Entry<Attribute, ValueTime> timestampedQuery : getQueryTimestampsToSend().entrySet()) {
+            ValueTime theirTimestamp = theirQueryTimestamps.get(timestampedQuery.getKey());
+            if (theirTimestamp == null || ValueUtils.valueLower(theirTimestamp, timestampedQuery.getValue())) {
+                queryList.add(
+                    new SimpleImmutableEntry(
+                        timestampedQuery.getKey(),
+                        queries.get(timestampedQuery.getKey()).getKey()
+                    )
+                );
+            }
+        }
+        return queryList;
     }
 
     public void collectZoneTimestamps(Map<PathName, ValueTime> timestamps, ZMI currentZMI, PathName recipientPath) {

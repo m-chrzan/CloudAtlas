@@ -8,7 +8,8 @@ public abstract class GossipGirlMessage extends AgentMessage {
         ATTRIBUTES,
         HEJKA,
         INITIATE,
-        NO_CO_TAM
+        NO_CO_TAM,
+        QUERY
     }
 
     private Type type;

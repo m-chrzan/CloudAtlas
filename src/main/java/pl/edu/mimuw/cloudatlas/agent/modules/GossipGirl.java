@@ -10,6 +10,7 @@ import pl.edu.mimuw.cloudatlas.agent.messages.GossipGirlMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.HejkaMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.InitiateGossipMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.NoCoTamMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.QueryMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UDUPMessage;
@@ -36,6 +37,7 @@ public class GossipGirl extends Module {
                 break;
             case NO_CO_TAM:
                 handleNoCoTam((NoCoTamMessage) message);
+                break;
             default:
                 throw new InvalidMessageType("This type of message cannot be handled by GossipGirl");
         }
@@ -90,7 +92,12 @@ public class GossipGirl extends Module {
                 UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, attributesMessage);
                 sendMessage(udupMessage);
             }
-            // TODO: send queries
+
+            for (Entry<Attribute, ValueQuery> query : state.getQueriesToSend()) {
+                QueryMessage queryMessage = new QueryMessage("", 0, query.getKey(), query.getValue(), state.theirGossipId);
+                UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, queryMessage);
+                sendMessage(udupMessage);
+            }
             state.sentInfo();
         } else {
             System.out.println("ERROR: GossipGirl got state for a nonexistent gossip");
