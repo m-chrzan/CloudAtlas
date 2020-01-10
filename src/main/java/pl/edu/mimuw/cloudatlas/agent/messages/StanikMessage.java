@@ -19,6 +19,8 @@ public abstract class StanikMessage extends AgentMessage {
         this.type = type;
     }
 
+    public StanikMessage() {}
+
     public Type getType() {
         return type;
     }

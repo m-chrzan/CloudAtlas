@@ -17,6 +17,8 @@ public abstract class ResponseMessage extends AgentMessage {
         this.requestId = requestId;
     }
 
+    public ResponseMessage() {}
+
     public void callMe(Module module) throws InterruptedException, Module.InvalidMessageType {
         module.handleTyped(this);
     }

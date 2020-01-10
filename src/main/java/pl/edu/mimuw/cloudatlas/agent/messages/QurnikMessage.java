@@ -2,6 +2,7 @@ package pl.edu.mimuw.cloudatlas.agent.messages;
 
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
+import pl.edu.mimuw.cloudatlas.agent.modules.Qurnik;
 
 public abstract class QurnikMessage extends AgentMessage {
     public enum Type {
@@ -14,6 +15,8 @@ public abstract class QurnikMessage extends AgentMessage {
         super(messageId, ModuleType.QUERY, timestamp);
         this.type = type;
     }
+
+    public QurnikMessage() {}
 
     public Type getType() {
         return type;

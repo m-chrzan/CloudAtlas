@@ -10,6 +10,8 @@ public class RequestStateMessage extends RemikMessage {
         this.responseFuture = responseFuture;
     }
 
+    public RequestStateMessage() {}
+
     public CompletableFuture<ResponseMessage> getFuture() {
         return responseFuture;
     }

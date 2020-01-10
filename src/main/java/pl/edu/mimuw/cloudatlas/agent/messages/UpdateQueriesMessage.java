@@ -15,6 +15,8 @@ public class UpdateQueriesMessage extends StanikMessage {
         this.queries = queries;
     }
 
+    public UpdateQueriesMessage() {}
+
     public Map<Attribute, Entry<ValueQuery, ValueTime>> getQueries() {
         return queries;
     }

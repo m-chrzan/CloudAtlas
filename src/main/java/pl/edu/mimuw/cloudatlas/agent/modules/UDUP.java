@@ -26,6 +26,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 // TODO set server port in global config - must be the same everywhere
 // TODO same with buffer size
 
+// TODO separate server like newapiimpl
+// TODO add timestamps as close to sending as possible
+
+// TODO wysylac tylko remotegossipgirl message
+// TODO update timestampow odpowiedni w tym remotegossipgirlmessage
+
 public class UDUP extends Module implements Runnable {
     private UDUPClient client;
     private UDUPServer server;

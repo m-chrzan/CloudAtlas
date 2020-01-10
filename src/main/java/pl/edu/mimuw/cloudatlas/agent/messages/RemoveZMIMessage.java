@@ -12,6 +12,8 @@ public class RemoveZMIMessage extends StanikMessage {
         this.removalTimestamp = removalTimestamp;
     }
 
+    public RemoveZMIMessage() {}
+
     public String getPathName() {
         return pathName;
     }

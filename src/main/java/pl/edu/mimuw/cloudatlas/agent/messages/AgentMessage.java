@@ -20,6 +20,8 @@ public abstract class AgentMessage {
         this.timestamp = System.currentTimeMillis() / 1000L;
     }
 
+    public AgentMessage() {}
+
     public String getMessageId() {
         return messageId;
     }
