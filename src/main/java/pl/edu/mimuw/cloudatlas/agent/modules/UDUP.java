@@ -23,11 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *  due to ValueContact design
  */
 
-// TODO add timestamps as close to sending as possible
-
-// TODO wysylac tylko remotegossipgirl message
-// TODO update timestampow odpowiedni w tym remotegossipgirlmessage
-
 public class UDUP extends Module {
     private UDUPClient client;
     private UDUPServer server;

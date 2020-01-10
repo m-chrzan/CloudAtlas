@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -138,6 +139,9 @@ public class UDUPSerializer {
         kryo.register(UDUPMessage.class);
         kryo.register(UpdateAttributesMessage.class);
         kryo.register(UpdateQueriesMessage.class);
+        kryo.register(GossipGirlMessage.class);
+        kryo.register(GossipGirlMessage.Type.class);
+        kryo.register(RemoteGossipGirlMessage.class);
 
         // modules
         kryo.register(TimerScheduledTask.class);

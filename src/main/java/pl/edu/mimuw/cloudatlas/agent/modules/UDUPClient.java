@@ -1,6 +1,8 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.UDUPMessage;
+import pl.edu.mimuw.cloudatlas.model.ValueTime;
+import pl.edu.mimuw.cloudatlas.model.ValueUtils;
 
 import javax.xml.crypto.Data;
 import java.io.IOException;
@@ -67,8 +69,11 @@ public class UDUPClient {
     public void sendMessage(UDUPMessage msg) throws IOException {
         int packetNo = 1;
         byte[] sendBuf;
-        byte[] dataBuf = this.serializer.serialize(msg);
+        byte[] dataBuf;
         this.lastTransmission++;
+
+        msg.getContent().setSentTimestamp(ValueUtils.currentTime());
+        dataBuf = this.serializer.serialize(msg);
 
         do {
             sendBuf = packSendBuffer(this.lastTransmission, packetNo, dataBuf);

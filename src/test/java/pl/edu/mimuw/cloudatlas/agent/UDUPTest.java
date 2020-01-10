@@ -1,6 +1,8 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
 import org.junit.*;
+import pl.edu.mimuw.cloudatlas.agent.messages.GossipGirlMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.RemoteGossipGirlMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UDUPMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
@@ -49,9 +51,9 @@ public class UDUPTest {
                     1000,
                     server2);
 
-            UDUPMessage testContent = new UDUPMessage();
+            RemoteGossipGirlMessage testContent =
+                    new RemoteGossipGirlMessage("singleMsgTest", 0, GossipGirlMessage.Type.NO_CO_TAM);
             testContent.setDestinationModule(ModuleType.TEST);
-            testContent.setMessageId("singleMsgTest");
 
             msg1 = new UDUPMessage(
                     "udup1",
@@ -61,6 +63,7 @@ public class UDUPTest {
 
         } catch (UnknownHostException | SocketException e) {
             e.printStackTrace();
+            testSuccess = false;
         }
 
         Thread udpThread1 = new Thread(server1);
@@ -69,13 +72,12 @@ public class UDUPTest {
         udpThread2.start();
 
         try {
-            Thread.sleep(5000);
-            System.out.println("Sending message");
+            Thread.sleep(500);
             if (udp1 == null | udp2 == null) {
-                Assert.fail("UDPs not initialized");
+                testSuccess = false;
             } else {
                 udp1.handle(msg1);
-                Thread.sleep(10000);
+                Thread.sleep(timeout);
             }
         } catch (InterruptedException | Module.InvalidMessageType e) {
             e.printStackTrace();
@@ -100,7 +102,7 @@ public class UDUPTest {
         UDUPServer server2 = null;
         UDUPMessage msg1 = null;
         boolean testSuccess = true;
-        int timeout = 5000;
+        int timeout = 3000;
 
         try {
             System.out.println("Starting udp1");
@@ -121,9 +123,9 @@ public class UDUPTest {
                     30,
                     server2);
 
-            UDUPMessage testContent = new UDUPMessage();
+            RemoteGossipGirlMessage testContent =
+                    new RemoteGossipGirlMessage("bigMsgTest", 0, GossipGirlMessage.Type.NO_CO_TAM);
             testContent.setDestinationModule(ModuleType.TEST);
-            testContent.setMessageId("bigMsgTest");
 
             msg1 = new UDUPMessage(
                     "udup1",
@@ -133,6 +135,7 @@ public class UDUPTest {
 
         } catch (UnknownHostException | SocketException e) {
             e.printStackTrace();
+            testSuccess = false;
         }
 
         Thread udpThread1 = new Thread(server1);
@@ -141,8 +144,13 @@ public class UDUPTest {
         udpThread2.start();
 
         try {
-            udp1.handle(msg1);
-            Thread.sleep(timeout + 1000);
+            Thread.sleep(500);
+            if (udp1 == null | udp2 == null) {
+                testSuccess = false;
+            } else {
+                udp1.handle(msg1);
+                Thread.sleep(timeout);
+            }
         } catch (InterruptedException | Module.InvalidMessageType e) {
             e.printStackTrace();
             testSuccess = false;
@@ -169,7 +177,7 @@ public class UDUPTest {
         UDUPMessage msg2 = null;
         UDUPMessage msg3 = null;
         boolean testSuccess = true;
-        int timeout = 5000;
+        int timeout = 3000;
 
         try {
             System.out.println("Starting udp1");
@@ -190,9 +198,9 @@ public class UDUPTest {
                     1000,
                     server2);
 
-            UDUPMessage testContent = new UDUPMessage();
+            RemoteGossipGirlMessage testContent =
+                    new RemoteGossipGirlMessage("multipleMsgTest", 0, GossipGirlMessage.Type.NO_CO_TAM);
             testContent.setDestinationModule(ModuleType.TEST);
-            testContent.setMessageId("multipleMsgTest");
 
             msg1 = new UDUPMessage(
                     "udup1",
@@ -214,6 +222,7 @@ public class UDUPTest {
 
         } catch (UnknownHostException | SocketException e) {
             e.printStackTrace();
+            testSuccess = false;
         }
 
         Thread udpThread1 = new Thread(server1);
@@ -222,12 +231,27 @@ public class UDUPTest {
         udpThread2.start();
 
         try {
-            udp1.handle(msg1);
-            udp1.handle(msg2);
-            udp1.handle(msg3);
-            Thread.sleep(timeout + 2000);
+            Thread.sleep(500);
+            if (udp1 == null | udp2 == null) {
+                testSuccess = false;
+            } else {
+                udp1.handle(msg1);
+                udp1.handle(msg2);
+                udp1.handle(msg3);
+                Thread.sleep(timeout);
+            }
         } catch (InterruptedException | Module.InvalidMessageType e) {
             e.printStackTrace();
+            testSuccess = false;
+        }
+
+        udpThread1.interrupt();
+        udpThread2.interrupt();
+
+        if (testSuccess) {
+            Assert.assertTrue(true);
+        } else {
+            Assert.fail();
         }
     }
 }
