@@ -39,18 +39,15 @@ public class Agent {
         }
     }
 
-    public static HashMap<ModuleType, Module> initializeModules() {
+    public static HashMap<ModuleType, Module> initializeModules() throws UnknownHostException {
         HashMap<ModuleType, Module> modules = new HashMap<ModuleType, Module>();
         modules.put(ModuleType.TIMER_SCHEDULER, new TimerScheduler(ModuleType.TIMER_SCHEDULER));
         modules.put(ModuleType.RMI, new Remik());
         Long freshnessPeriod = new Long(System.getProperty("freshness_period"));
         modules.put(ModuleType.STATE, new Stanik(freshnessPeriod));
         modules.put(ModuleType.QUERY, new Qurnik());
-        try {
-            modules.put(ModuleType.UDP, new UDUP(InetAddress.getByName("127.0.0.1"), 5988, 5000, 20000));
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        UDUPServer server = new UDUPServer(InetAddress.getByName("127.0.0.1"), 5988, 2000);
+        modules.put(ModuleType.UDP, new UDUP(5988, 5000, 20000, null));
         // TODO add modules as we implement them
         return modules;
     }
@@ -89,14 +86,24 @@ public class Agent {
     }
 
     public static void runModulesAsThreads() {
-        HashMap<ModuleType, Module> modules = initializeModules();
+        HashMap<ModuleType, Module> modules = null;
+
+        try {
+            modules = initializeModules();
+        } catch (UnknownHostException e) {
+            System.out.println("Module initialization failed");
+            e.printStackTrace();
+            return;
+        }
+
         HashMap<ModuleType, Executor> executors = initializeExecutors(modules);
         ArrayList<Thread> executorThreads = initializeExecutorThreads(executors);
-
         eventBus = new EventBus(executors);
+        Thread UDUPServerThread = new Thread(((UDUP) modules.get(ModuleType.UDP)).getServer());
         Thread eventBusThread = new Thread(eventBus);
         System.out.println("Initializing event bus");
         eventBusThread.start();
+        UDUPServerThread.start();
     }
 
     private static void initZones() {

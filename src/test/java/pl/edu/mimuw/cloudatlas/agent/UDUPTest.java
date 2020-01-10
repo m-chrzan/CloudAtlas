@@ -6,12 +6,14 @@ import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 import pl.edu.mimuw.cloudatlas.agent.modules.UDUP;
+import pl.edu.mimuw.cloudatlas.agent.modules.UDUPServer;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.PathName;
 import pl.edu.mimuw.cloudatlas.model.ValueContact;
 import pl.edu.mimuw.cloudatlas.model.ValueInt;
 
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 // TODO add serialization tests that target custom serializers (type collections!)
@@ -22,25 +24,30 @@ public class UDUPTest {
     public void messageBetweenUDUPs() {
         UDUP udp1 = null;
         UDUP udp2 = null;
+        UDUPServer server1 = null;
+        UDUPServer server2 = null;
         UDUPMessage msg1 = null;
         boolean testSuccess = true;
+        int timeout = 5000;
 
         try {
             System.out.println("Starting udp1");
 
+            server1 = new UDUPServer(InetAddress.getByName("127.0.0.2"), 5996, 1000);
             udp1 = new UDUP(
-                    InetAddress.getByName("127.0.0.2"),
-                    5999,
-                    5000,
-                    1000);
+                    5997,
+                    timeout,
+                    1000,
+                    server1);
 
             System.out.println("Starting udp2");
 
+            server2 = new UDUPServer(InetAddress.getByName("127.0.0.3"), 5996, 1000);
             udp2 = new UDUP(
-                    InetAddress.getByName("127.0.0.3"),
-                    5999,
-                    5000,
-                    1000);
+                    5997,
+                    timeout,
+                    1000,
+                    server2);
 
             UDUPMessage testContent = new UDUPMessage();
             testContent.setDestinationModule(ModuleType.TEST);
@@ -52,13 +59,13 @@ public class UDUPTest {
                     testContent
             );
 
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException | SocketException e) {
             e.printStackTrace();
         }
 
-        Thread udpThread1 = new Thread(udp1);
+        Thread udpThread1 = new Thread(server1);
         udpThread1.start();
-        Thread udpThread2 = new Thread(udp2);
+        Thread udpThread2 = new Thread(server2);
         udpThread2.start();
 
         try {
@@ -89,6 +96,8 @@ public class UDUPTest {
     public void bigMessageBetweenUDUPs() {
         UDUP udp1 = null;
         UDUP udp2 = null;
+        UDUPServer server1 = null;
+        UDUPServer server2 = null;
         UDUPMessage msg1 = null;
         boolean testSuccess = true;
         int timeout = 5000;
@@ -96,19 +105,21 @@ public class UDUPTest {
         try {
             System.out.println("Starting udp1");
 
+            server1 = new UDUPServer(InetAddress.getByName("127.0.0.2"), 5991, 1000);
             udp1 = new UDUP(
-                    InetAddress.getByName("127.0.0.2"),
-                    5998,
+                    5997,
                     timeout,
-                    30);
+                    30,
+                    server1);
 
             System.out.println("Starting udp2");
 
+            server2 = new UDUPServer(InetAddress.getByName("127.0.0.3"), 5991, 1000);
             udp2 = new UDUP(
-                    InetAddress.getByName("127.0.0.3"),
-                    5998,
+                    5997,
                     timeout,
-                    30);
+                    30,
+                    server2);
 
             UDUPMessage testContent = new UDUPMessage();
             testContent.setDestinationModule(ModuleType.TEST);
@@ -120,13 +131,13 @@ public class UDUPTest {
                     testContent
             );
 
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException | SocketException e) {
             e.printStackTrace();
         }
 
-        Thread udpThread1 = new Thread(udp1);
+        Thread udpThread1 = new Thread(server1);
         udpThread1.start();
-        Thread udpThread2 = new Thread(udp2);
+        Thread udpThread2 = new Thread(server2);
         udpThread2.start();
 
         try {
@@ -152,6 +163,8 @@ public class UDUPTest {
     public void sendMultipleMessages() {
         UDUP udp1 = null;
         UDUP udp2 = null;
+        UDUPServer server1 = null;
+        UDUPServer server2 = null;
         UDUPMessage msg1 = null;
         UDUPMessage msg2 = null;
         UDUPMessage msg3 = null;
@@ -161,19 +174,21 @@ public class UDUPTest {
         try {
             System.out.println("Starting udp1");
 
+            server1 = new UDUPServer(InetAddress.getByName("127.0.0.2"), 5997, 1000);
             udp1 = new UDUP(
-                    InetAddress.getByName("127.0.0.2"),
                     5997,
                     timeout,
-                    1000);
+                    1000,
+                    server1);
 
             System.out.println("Starting udp2");
 
+            server2 = new UDUPServer(InetAddress.getByName("127.0.0.3"), 5997, 1000);
             udp2 = new UDUP(
-                    InetAddress.getByName("127.0.0.3"),
                     5997,
                     timeout,
-                    1000);
+                    1000,
+                    server2);
 
             UDUPMessage testContent = new UDUPMessage();
             testContent.setDestinationModule(ModuleType.TEST);
@@ -197,13 +212,13 @@ public class UDUPTest {
                     testContent
             );
 
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException | SocketException e) {
             e.printStackTrace();
         }
 
-        Thread udpThread1 = new Thread(udp1);
+        Thread udpThread1 = new Thread(server1);
         udpThread1.start();
-        Thread udpThread2 = new Thread(udp2);
+        Thread udpThread2 = new Thread(server2);
         udpThread2.start();
 
         try {
