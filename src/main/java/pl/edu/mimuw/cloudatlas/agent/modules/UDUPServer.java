@@ -2,6 +2,7 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import com.google.common.primitives.Bytes;
 import pl.edu.mimuw.cloudatlas.agent.messages.UDUPMessage;
+import pl.edu.mimuw.cloudatlas.model.ValueUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -54,14 +55,19 @@ public class UDUPServer implements Runnable {
         String transmissionID = packTransmissionID(transmissionNo, packet.getAddress());
         int packetNo = readPacketNo(packet.getData());
         byte[] packetData = trimPacketBuffer(packet.getData());
+        UDUPMessage msg;
 
         if (packetNo == 1 && packet.getLength() < this.bufSize) {
-            UDUPMessage msg = this.serializer.deserialize(packetData);
+            msg = this.serializer.deserialize(packetData);
+            msg.getContent().setReceivedTimestamp(ValueUtils.currentTime());
             System.out.println("UDP received message " + msg.getContent().getMessageId());
-            sendMessageFurther(msg);
         } else {
             System.out.println("UDP received partial message with transmission id " + transmissionID + " packet no " + packetNo);
-            this.addPartialMessageAndCheckSerialization(transmissionID, packetNo, packetData);
+            msg = this.addPartialMessageAndCheckSerialization(transmissionID, packetNo, packetData);
+        }
+
+        if (msg != null) {
+            sendMessageFurther(msg);
         }
     }
 
@@ -124,14 +130,16 @@ public class UDUPServer implements Runnable {
         return fullData;
     }
 
-    public void addPartialMessageAndCheckSerialization(String transmissionID, int newPacketNo, byte[] packetData) {
+    public UDUPMessage addPartialMessageAndCheckSerialization(String transmissionID, int newPacketNo, byte[] packetData) {
+        UDUPMessage msg = null;
+
         if (this.partialPackets.containsKey(transmissionID)) {
             try {
                 byte[] allPacketData = concatPacketData(transmissionID, newPacketNo, packetData);
-                UDUPMessage msg = this.serializer.deserialize(allPacketData);
+                msg = this.serializer.deserialize(allPacketData);
+                msg.getContent().setReceivedTimestamp(ValueUtils.currentTime());
                 this.partialPackets.remove(transmissionID);
                 System.out.println("Kryo put together whole transmission for msg " + msg.getContent().getMessageId());
-                this.udp.sendMessage(msg.getContent());
             } catch (Error | Exception e) {
                 System.out.println("Kryo didn't deserialize partial message, waiting to receive the rest");
             }
@@ -140,6 +148,8 @@ public class UDUPServer implements Runnable {
             newTransmission.add(newPacketNo-1, packetData);
             this.partialPackets.put(transmissionID, newTransmission);
         }
+
+        return msg;
     }
 
     public void close() {
