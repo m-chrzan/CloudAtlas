@@ -40,16 +40,17 @@ public class GossipGirlStrategies {
             zoneProbabilities.add(probPair);
         }
 
-        uniformDist = new EnumeratedDistribution<String>(zoneProbabilities);
+        expDist = new EnumeratedDistribution<String>(zoneProbabilities);
     }
 
     private void initUniformZoneProbabilities() {
         ArrayList<Pair<String, Double>> zoneProbabilities;
         zoneProbabilities = new ArrayList<>(fullPathLength);
+        Double uniformProb = 1.0/fullPathLength;
 
         // TODO good direction
         for (int i = 0; i < fullPathLength; i++) {
-            Pair<String, Double> probPair = new Pair<String, Double>(fullPathComponents.get(i), 1.0);
+            Pair<String, Double> probPair = new Pair<String, Double>(fullPathComponents.get(i), uniformProb);
             zoneProbabilities.add(probPair);
         }
 
@@ -77,14 +78,24 @@ public class GossipGirlStrategies {
             Pair<String, Integer> nextP = roundRobinExpFreqs.get(i-1);
 
             if (2 * p.getSecond() < nextP.getSecond()) {
-                roundRobinExpFreqs.add(i, new Pair<String, Integer>(p.getFirst(), p.getSecond() + 1));
+                roundRobinExpFreqs.set(i, new Pair<String, Integer>(p.getFirst(), p.getSecond() + 1));
                 return p.getFirst();
             }
         }
 
         Pair<String, Integer> rootPath = roundRobinExpFreqs.get(0);
-        roundRobinExpFreqs.add(0, new Pair<String, Integer>(rootPath.getFirst(), rootPath.getSecond() + 1));
+        roundRobinExpFreqs.set(0, new Pair<String, Integer>(rootPath.getFirst(), rootPath.getSecond() + 1));
         return rootPath.getFirst();
+    }
+
+    private String formNewPath(String selectedPath) {
+        String newPath = "";
+        for (String pathEl : fullPathComponents) {
+            newPath = newPath.concat("/" + pathEl);
+            if (pathEl.equals(selectedPath))
+                break;
+        }
+        return newPath;
     }
 
     public PathName selectStrategy(ZoneSelectionStrategy selectionStrategy) {
@@ -108,6 +119,6 @@ public class GossipGirlStrategies {
                 throw new UnsupportedOperationException("Such strategy doesn't exist");
         }
 
-        return new PathName(selectedPath);
+        return new PathName(formNewPath(selectedPath));
     }
 }
