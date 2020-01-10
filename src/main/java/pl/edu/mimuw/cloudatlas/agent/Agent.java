@@ -2,6 +2,7 @@ package pl.edu.mimuw.cloudatlas.agent;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -39,15 +40,19 @@ public class Agent {
         }
     }
 
-    public static HashMap<ModuleType, Module> initializeModules() throws UnknownHostException {
+    public static HashMap<ModuleType, Module> initializeModules() throws UnknownHostException, SocketException {
         HashMap<ModuleType, Module> modules = new HashMap<ModuleType, Module>();
         modules.put(ModuleType.TIMER_SCHEDULER, new TimerScheduler(ModuleType.TIMER_SCHEDULER));
         modules.put(ModuleType.RMI, new Remik());
-        Long freshnessPeriod = new Long(System.getProperty("freshness_period"));
+        Long freshnessPeriod = Long.getLong(System.getProperty("freshness_period"));
         modules.put(ModuleType.STATE, new Stanik(freshnessPeriod));
         modules.put(ModuleType.QUERY, new Qurnik());
-        UDUPServer server = new UDUPServer(InetAddress.getByName("127.0.0.1"), 5988, 2000);
-        modules.put(ModuleType.UDP, new UDUP(5988, 5000, 20000, null));
+
+        Integer port = Integer.getInteger(System.getProperty("port"));
+        Integer timeout = Integer.getInteger(System.getProperty("timeout"));
+        Integer bufsize = Integer.getInteger(System.getProperty("bufsize"));
+        UDUPServer server = new UDUPServer(InetAddress.getByName("127.0.0.1"), port, bufsize);
+        modules.put(ModuleType.UDP, new UDUP(port, timeout, bufsize, server));
         // TODO add modules as we implement them
         return modules;
     }
@@ -90,7 +95,7 @@ public class Agent {
 
         try {
             modules = initializeModules();
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException | SocketException e) {
             System.out.println("Module initialization failed");
             e.printStackTrace();
             return;

@@ -23,10 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *  due to ValueContact design
  */
 
-// TODO set server port in global config - must be the same everywhere
-// TODO same with buffer size
-
-// TODO separate server like newapiimpl
 // TODO add timestamps as close to sending as possible
 
 // TODO wysylac tylko remotegossipgirl message
