@@ -10,6 +10,8 @@ public class RemoteGossipGirlMessage extends GossipGirlMessage {
         super(messageId, timestamp, type);
     }
 
+    public RemoteGossipGirlMessage() {};
+
     public void setSentTimestamp(ValueTime sentTimestamp) {
         this.sentTimestamp = sentTimestamp;
     }

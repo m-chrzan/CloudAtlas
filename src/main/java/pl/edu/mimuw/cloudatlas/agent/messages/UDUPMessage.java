@@ -6,15 +6,15 @@ import pl.edu.mimuw.cloudatlas.model.ValueContact;
 
 public class UDUPMessage extends AgentMessage {
     private ValueContact contact;
-    private AgentMessage content;
+    private RemoteGossipGirlMessage content;
 
-    public UDUPMessage(String messageId, long timestamp, ValueContact contact, AgentMessage content) {
+    public UDUPMessage(String messageId, long timestamp, ValueContact contact, RemoteGossipGirlMessage content) {
         super(messageId, ModuleType.UDP, timestamp);
         this.contact = contact;
         this.content = content;
     }
 
-    public UDUPMessage(String messageId, ValueContact contact, AgentMessage content) {
+    public UDUPMessage(String messageId, ValueContact contact, RemoteGossipGirlMessage content) {
         super(messageId, ModuleType.UDP);
         this.contact = contact;
         this.content = content;
@@ -27,11 +27,11 @@ public class UDUPMessage extends AgentMessage {
         module.handleTyped(this);
     }
 
-    public AgentMessage getContent() {
+    public RemoteGossipGirlMessage getContent() {
         return content;
     }
 
-    public void setContent(AgentMessage content) {
+    public void setContent(RemoteGossipGirlMessage content) {
         this.content = content;
     }
 

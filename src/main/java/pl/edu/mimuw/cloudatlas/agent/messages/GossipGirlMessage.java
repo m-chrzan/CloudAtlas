@@ -19,6 +19,8 @@ public abstract class GossipGirlMessage extends AgentMessage {
         this.type = type;
     }
 
+    public GossipGirlMessage() {};
+
     public Type getType() {
         return type;
     }

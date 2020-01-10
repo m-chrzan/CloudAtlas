@@ -23,30 +23,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *  due to ValueContact design
  */
 
-// TODO set server port in global config - must be the same everywhere
-// TODO same with buffer size
-
-// TODO separate server like newapiimpl
-// TODO add timestamps as close to sending as possible
-
-// TODO wysylac tylko remotegossipgirl message
-// TODO update timestampow odpowiedni w tym remotegossipgirlmessage
-
-public class UDUP extends Module implements Runnable {
+public class UDUP extends Module {
     private UDUPClient client;
     private UDUPServer server;
-    private final AtomicBoolean running;
 
-    public UDUP(InetAddress serverAddr,
-                int serverPort,
+    public UDUP(int serverPort,
                 int timeout,
-                int bufferSize) {
+                int bufferSize,
+                UDUPServer server) {
         super(ModuleType.UDP);
-        this.running = new AtomicBoolean(false);
         try {
             this.client = new UDUPClient(this, serverPort, bufferSize);
-            this.server = new UDUPServer(this, serverAddr, serverPort, bufferSize);
-            this.running.getAndSet(true);
+            this.server = server;
+            this.server.setUDUP(this);
         } catch (SocketException e) {
             e.printStackTrace();
             this.client.close();
@@ -54,17 +43,8 @@ public class UDUP extends Module implements Runnable {
         }
     }
 
-    public void run() {
-        System.out.println("UDP server running");
-        while(this.running.get()) {
-            try {
-                this.server.acceptMessage();
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-                this.running.getAndSet(false);
-                this.server.close();
-            }
-        }
+    public UDUPServer getServer() {
+        return this.server;
     }
 
     public void handleTyped(UDUPMessage event) throws InterruptedException {
