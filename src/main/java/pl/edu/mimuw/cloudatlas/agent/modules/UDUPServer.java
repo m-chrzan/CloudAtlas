@@ -59,7 +59,6 @@ public class UDUPServer implements Runnable {
 
         if (packetNo == 1 && packet.getLength() < this.bufSize) {
             msg = this.serializer.deserialize(packetData);
-            msg.getContent().setReceivedTimestamp(ValueUtils.currentTime());
             System.out.println("UDP received message " + msg.getContent().getMessageId());
         } else {
             System.out.println("UDP received partial message with transmission id " + transmissionID + " packet no " + packetNo);
@@ -67,6 +66,8 @@ public class UDUPServer implements Runnable {
         }
 
         if (msg != null) {
+            msg.getContent().setReceivedTimestamp(ValueUtils.currentTime());
+            msg.getContent().setSenderAddress(packet.getAddress());
             sendMessageFurther(msg);
         }
     }
@@ -137,7 +138,6 @@ public class UDUPServer implements Runnable {
             try {
                 byte[] allPacketData = concatPacketData(transmissionID, newPacketNo, packetData);
                 msg = this.serializer.deserialize(allPacketData);
-                msg.getContent().setReceivedTimestamp(ValueUtils.currentTime());
                 this.partialPackets.remove(transmissionID);
                 System.out.println("Kryo put together whole transmission for msg " + msg.getContent().getMessageId());
             } catch (Error | Exception e) {
