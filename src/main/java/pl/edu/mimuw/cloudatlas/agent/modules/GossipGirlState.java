@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import pl.edu.mimuw.cloudatlas.agent.messages.HejkaMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.NoCoTamMessage;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.PathName;
@@ -22,8 +23,10 @@ import pl.edu.mimuw.cloudatlas.model.ZMI;
 public class GossipGirlState {
     public enum State {
         WAIT_FOR_STATE_INITIALIZER,
+        APPLY_HEJKA,
         WAIT_FOR_STATE_RESPONDER,
         SEND_HEJKA,
+        SEND_NO_CO_TAM,
         SEND_INFO,
         WAIT_FOR_NO_CO_TAM,
         WAIT_FOR_FIRST_INFO,
@@ -57,7 +60,7 @@ public class GossipGirlState {
         if (initiating) {
             state = State.WAIT_FOR_STATE_INITIALIZER;
         } else {
-            state = State.WAIT_FOR_STATE_RESPONDER;
+            state = State.APPLY_HEJKA;
         }
     }
 
@@ -71,7 +74,7 @@ public class GossipGirlState {
             case WAIT_FOR_STATE_RESPONDER:
                 this.hierarchy = hierarchy;
                 this.queries = queries;
-                state = State.WAIT_FOR_FIRST_INFO;
+                state = State.SEND_NO_CO_TAM;
                 break;
             default:
                 System.out.println("ERROR: tried to set gossip state when not expected");
@@ -83,6 +86,34 @@ public class GossipGirlState {
         switch (state) {
             case SEND_HEJKA:
                 state = state.WAIT_FOR_NO_CO_TAM;
+                break;
+            default:
+                System.out.println("ERROR: tried to set gossip state when not expected");
+                state = State.ERROR;
+        }
+    }
+
+    public void sentNoCoTam() {
+        switch (state) {
+            case SEND_NO_CO_TAM:
+                state = state.WAIT_FOR_FIRST_INFO;
+                break;
+            default:
+                System.out.println("ERROR: tried to set gossip state when not expected");
+                state = State.ERROR;
+        }
+    }
+
+    public void handleHejka(HejkaMessage message) {
+        switch (state) {
+            case APPLY_HEJKA:
+                System.out.println("setting sender gossip id to " + message.getSenderGossipId());
+                theirGossipId = message.getSenderGossipId();
+                theirZoneTimestamps = message.getZoneTimestamps();
+                theirQueryTimestamps = message.getQueryTimestamps();
+                hejkaSendTimestamp = message.getSentTimestamp();
+                hejkaReceiveTimestamp = message.getReceivedTimestamp();
+                state = State.WAIT_FOR_STATE_RESPONDER;
                 break;
             default:
                 System.out.println("ERROR: tried to set gossip state when not expected");

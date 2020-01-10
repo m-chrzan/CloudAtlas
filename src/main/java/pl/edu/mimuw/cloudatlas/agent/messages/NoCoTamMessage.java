@@ -14,7 +14,7 @@ public class NoCoTamMessage extends RemoteGossipGirlMessage {
     private ValueTime hejkaSendTimestamp;
     private ValueTime hejkaReceiveTimestamp;
 
-    public NoCoTamMessage(String messageId, long timestamp, long receiverGossipId, long senderGossipId, Map<PathName, ValueTime> zoneTimestamps, Map<Attribute, ValueTime> queryTimestamps, ValueTime hejkaSendTimestamp, ValueTime hejkaReceiveTimestamp) {
+    public NoCoTamMessage(String messageId, long timestamp, long senderGossipId, long receiverGossipId, Map<PathName, ValueTime> zoneTimestamps, Map<Attribute, ValueTime> queryTimestamps, ValueTime hejkaSendTimestamp, ValueTime hejkaReceiveTimestamp) {
         super(messageId, timestamp, Type.NO_CO_TAM);
         this.receiverGossipId = receiverGossipId;
         this.senderGossipId = senderGossipId;

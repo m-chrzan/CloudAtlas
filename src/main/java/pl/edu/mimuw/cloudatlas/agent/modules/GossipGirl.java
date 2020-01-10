@@ -20,6 +20,7 @@ import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.PathName;
+import pl.edu.mimuw.cloudatlas.model.ValueContact;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
@@ -37,6 +38,9 @@ public class GossipGirl extends Module {
         switch(message.getType()) {
             case INITIATE:
                 initiateGossip((InitiateGossipMessage) message);
+                break;
+            case HEJKA:
+                receiveGossip((HejkaMessage) message);
                 break;
             case NO_CO_TAM:
                 handleNoCoTam((NoCoTamMessage) message);
@@ -71,6 +75,23 @@ public class GossipGirl extends Module {
         sendMessage(getState);
     }
 
+    private void receiveGossip(HejkaMessage message) throws InterruptedException {
+        Long gossipId = nextGossipId;
+        nextGossipId++;
+        gossipStates.put(gossipId, new GossipGirlState(
+                    gossipId,
+                    message.getReceiverPath(),
+                    new ValueContact(message.getSenderPath(), message.getSenderAddress()),
+                    false
+                )
+        );
+
+        gossipStates.get(gossipId).handleHejka(message);
+
+        GetStateMessage getState = new GetStateMessage("", 0, ModuleType.GOSSIP, gossipId);
+        sendMessage(getState);
+    }
+
     private void setState(StateMessage message) throws InterruptedException {
         GossipGirlState state = gossipStates.get(message.getRequestId());
         if (state != null) {
@@ -80,12 +101,28 @@ public class GossipGirl extends Module {
                         "",
                         0,
                         state.gossipId,
+                        state.ourPath,
+                        state.theirContact.getName(),
                         state.getZoneTimestampsToSend(),
                         state.getQueryTimestampsToSend()
                 );
                 UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, hejka);
                 sendMessage(udupMessage);
                 state.sentHejka();
+            } else if (state.state == GossipGirlState.State.SEND_NO_CO_TAM) {
+                NoCoTamMessage noCoTam = new NoCoTamMessage(
+                        "",
+                        0,
+                        state.gossipId,
+                        state.theirGossipId,
+                        state.getZoneTimestampsToSend(),
+                        state.getQueryTimestampsToSend(),
+                        state.hejkaSendTimestamp,
+                        state.hejkaReceiveTimestamp
+                );
+                UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, noCoTam);
+                sendMessage(udupMessage);
+                state.sentNoCoTam();
             }
         } else {
             System.out.println("ERROR: GossipGirl got state for a nonexistent gossip");

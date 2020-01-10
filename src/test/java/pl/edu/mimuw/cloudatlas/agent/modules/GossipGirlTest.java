@@ -49,12 +49,14 @@ public class GossipGirlTest {
     private ValueTime testTime;
     private ZMI initiatorHierarchy;
     private Map<Attribute, Entry<ValueQuery, ValueTime>> initiatorQueries;
-    private StateMessage initiatorStateMessage;
+    private StateMessage stateMessage;
     private NoCoTamMessage noCoTamMessage;
     private AttributesMessage attributesMessage1;
     private AttributesMessage attributesMessage2;
     private QueryMessage queryMessage1;
     private QueryMessage queryMessage2;
+
+    private HejkaMessage hejkaMessage;
 
     @Before
     public void setupLocals() throws Exception {
@@ -75,18 +77,24 @@ public class GossipGirlTest {
         testTime = ValueUtils.currentTime();
         setupHierarchy();
         setupQueries();
-        initiatorStateMessage = new StateMessage("", ModuleType.GOSSIP, 0, 0, initiatorHierarchy, initiatorQueries);
+        stateMessage = new StateMessage("", ModuleType.GOSSIP, 0, 0, initiatorHierarchy, initiatorQueries);
 
         Map<PathName, ValueTime> otherZoneTimestamps = makeOtherZoneTimestamps();
         Map<Attribute, ValueTime> otherQueryTimestamps = makeOtherQueryTimestamps();
 
-        noCoTamMessage = new NoCoTamMessage("", 0, 0, 42, otherZoneTimestamps, otherQueryTimestamps, TestUtil.addToTime(testTime, 10), TestUtil.addToTime(testTime, 22));
+        noCoTamMessage = new NoCoTamMessage("", 0, 42, 0, otherZoneTimestamps, otherQueryTimestamps, TestUtil.addToTime(testTime, 10), TestUtil.addToTime(testTime, 22));
 
         attributesMessage1 = makeAttributesMessage("/son/bro", makeAttributes1());
         attributesMessage2 = makeAttributesMessage("/son/whodis", makeAttributes2());
         queryMessage1 = makeQueryMessage("&one", "SELECT 3 AS one");
         queryMessage2 = makeQueryMessage("&three", "SELECT 3 AS three");
+
+        hejkaMessage = new HejkaMessage("", 0, 123, new PathName("/son/bro"), new PathName("/son/grand"), otherZoneTimestamps, otherQueryTimestamps);
+        hejkaMessage.setSentTimestamp(testTime);
+        hejkaMessage.setReceivedTimestamp(TestUtil.addToTime(testTime, 15));
+        hejkaMessage.setSenderAddress(theirContact.getAddress());
     }
+
 
     public QueryMessage makeQueryMessage(String name, String query) throws Exception {
         return new QueryMessage("", 0, new Attribute(name), new ValueQuery(query), 0);
@@ -192,7 +200,7 @@ public class GossipGirlTest {
     public void initiatorSendsHejkaOnState() throws Exception {
         gossipGirl.handleTyped(initiateGossipMessage);
         executor.messagesToPass.take();
-        gossipGirl.handleTyped(initiatorStateMessage);
+        gossipGirl.handleTyped(stateMessage);
 
         AgentMessage receivedMessage = executor.messagesToPass.poll();
         assertUDUPMessage(
@@ -202,6 +210,8 @@ public class GossipGirlTest {
         );
         HejkaMessage hejkaMessage = (HejkaMessage) ((UDUPMessage) receivedMessage).getContent();
         assertEquals(0, hejkaMessage.getSenderGossipId());
+        assertEquals(new PathName("/son/grand"), hejkaMessage.getSenderPath());
+        assertEquals(new PathName("/son/bro"), hejkaMessage.getReceiverPath());
         assertEquals(3, TestUtil.iterableSize(hejkaMessage.getZoneTimestamps().keySet()));
         Set<PathName> zoneSet = hejkaMessage.getZoneTimestamps().keySet();
         assertThat(zoneSet, hasItems(new PathName("/daughter")));
@@ -219,7 +229,7 @@ public class GossipGirlTest {
     public void initiatorSendsZonesAndQueriesOnNoCoTam() throws Exception {
         gossipGirl.handleTyped(initiateGossipMessage);
         executor.messagesToPass.take();
-        gossipGirl.handleTyped(initiatorStateMessage);
+        gossipGirl.handleTyped(stateMessage);
         executor.messagesToPass.take();
         gossipGirl.handleTyped(noCoTamMessage);
 
@@ -243,7 +253,7 @@ public class GossipGirlTest {
     public void initiatorModifiesStateOnAttributes() throws Exception {
         gossipGirl.handleTyped(initiateGossipMessage);
         executor.messagesToPass.take();
-        gossipGirl.handleTyped(initiatorStateMessage);
+        gossipGirl.handleTyped(stateMessage);
         executor.messagesToPass.take();
         gossipGirl.handleTyped(noCoTamMessage);
         executor.messagesToPass.take();
@@ -284,6 +294,47 @@ public class GossipGirlTest {
 
         gossipGirl.handleTyped(attributesMessage2);
         gossipGirl.handleTyped(queryMessage2);
+    }
+
+    @Test
+    public void getsStateOnHejka() throws Exception {
+        gossipGirl.handleTyped(hejkaMessage);
+
+        AgentMessage receivedMessage = executor.messagesToPass.poll();
+        assertNotNull(receivedMessage);
+        assertEquals(ModuleType.STATE, receivedMessage.getDestinationModule());
+        StanikMessage stanikMessage = (StanikMessage) receivedMessage;
+        assertEquals(StanikMessage.Type.GET_STATE, stanikMessage.getType());
+        GetStateMessage getStateMessage = (GetStateMessage) stanikMessage;
+        assertEquals(ModuleType.GOSSIP, getStateMessage.getRequestingModule());
+    }
+
+    @Test
+    public void receiverSendsNoCoTamOnState() throws Exception {
+        gossipGirl.handleTyped(hejkaMessage);
+        executor.messagesToPass.poll();
+
+        gossipGirl.handleTyped(stateMessage);
+        AgentMessage receivedMessage = executor.messagesToPass.poll();
+        assertUDUPMessage(
+                receivedMessage,
+                new PathName("/son/bro"),
+                GossipGirlMessage.Type.NO_CO_TAM
+        );
+        NoCoTamMessage noCoTamMessage = (NoCoTamMessage) ((UDUPMessage) receivedMessage).getContent();
+        assertEquals(0, noCoTamMessage.getSenderGossipId());
+        assertEquals(123, noCoTamMessage.getReceiverGossipId());
+        assertEquals(3, TestUtil.iterableSize(noCoTamMessage.getZoneTimestamps().keySet()));
+        Set<PathName> zoneSet = noCoTamMessage.getZoneTimestamps().keySet();
+        assertThat(zoneSet, hasItems(new PathName("/daughter")));
+        assertThat(zoneSet, hasItems(new PathName("/son/sis")));
+        assertThat(zoneSet, hasItems(new PathName("/son/grand")));
+
+        assertEquals(3, TestUtil.iterableSize(noCoTamMessage.getQueryTimestamps().keySet()));
+        Set<Attribute> querySet = noCoTamMessage.getQueryTimestamps().keySet();
+        assertThat(querySet, hasItems(new Attribute("&one")));
+        assertThat(querySet, hasItems(new Attribute("&two")));
+        assertThat(querySet, hasItems(new Attribute("&query")));
     }
 
     private void assertQueryMessage(AgentMessage message, String recipientPath, String name, String query) throws Exception {
