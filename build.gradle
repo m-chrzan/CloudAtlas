@@ -22,6 +22,22 @@ ext.freshnessPeriod = {
     return System.getProperty("freshnessPeriod") ?: 60 * 1000
 }
 
+ext.UDUPHostname = {
+    return System.getProperty("hostname") ?: "localhost"
+}
+
+ext.port = {
+    return System.getProperty("port") ?: 5999;
+}
+
+ext.timeout = {
+    return System.getProperty("timeout") ?: 5000;
+}
+
+ext.bufsize = {
+    return System.getProperty("bufsize") ?: 512;
+}
+
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
@@ -61,6 +77,10 @@ task runAgent(type: JavaExec) {
     main = 'pl.edu.mimuw.cloudatlas.agent.Agent'
     systemProperty 'java.rmi.server.hostname', hostname()
     systemProperty 'freshness_period', freshnessPeriod()
+    systemProperty 'UDUPServer.hostname', UDUPHostname()
+    systemProperty 'UDUPServer.port', port()
+    systemProperty 'UDUPServer.timeout', port()
+    systemProperty 'UDUPServer.bufsize', port()
 }
 
 task runClient(type: JavaExec) {

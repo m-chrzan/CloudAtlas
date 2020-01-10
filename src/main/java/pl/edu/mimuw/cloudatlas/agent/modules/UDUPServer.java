@@ -10,22 +10,42 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class UDUPServer {
+public class UDUPServer implements Runnable {
     private UDUP udp;
     private UDUPSerializer serializer;
     private DatagramSocket socket;
     private InetAddress address;
     private HashMap<String, ArrayList<byte[]>> partialPackets;
     private int bufSize;
+    private final AtomicBoolean running;
 
-    public UDUPServer(UDUP udp, InetAddress addr, int port, int bufSize) throws SocketException {
-        this.udp = udp;
+    public UDUPServer(InetAddress addr, int port, int bufSize) throws SocketException {
         this.socket = new DatagramSocket(port, addr);
         this.address = addr;
         this.bufSize = bufSize;
         this.partialPackets = new HashMap<>();
         this.serializer = new UDUPSerializer();
+        this.running = new AtomicBoolean(false);
+    }
+
+    public void setUDUP(UDUP udup) {
+        this.udp = udup;
+    }
+
+    public void run() {
+        System.out.println("UDP server running");
+        this.running.getAndSet(true);
+        while(this.running.get()) {
+            try {
+                this.acceptMessage();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+                this.running.getAndSet(false);
+                this.close();
+            }
+        }
     }
 
     public void acceptMessage() throws IOException, InterruptedException {
