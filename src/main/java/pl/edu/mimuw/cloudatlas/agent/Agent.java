@@ -40,17 +40,17 @@ public class Agent {
         }
     }
 
-    public static HashMap<ModuleType, Module> initializeModules() throws UnknownHostException, SocketException {
+    public static HashMap<ModuleType, Module> initializeModules() throws UnknownHostException, SocketException, NullPointerException {
         HashMap<ModuleType, Module> modules = new HashMap<ModuleType, Module>();
         modules.put(ModuleType.TIMER_SCHEDULER, new TimerScheduler(ModuleType.TIMER_SCHEDULER));
         modules.put(ModuleType.RMI, new Remik());
-        Long freshnessPeriod = Long.getLong(System.getProperty("freshness_period"));
+        Long freshnessPeriod = Long.getLong("freshness_period");
         modules.put(ModuleType.STATE, new Stanik(freshnessPeriod));
         modules.put(ModuleType.QUERY, new Qurnik());
 
-        Integer port = Integer.getInteger(System.getProperty("port"));
-        Integer timeout = Integer.getInteger(System.getProperty("timeout"));
-        Integer bufsize = Integer.getInteger(System.getProperty("bufsize"));
+        Integer port = Integer.getInteger("UDUPServer.port");
+        Integer timeout = Integer.getInteger("UDUPServer.timeout");
+        Integer bufsize = Integer.getInteger("UDUPServer.bufsize");
         UDUPServer server = new UDUPServer(InetAddress.getByName("127.0.0.1"), port, bufsize);
         modules.put(ModuleType.UDP, new UDUP(port, timeout, bufsize, server));
         // TODO add modules as we implement them
