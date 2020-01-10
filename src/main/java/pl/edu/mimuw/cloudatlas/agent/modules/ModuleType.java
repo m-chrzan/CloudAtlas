@@ -5,8 +5,7 @@ public enum ModuleType {
     TIMER_GTP,
     RMI,
     UDP,
-    GOSSIP_IN,
-    GOSSIP_OUT,
+    GOSSIP,
     STATE,
     QUERY,
     // for testing

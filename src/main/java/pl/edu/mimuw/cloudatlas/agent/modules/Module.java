@@ -28,6 +28,10 @@ public abstract class Module {
         throw new InvalidMessageType("Got a TimerSchedulerMessage in module " + moduleType.toString());
     }
 
+    public void handleTyped(GossipGirlMessage message) throws InterruptedException, InvalidMessageType {
+        throw new InvalidMessageType("Got a GossipGirlMessage in module " + moduleType.toString());
+    }
+
     public void handleTyped(QurnikMessage message) throws InterruptedException, InvalidMessageType {
         throw new InvalidMessageType("Got a QurnikMessage in module " + moduleType.toString());
     }
