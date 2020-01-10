@@ -1,5 +1,6 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,6 +15,8 @@ import pl.edu.mimuw.cloudatlas.agent.messages.QueryMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UDUPMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.PathName;
@@ -37,6 +40,12 @@ public class GossipGirl extends Module {
                 break;
             case NO_CO_TAM:
                 handleNoCoTam((NoCoTamMessage) message);
+                break;
+            case ATTRIBUTES:
+                handleAttributes((AttributesMessage) message);
+                break;
+            case QUERY:
+                handleQuery((QueryMessage) message);
                 break;
             default:
                 throw new InvalidMessageType("This type of message cannot be handled by GossipGirl");
@@ -101,6 +110,39 @@ public class GossipGirl extends Module {
             state.sentInfo();
         } else {
             System.out.println("ERROR: GossipGirl got state for a nonexistent gossip");
+        }
+    }
+
+    private void handleAttributes(AttributesMessage message) throws InterruptedException {
+        GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
+        if (state != null) {
+            state.gotAttributesFor(message.getPath());
+            UpdateAttributesMessage updateMessage = new UpdateAttributesMessage("", 0, message.getPath().toString(), message.getAttributes());
+            sendMessage(updateMessage);
+            if (state.state == GossipGirlState.State.FINISHED) {
+                gossipStates.remove(message.getReceiverGossipId());
+            }
+        } else {
+            System.out.println("ERROR: GossipGirl got attributes for a nonexistent gossip");
+        }
+    }
+
+    private void handleQuery(QueryMessage message) throws InterruptedException {
+        GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
+        if (state != null) {
+            state.gotQuery(message.getName());
+            Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
+            queries.put(
+                message.getName(),
+                new SimpleImmutableEntry(message.getQuery(), state.getTheirQueryTimestamp(message.getName()))
+            );
+            UpdateQueriesMessage updateMessage = new UpdateQueriesMessage("", 0, queries);
+            sendMessage(updateMessage);
+            if (state.state == GossipGirlState.State.FINISHED) {
+                gossipStates.remove(message.getReceiverGossipId());
+            }
+        } else {
+            System.out.println("ERROR: GossipGirl got query for a nonexistent gossip");
         }
     }
 }

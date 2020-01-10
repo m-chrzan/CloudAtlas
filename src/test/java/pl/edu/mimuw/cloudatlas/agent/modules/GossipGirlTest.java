@@ -24,6 +24,8 @@ import pl.edu.mimuw.cloudatlas.agent.messages.NoCoTamMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StanikMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.UDUPMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
@@ -49,6 +51,10 @@ public class GossipGirlTest {
     private Map<Attribute, Entry<ValueQuery, ValueTime>> initiatorQueries;
     private StateMessage initiatorStateMessage;
     private NoCoTamMessage noCoTamMessage;
+    private AttributesMessage attributesMessage1;
+    private AttributesMessage attributesMessage2;
+    private QueryMessage queryMessage1;
+    private QueryMessage queryMessage2;
 
     @Before
     public void setupLocals() throws Exception {
@@ -75,6 +81,37 @@ public class GossipGirlTest {
         Map<Attribute, ValueTime> otherQueryTimestamps = makeOtherQueryTimestamps();
 
         noCoTamMessage = new NoCoTamMessage("", 0, 0, 42, otherZoneTimestamps, otherQueryTimestamps, TestUtil.addToTime(testTime, 10), TestUtil.addToTime(testTime, 22));
+
+        attributesMessage1 = makeAttributesMessage("/son/bro", makeAttributes1());
+        attributesMessage2 = makeAttributesMessage("/son/whodis", makeAttributes2());
+        queryMessage1 = makeQueryMessage("&one", "SELECT 3 AS one");
+        queryMessage2 = makeQueryMessage("&three", "SELECT 3 AS three");
+    }
+
+    public QueryMessage makeQueryMessage(String name, String query) throws Exception {
+        return new QueryMessage("", 0, new Attribute(name), new ValueQuery(query), 0);
+    }
+
+    public AttributesMap makeAttributes1() {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("name", new ValueString("bro"));
+        attributes.add("timestamp", testTime);
+        attributes.add("foo", new ValueInt(140l));
+        attributes.add("bar", new ValueString(":wq"));
+        return attributes;
+    }
+
+    public AttributesMap makeAttributes2() {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("name", new ValueString("whodis"));
+        attributes.add("timestamp", TestUtil.addToTime(testTime, -300));
+        attributes.add("foo", new ValueInt(61l));
+        attributes.add("bar", new ValueString("nice"));
+        return attributes;
+    }
+
+    public AttributesMessage makeAttributesMessage(String path, AttributesMap attributes) {
+        return new AttributesMessage("", 0, new PathName(path), attributes, 0);
     }
 
     public Map<PathName, ValueTime> makeOtherZoneTimestamps() {
@@ -165,7 +202,6 @@ public class GossipGirlTest {
         );
         HejkaMessage hejkaMessage = (HejkaMessage) ((UDUPMessage) receivedMessage).getContent();
         assertEquals(0, hejkaMessage.getSenderGossipId());
-        System.out.println(hejkaMessage.getZoneTimestamps().keySet());
         assertEquals(3, TestUtil.iterableSize(hejkaMessage.getZoneTimestamps().keySet()));
         Set<PathName> zoneSet = hejkaMessage.getZoneTimestamps().keySet();
         assertThat(zoneSet, hasItems(new PathName("/daughter")));
@@ -201,6 +237,53 @@ public class GossipGirlTest {
         assertQueryMessage(receivedMessage4, "/son/bro", "&two", "SELECT 2 AS two");
         AgentMessage receivedMessage5 = executor.messagesToPass.poll();
         assertQueryMessage(receivedMessage5, "/son/bro", "&query", "SELECT sum(foo) AS foo");
+    }
+
+    @Test
+    public void initiatorModifiesStateOnAttributes() throws Exception {
+        gossipGirl.handleTyped(initiateGossipMessage);
+        executor.messagesToPass.take();
+        gossipGirl.handleTyped(initiatorStateMessage);
+        executor.messagesToPass.take();
+        gossipGirl.handleTyped(noCoTamMessage);
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+
+        gossipGirl.handleTyped(attributesMessage1);
+        AgentMessage receivedMessage1 = executor.messagesToPass.poll();
+        assertNotNull(receivedMessage1);
+        assertEquals(ModuleType.STATE, receivedMessage1.getDestinationModule());
+        StanikMessage stanikMessage1 = (StanikMessage) receivedMessage1;
+        assertEquals(StanikMessage.Type.UPDATE_ATTRIBUTES, stanikMessage1.getType());
+        UpdateAttributesMessage updateMessage1 = (UpdateAttributesMessage) stanikMessage1;
+        assertEquals("/son/bro", updateMessage1.getPathName());
+        // TODO: this should be modified by GTP
+        assertEquals(testTime, updateMessage1.getAttributes().getOrNull("timestamp"));
+        assertEquals(new ValueInt(140l), updateMessage1.getAttributes().getOrNull("foo"));
+        assertEquals(new ValueString(":wq"), updateMessage1.getAttributes().getOrNull("bar"));
+
+        gossipGirl.handleTyped(queryMessage1);
+        AgentMessage receivedMessage2 = executor.messagesToPass.poll();
+        assertNotNull(receivedMessage2);
+        assertEquals(ModuleType.STATE, receivedMessage2.getDestinationModule());
+        StanikMessage stanikMessage2 = (StanikMessage) receivedMessage2;
+        assertEquals(StanikMessage.Type.UPDATE_QUERIES, stanikMessage2.getType());
+        UpdateQueriesMessage updateMessage2 = (UpdateQueriesMessage) stanikMessage2;
+        assertEquals(1, updateMessage2.getQueries().keySet().size());
+        assertThat(updateMessage2.getQueries().keySet(), hasItems(new Attribute("&one")));
+        assertEquals(updateMessage2.getQueries().get(new Attribute("&one")),
+                new SimpleImmutableEntry(
+                    new ValueQuery("SELECT 3 AS one"),
+                    // TODO: this should be modified by GTP
+                    TestUtil.addToTime(testTime, 10)
+                )
+        );
+
+        gossipGirl.handleTyped(attributesMessage2);
+        gossipGirl.handleTyped(queryMessage2);
     }
 
     private void assertQueryMessage(AgentMessage message, String recipientPath, String name, String query) throws Exception {

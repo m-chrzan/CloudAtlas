@@ -2,11 +2,13 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.NoCoTamMessage;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
@@ -26,6 +28,7 @@ public class GossipGirlState {
         WAIT_FOR_NO_CO_TAM,
         WAIT_FOR_FIRST_INFO,
         WAIT_FOR_INFO,
+        FINISHED,
         ERROR
     }
     public PathName ourPath;
@@ -42,6 +45,10 @@ public class GossipGirlState {
     public ValueTime noCoTamSendReceiveTimestamp;
     private Map<PathName, ValueTime> theirZoneTimestamps;
     private Map<Attribute, ValueTime> theirQueryTimestamps;
+    private List<PathName> zonesToSend;
+    private List<Attribute> queriesToSend;
+    private Set<PathName> waitingForZones;
+    private Set<Attribute> waitingForQueries;
 
     public GossipGirlState(long gossipId, PathName ourPath, ValueContact theirContact, boolean initiating) {
         this.gossipId = gossipId;
@@ -91,11 +98,33 @@ public class GossipGirlState {
                 theirQueryTimestamps = message.getQueryTimestamps();
                 hejkaSendTimestamp = message.getHejkaSendTimestamp();
                 hejkaReceiveTimestamp = message.getHejkaReceiveTimestamp();
+                setZonesToSend();
+                setQueriesToSend();
+                setWaitingFor();
                 state = State.SEND_INFO;
                 break;
             default:
                 System.out.println("ERROR: tried to set gossip state when not expected");
                 state = State.ERROR;
+        }
+    }
+
+    private void setWaitingFor() {
+        setWaitingForZones();
+        setWaitingForQueries();
+    }
+
+    private void setWaitingForZones() {
+        waitingForZones = new HashSet(theirZoneTimestamps.keySet());
+        for (PathName path : zonesToSend) {
+            waitingForZones.remove(path);
+        }
+    }
+
+    private void setWaitingForQueries() {
+        waitingForQueries = new HashSet(theirQueryTimestamps.keySet());
+        for (Attribute name : queriesToSend) {
+            waitingForQueries.remove(name);
         }
     }
 
@@ -114,17 +143,33 @@ public class GossipGirlState {
         return queryTimestamps;
     }
 
-    public List<ZMI> getZMIsToSend() {
-        List<ZMI> zmis = new LinkedList();
+    public void setZonesToSend() {
+        zonesToSend = new LinkedList();
         for (Entry<PathName, ValueTime> timestampedPath : getZoneTimestampsToSend().entrySet()) {
             ValueTime theirTimestamp = theirZoneTimestamps.get(timestampedPath.getKey());
             if (theirTimestamp == null || ValueUtils.valueLower(theirTimestamp, timestampedPath.getValue())) {
-                System.out.println("going to send " + timestampedPath.getKey().toString());
-                try {
-                    zmis.add(hierarchy.findDescendant(timestampedPath.getKey()));
-                } catch (ZMI.NoSuchZoneException e) {
-                    System.out.println("ERROR: didn't find a zone we wanted to send in getZMIsToSend");
-                }
+                zonesToSend.add(timestampedPath.getKey());
+            }
+        }
+    }
+
+    public void setQueriesToSend() {
+        queriesToSend = new LinkedList();
+        for (Entry<Attribute, ValueTime> timestampedQuery : getQueryTimestampsToSend().entrySet()) {
+            ValueTime theirTimestamp = theirQueryTimestamps.get(timestampedQuery.getKey());
+            if (theirTimestamp == null || ValueUtils.valueLower(theirTimestamp, timestampedQuery.getValue())) {
+                queriesToSend.add(timestampedQuery.getKey());
+            }
+        }
+    }
+
+    public List<ZMI> getZMIsToSend() {
+        List<ZMI> zmis = new LinkedList();
+        for (PathName path : zonesToSend) {
+            try {
+                zmis.add(hierarchy.findDescendant(path));
+            } catch (ZMI.NoSuchZoneException e) {
+                System.out.println("ERROR: didn't find a zone we wanted to send in getZMIsToSend");
             }
         }
         return zmis;
@@ -132,16 +177,13 @@ public class GossipGirlState {
 
     public List<Entry<Attribute, ValueQuery>> getQueriesToSend() {
         List<Entry<Attribute, ValueQuery>> queryList = new LinkedList();
-        for (Entry<Attribute, ValueTime> timestampedQuery : getQueryTimestampsToSend().entrySet()) {
-            ValueTime theirTimestamp = theirQueryTimestamps.get(timestampedQuery.getKey());
-            if (theirTimestamp == null || ValueUtils.valueLower(theirTimestamp, timestampedQuery.getValue())) {
-                queryList.add(
-                    new SimpleImmutableEntry(
-                        timestampedQuery.getKey(),
-                        queries.get(timestampedQuery.getKey()).getKey()
-                    )
-                );
-            }
+        for (Attribute name : queriesToSend) {
+            queryList.add(
+                new SimpleImmutableEntry(
+                    name,
+                    queries.get(name).getKey()
+                )
+            );
         }
         return queryList;
     }
@@ -193,5 +235,43 @@ public class GossipGirlState {
                 System.out.println("ERROR: tried to set gossip state when not expected");
                 state = State.ERROR;
         }
+    }
+
+    public void gotAttributesFor(PathName path) {
+        switch (state) {
+            case WAIT_FOR_INFO:
+                if (!waitingForZones.remove(path)) {
+                    System.out.println("DEBUG: got zone attributes we weren't expecting");
+                }
+                if (waitingForZones.isEmpty() && waitingForQueries.isEmpty()) {
+                    System.out.println("INFO: done waiting for info");
+                    state = state.FINISHED;
+                }
+                break;
+            default:
+                System.out.println("ERROR: got attributes when not expected");
+                state = State.ERROR;
+        }
+    }
+
+    public void gotQuery(Attribute name) {
+        switch (state) {
+            case WAIT_FOR_INFO:
+                if (!waitingForQueries.remove(name)) {
+                    System.out.println("DEBUG: got query we weren't expecting");
+                }
+                if (waitingForZones.isEmpty() && waitingForQueries.isEmpty()) {
+                    System.out.println("INFO: done waiting for info");
+                    state = state.FINISHED;
+                }
+                break;
+            default:
+                System.out.println("ERROR: got query when not expected");
+                state = State.ERROR;
+        }
+    }
+
+    public ValueTime getTheirQueryTimestamp(Attribute name) {
+        return theirQueryTimestamps.get(name);
     }
 }
