@@ -44,6 +44,7 @@ public class UDUPTest {
 
             UDUPMessage testContent = new UDUPMessage();
             testContent.setDestinationModule(ModuleType.TEST);
+            testContent.setMessageId("singleMsgTest");
 
             msg1 = new UDUPMessage(
                     "udup1",
@@ -99,7 +100,7 @@ public class UDUPTest {
                     InetAddress.getByName("127.0.0.2"),
                     5998,
                     timeout,
-                    20);
+                    30);
 
             System.out.println("Starting udp2");
 
@@ -107,10 +108,11 @@ public class UDUPTest {
                     InetAddress.getByName("127.0.0.3"),
                     5998,
                     timeout,
-                    20);
+                    30);
 
             UDUPMessage testContent = new UDUPMessage();
             testContent.setDestinationModule(ModuleType.TEST);
+            testContent.setMessageId("bigMsgTest");
 
             msg1 = new UDUPMessage(
                     "udup1",
@@ -175,6 +177,7 @@ public class UDUPTest {
 
             UDUPMessage testContent = new UDUPMessage();
             testContent.setDestinationModule(ModuleType.TEST);
+            testContent.setMessageId("multipleMsgTest");
 
             msg1 = new UDUPMessage(
                     "udup1",

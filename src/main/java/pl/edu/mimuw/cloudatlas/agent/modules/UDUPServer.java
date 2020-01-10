@@ -35,15 +35,12 @@ public class UDUPServer {
         int packetNo = readPacketNo(packet.getData());
         byte[] packetData = trimPacketBuffer(packet.getData());
 
-        if (packetNo == 0) {
-            if (packet.getLength() == this.bufSize) {
-                this.addPartialMessageAndCheckSerialization(transmissionID, packetNo, packetData);
-            } else  {
-                UDUPMessage msg = this.serializer.deserialize(packetData);
-                System.out.println("UDP received message " + msg.getContent().getMessageId());
-                sendMessageFurther(msg);
-            }
+        if (packetNo == 1 && packet.getLength() < this.bufSize) {
+            UDUPMessage msg = this.serializer.deserialize(packetData);
+            System.out.println("UDP received message " + msg.getContent().getMessageId());
+            sendMessageFurther(msg);
         } else {
+            System.out.println("UDP received partial message with transmission id " + transmissionID + " packet no " + packetNo);
             this.addPartialMessageAndCheckSerialization(transmissionID, packetNo, packetData);
         }
     }
@@ -93,7 +90,7 @@ public class UDUPServer {
         ArrayList<byte[]> previousPacketData = this.partialPackets.get(transmissionID);
         byte[] fullData = new byte[0];
 
-        previousPacketData.add(newPacketNo, newPacketData);
+        previousPacketData.add(newPacketNo - 1, newPacketData);
         this.partialPackets.put(transmissionID, previousPacketData);
 
         if (previousPacketData.contains(null)) {
@@ -112,15 +109,15 @@ public class UDUPServer {
             try {
                 byte[] allPacketData = concatPacketData(transmissionID, newPacketNo, packetData);
                 UDUPMessage msg = this.serializer.deserialize(allPacketData);
-                this.udp.sendMessage(msg.getContent());
                 this.partialPackets.remove(transmissionID);
-                System.out.println("Kryo put together whole transmission");
+                System.out.println("Kryo put together whole transmission for msg " + msg.getContent().getMessageId());
+                this.udp.sendMessage(msg.getContent());
             } catch (Error | Exception e) {
                 System.out.println("Kryo didn't deserialize partial message, waiting to receive the rest");
             }
         } else {
             ArrayList<byte[]> newTransmission = new ArrayList<byte[]>();
-            newTransmission.add(packetData);
+            newTransmission.add(newPacketNo-1, packetData);
             this.partialPackets.put(transmissionID, newTransmission);
         }
     }

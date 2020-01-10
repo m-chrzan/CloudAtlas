@@ -26,7 +26,7 @@ public class UDUPClient {
 
     private void logSending(DatagramPacket packet, int packetNo, byte[] buf) {
         System.out.print("UDP sends packet no " + packetNo +
-                " with realbufsize " + (bufsize - 8) +
+                " with real bufsize " + (bufsize - 8) +
                 " out of data buffer with size " + buf.length +
                 " to " + packet.getAddress() + ": ");
         for (byte b : packet.getData()) {
@@ -40,22 +40,27 @@ public class UDUPClient {
     }
 
     private byte[] packSendBuffer(int transmissionNo, int packetNo, byte[] buf) {
-        byte[] sendBuf = new byte[bufsize];
+        byte[] sendBuf;
         int sendBufSize = bufsize - 8;
-        System.arraycopy(toByteArray(transmissionNo), 0, sendBuf, 0, 4);
-        System.arraycopy(toByteArray(packetNo), 0, sendBuf, 4, 4);
+
         if (packetNo*sendBufSize >= buf.length) {
-            System.arraycopy(buf, 0, sendBuf, 8, sendBufSize);
+            int copyLength = buf.length - (packetNo-1)*sendBufSize;
+            sendBuf = new byte[copyLength + 8];
+            System.arraycopy(buf, (packetNo-1)*sendBufSize, sendBuf, 8, copyLength);
         } else {
+            sendBuf = new byte[bufsize];
             System.arraycopy(buf, (packetNo-1)*sendBufSize, sendBuf, 8, sendBufSize);
         }
+
+        System.arraycopy(toByteArray(transmissionNo), 0, sendBuf, 0, 4);
+        System.arraycopy(toByteArray(packetNo), 0, sendBuf, 4, 4);
+
         return sendBuf;
     }
 
     boolean checkEndOfTransmission(int packetNo, int dataBufSize) {
         int sendBufSize = bufsize - 8;
         int dataSentSoFar = (packetNo - 1) * sendBufSize;
-        System.out.println("used data " + dataSentSoFar + " " + dataBufSize);
         return dataSentSoFar >= dataBufSize;
     }
 
@@ -67,7 +72,7 @@ public class UDUPClient {
 
         do {
             sendBuf = packSendBuffer(this.lastTransmission, packetNo, dataBuf);
-            DatagramPacket packet = new DatagramPacket(sendBuf, bufsize, msg.getContact().getAddress(), this.serverPort);
+            DatagramPacket packet = new DatagramPacket(sendBuf, 0, sendBuf.length, msg.getContact().getAddress(), this.serverPort);
             this.socket.send(packet);
             logSending(packet, packetNo, dataBuf);
             packetNo++;
