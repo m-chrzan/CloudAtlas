@@ -122,6 +122,7 @@ public class UDUPSerializer {
         kryo.register(AttributesUtil.class);
 
         kryo.register(Type.class);
+        kryo.register(Type.PrimaryType.class);
         kryo.register(TypeCollection.class);
         kryo.register(TypePrimitive.class);
 
