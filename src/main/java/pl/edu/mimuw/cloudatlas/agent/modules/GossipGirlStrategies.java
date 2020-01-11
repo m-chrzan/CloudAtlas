@@ -34,7 +34,6 @@ public class GossipGirlStrategies {
         ArrayList<Pair<String, Double>> zoneProbabilities;
         zoneProbabilities = new ArrayList<>(fullPathLength);
 
-        // TODO check if we decrease in good direction
         for (int i = 0; i < fullPathLength; i++) {
             Pair<String, Double> probPair = new Pair<String, Double>(fullPathComponents.get(i), Math.exp((double) i+1));
             zoneProbabilities.add(probPair);
@@ -48,7 +47,6 @@ public class GossipGirlStrategies {
         zoneProbabilities = new ArrayList<>(fullPathLength);
         Double uniformProb = 1.0/fullPathLength;
 
-        // TODO good direction
         for (int i = 0; i < fullPathLength; i++) {
             Pair<String, Double> probPair = new Pair<String, Double>(fullPathComponents.get(i), uniformProb);
             zoneProbabilities.add(probPair);
@@ -72,10 +70,9 @@ public class GossipGirlStrategies {
     }
 
     private String updateRoundRobinExpFreqs() {
-        // TODO good direction
-        for (int i = roundRobinExpFreqs.size() - 1; i > 0; i--) {
+        for (int i = 0; i < roundRobinExpFreqs.size() - 1; i++) {
             Pair<String, Integer> p = roundRobinExpFreqs.get(i);
-            Pair<String, Integer> nextP = roundRobinExpFreqs.get(i-1);
+            Pair<String, Integer> nextP = roundRobinExpFreqs.get(i+1);
 
             if (2 * p.getSecond() < nextP.getSecond()) {
                 roundRobinExpFreqs.set(i, new Pair<String, Integer>(p.getFirst(), p.getSecond() + 1));
@@ -83,8 +80,10 @@ public class GossipGirlStrategies {
             }
         }
 
-        Pair<String, Integer> rootPath = roundRobinExpFreqs.get(0);
-        roundRobinExpFreqs.set(0, new Pair<String, Integer>(rootPath.getFirst(), rootPath.getSecond() + 1));
+        Pair<String, Integer> rootPath = roundRobinExpFreqs.get(roundRobinExpFreqs.size() - 1);
+        roundRobinExpFreqs.set(
+                roundRobinExpFreqs.size() - 1,
+                new Pair<String, Integer>(rootPath.getFirst(), rootPath.getSecond() + 1));
         return rootPath.getFirst();
     }
 
