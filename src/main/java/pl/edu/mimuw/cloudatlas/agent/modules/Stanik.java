@@ -1,5 +1,6 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -141,7 +142,11 @@ public class Stanik extends Module {
      */
     public void handleSetAttribte(SetAttributeMessage message) {
         try {
-            ZMI zmi = hierarchy.findDescendant(new PathName(message.getPathName()));
+            PathName descendantPath = new PathName(message.getPathName());
+            if (!hierarchy.descendantExists(descendantPath)) {
+                addMissingZones(descendantPath);
+            }
+            ZMI zmi = hierarchy.findDescendant(descendantPath);
             ValueTime updateTimestamp = message.getUpdateTimestamp();
             ValueTime currentTimestamp = (ValueTime) zmi.getAttributes().getOrNull("timestamp");
             if (ValueUtils.valueLower(currentTimestamp, updateTimestamp)) {
