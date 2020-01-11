@@ -15,6 +15,8 @@ public class QueryMessage extends RemoteGossipGirlMessage {
         this.receiverGossipId = receiverGossipId;
     }
 
+    public QueryMessage() {}
+
     public Attribute getName() {
         return name;
     }

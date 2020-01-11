@@ -22,6 +22,8 @@ public class HejkaMessage extends RemoteGossipGirlMessage {
         this.queryTimestamps = queryTimestamps;
     }
 
+    private HejkaMessage() {}
+
     public long getSenderGossipId() {
         return senderGossipId;
     }
