@@ -15,15 +15,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AgentConfig {
-    private EventBus eventBus;
+    private HashMap<ModuleType, Executor> executors;
+    HashMap<ModuleType, Module> modules;
 
-    AgentConfig() {}
-
-    public EventBus getEventBus() {
-        return eventBus;
+    public HashMap<ModuleType, Executor> getExecutors() {
+        return executors;
     }
 
-    public void runRegistry() {
+    public void runRegistry(EventBus eventBus) {
         try {
             NewApiImplementation api = new NewApiImplementation(eventBus);
             Api apiStub =
@@ -38,18 +37,20 @@ public class AgentConfig {
     }
 
     private HashMap<ModuleType, Module> initializeModules() throws UnknownHostException, SocketException, NullPointerException {
-        HashMap<ModuleType, Module> modules = new HashMap<ModuleType, Module>();
-        modules.put(ModuleType.TIMER_SCHEDULER, new TimerScheduler(ModuleType.TIMER_SCHEDULER));
-        modules.put(ModuleType.RMI, new Remik());
+        // TODO config setup
         Long freshnessPeriod = Long.getLong("freshness_period");
-        modules.put(ModuleType.STATE, new Stanik(freshnessPeriod));
-        modules.put(ModuleType.QUERY, new Qurnik());
-        modules.put(ModuleType.GOSSIP, new GossipGirl());
-
         Integer port = Integer.getInteger("UDUPServer.port");
         Integer timeout = Integer.getInteger("UDUPServer.timeout");
         Integer bufsize = Integer.getInteger("UDUPServer.bufsize");
         InetAddress serverAddr = InetAddress.getByName(System.getProperty("UDUPServer.hostname"));
+
+        HashMap<ModuleType, Module> modules = new HashMap<ModuleType, Module>();
+        modules.put(ModuleType.TIMER_SCHEDULER, new TimerScheduler(ModuleType.TIMER_SCHEDULER));
+        modules.put(ModuleType.RMI, new Remik());
+        modules.put(ModuleType.STATE, new Stanik(freshnessPeriod));
+        modules.put(ModuleType.QUERY, new Qurnik());
+        modules.put(ModuleType.GOSSIP, new GossipGirl());
+
         UDUPServer server = new UDUPServer(serverAddr, port, bufsize);
         modules.put(ModuleType.UDP, new UDUP(port, timeout, bufsize, server));
         return modules;
@@ -89,8 +90,6 @@ public class AgentConfig {
     }
 
     public void runModulesAsThreads() {
-        HashMap<ModuleType, Module> modules = null;
-
         try {
             modules = initializeModules();
         } catch (UnknownHostException | SocketException e) {
@@ -99,15 +98,15 @@ public class AgentConfig {
             return;
         }
 
-        HashMap<ModuleType, Executor> executors = initializeExecutors(modules);
+        executors = initializeExecutors(modules);
         ArrayList<Thread> executorThreads = initializeExecutorThreads(executors);
-        eventBus = new EventBus(executors);
+    }
+
+    void startNonModuleThreads(EventBus eventBus) {
         Thread UDUPServerThread = new Thread(((UDUP) modules.get(ModuleType.UDP)).getServer());
         Thread eventBusThread = new Thread(eventBus);
         System.out.println("Initializing event bus");
         eventBusThread.start();
         UDUPServerThread.start();
     }
-
-
 }

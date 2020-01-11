@@ -46,6 +46,21 @@ ext.UDUPServerBufsize = {
     return System.getProperty("bufsize") ?: 512;
 }
 
+/*
+Possible options:
+RoundRobinExp
+RoundRobinUniform
+RandomExp
+RandomUniform
+ */
+ext.zoneSelectionStrategy = {
+    return System.getProperty("zoneStrategy") ?: "RandomUniform"
+}
+
+ext.zonePath = {
+    return System.getProperty("zonePath") ?: "/uw/violet07"
+}
+
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
@@ -93,6 +108,8 @@ task runAgent(type: JavaExec) {
     systemProperty 'UDUPServer.port', UDUPServerPort()
     systemProperty 'UDUPServer.timeout', UDUPServerTimeout()
     systemProperty 'UDUPServer.bufsize', UDUPServerBufsize()
+    systemProperty 'Gossip.zone_strategy', zoneSelectionStrategy()
+    systemProperty 'zone_path', zonePath()
 }
 
 task runClient(type: JavaExec) {

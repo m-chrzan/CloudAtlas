@@ -1,13 +1,11 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.*;
-import pl.edu.mimuw.cloudatlas.agent.modules.GossipGirl;
 import pl.edu.mimuw.cloudatlas.agent.modules.GossipGirlStrategies;
-import pl.edu.mimuw.cloudatlas.agent.modules.RecursiveScheduledTask;
 import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduledTask;
-import pl.edu.mimuw.cloudatlas.interpreter.Main;
 import pl.edu.mimuw.cloudatlas.model.*;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -18,10 +16,25 @@ public class HierarchyConfig {
     private Random random = new Random();
     private EventBus eventBus;
 
-    HierarchyConfig(EventBus eventBus) {
-        zoneSelectionStrategy = GossipGirlStrategies.ZoneSelectionStrategy.ROUND_ROBIN_SAME_FREQ;
-        gossipGirlStrategies = new GossipGirlStrategies(new PathName("/uw/violet07"));
+    HierarchyConfig(EventBus eventBus, String zonePath, String zoneStrategy) {
+        zoneSelectionStrategy = parseStrategy(zoneStrategy);
+        gossipGirlStrategies = new GossipGirlStrategies(new PathName(zonePath));
         this.eventBus = eventBus;
+    }
+
+    private GossipGirlStrategies.ZoneSelectionStrategy parseStrategy(String selectionStrategy) {
+        switch (selectionStrategy) {
+            case "RoundRobinExp":
+                return GossipGirlStrategies.ZoneSelectionStrategy.ROUND_ROBIN_EXP_FREQ;
+            case "RoundRobinUniform":
+                return GossipGirlStrategies.ZoneSelectionStrategy.ROUND_ROBIN_SAME_FREQ;
+            case "RandomExp":
+                return GossipGirlStrategies.ZoneSelectionStrategy.RANDOM_DECR_EXP;
+            case "RandomUniform":
+                return GossipGirlStrategies.ZoneSelectionStrategy.RANDOM_UNFIORM;
+            default:
+                throw new UnsupportedOperationException("Selection strategy doesnt exist");
+        }
     }
 
     public void startGossip(long gossipPeriod) {
@@ -47,7 +60,7 @@ public class HierarchyConfig {
                     }
                 };
 
-        startRecursiveTask(taskSupplier, gossipPeriod);
+        AgentUtils.startRecursiveTask(taskSupplier, gossipPeriod, eventBus);
     }
 
     private ValueContact selectContactFromLevel(PathName path) throws Exception {
@@ -122,38 +135,6 @@ public class HierarchyConfig {
         }
     }
 
-    public void startRecursiveTask(Supplier<TimerScheduledTask> taskSupplier, long period) {
-        TimerScheduledTask timerTask = new RecursiveScheduledTask(period, taskSupplier);
-
-        try {
-            this.eventBus.addMessage(new TimerSchedulerMessage("", 0, "", period, 0, timerTask));
-        } catch (InterruptedException e) {
-            System.out.println("Interrupted while starting queries");
-        }
-    }
-
-    private void addZoneAndChildren(ZMI zmi, PathName pathName) {
-        try {
-            UpdateAttributesMessage message = new UpdateAttributesMessage("", 0, pathName.toString(), zmi.getAttributes());
-            this.eventBus.addMessage(message);
-            for (ZMI son : zmi.getSons()) {
-                addZoneAndChildren(son, pathName.levelDown(son.getAttributes().getOrNull("name").toString()));
-            }
-        } catch (Exception e) {
-            System.out.println("ERROR: failed to add zone");
-        }
-    }
-
-    public void initZones() {
-        try {
-            ZMI root = Main.createTestHierarchy2();
-            addZoneAndChildren(root, new PathName(""));
-            System.out.println("Initialized with test hierarchy");
-        } catch (Exception e) {
-            System.out.println("ERROR: failed to create test hierarchy");
-        }
-    }
-
     public void startQueries(long queriesPeriod) {
         Supplier<TimerScheduledTask> taskSupplier = () ->
                 new TimerScheduledTask() {
@@ -166,6 +147,6 @@ public class HierarchyConfig {
                     }
                 };
 
-        startRecursiveTask(taskSupplier, queriesPeriod);
+        AgentUtils.startRecursiveTask(taskSupplier, queriesPeriod, eventBus);
     }
 }
