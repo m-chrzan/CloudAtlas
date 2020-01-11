@@ -26,6 +26,7 @@ public class GossipGirlStrategyTest {
                     gossipGirlStrategies.selectStrategy(GossipGirlStrategies.ZoneSelectionStrategy.ROUND_ROBIN_EXP_FREQ);
             freqs.put(selectedPath, freqs.get(selectedPath) + 1);
             System.out.println(selectedPath);
+            System.out.println(freqs);
         }
     }
 }
