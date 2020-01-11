@@ -57,8 +57,9 @@ ext.zoneSelectionStrategy = {
     return System.getProperty("zoneStrategy") ?: "RandomUniform"
 }
 
+// TODO nie bangla zmienianie
 ext.zonePath = {
-    return System.getProperty("zonePath") ?: "/uw/violet07"
+    return System.getProperty("zonePath") ?: "/uw/violet08"
 }
 
 repositories {
