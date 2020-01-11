@@ -56,7 +56,7 @@ public class AgentConfig {
         return modules;
     }
 
-    private HashMap<ModuleType, Executor> initializeExecutors(
+    public static HashMap<ModuleType, Executor> initializeExecutors(
             HashMap<ModuleType, Module> modules) {
         HashMap<ModuleType, Executor> executors = new HashMap<ModuleType, Executor>();
 
@@ -69,7 +69,7 @@ public class AgentConfig {
         return executors;
     }
 
-    private ArrayList<Thread> initializeExecutorThreads(HashMap<ModuleType, Executor> executors) {
+    public static ArrayList<Thread> initializeExecutorThreads(HashMap<ModuleType, Executor> executors) {
         ArrayList<Thread> executorThreads = new ArrayList<Thread>();
 
         for (Map.Entry<ModuleType, Executor> executorEntry : executors.entrySet()) {
