@@ -53,7 +53,8 @@ public class ClientController {
                 return size() > MAX_ENTRIES;
             }
         };
-        this.currentZoneName = "/uw/violet07";
+        // TODO set zone in config
+        this.currentZoneName = "/uw/violet08";
         fetchAttributeData(); // fetch attribute data as early as possible
     }
 
@@ -445,6 +446,7 @@ public class ClientController {
         return "zoneForm";
     }
 
+    // TODO available zones dont work when our zone changed
     @PostMapping("/zones")
     public String zonesPostPage(@ModelAttribute DataStringInput zoneName, Model model) {
         this.currentZoneName = zoneName.getString();

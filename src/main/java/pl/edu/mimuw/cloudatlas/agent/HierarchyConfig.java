@@ -47,7 +47,7 @@ public class HierarchyConfig {
                             ValueContact contact = selectContactFromLevel(gossipLevel);
                             if (contact != null) {
                                 System.out.println("INFO: found a contact " + contact.toString());
-                                InitiateGossipMessage message = new InitiateGossipMessage("", 0, new PathName("/uw/violet07"), contact);
+                                InitiateGossipMessage message = new InitiateGossipMessage("", 0, new PathName("/uw/violet08"), contact);
                                 sendMessage(message);
                             } else {
                                 System.out.println("DEBUG: couldn't find contact for gossip");
