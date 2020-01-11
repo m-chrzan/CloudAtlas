@@ -271,7 +271,9 @@ public class Agent {
         runRegistry();
         initZones();
         // TODO: make query period confiurable with config file and from tests
-        startQueries(100l);
-        startGossip(5000l);
+        Long queryPeriod = Long.getLong("query_period");
+        startQueries(queryPeriod);
+        Long gossipPeriod = Long.getLong("gossip_period");
+        startGossip(gossipPeriod);
     }
 }
