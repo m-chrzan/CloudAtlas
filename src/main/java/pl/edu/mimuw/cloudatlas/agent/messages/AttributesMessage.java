@@ -17,6 +17,8 @@ public class AttributesMessage extends RemoteGossipGirlMessage {
         this.receiverGossipId = receiverGossipId;
     }
 
+    private AttributesMessage() {}
+
     public PathName getPath() {
         return path;
     }
