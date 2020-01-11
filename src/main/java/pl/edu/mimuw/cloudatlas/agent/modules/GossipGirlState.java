@@ -59,6 +59,7 @@ public class GossipGirlState {
         this.gossipId = gossipId;
         this.ourPath = ourPath;
         this.theirContact = theirContact;
+        System.out.println("INFO: initializing Gossip state, their contact " + theirContact.toString());
         if (initiating) {
             state = State.WAIT_FOR_STATE_INITIALIZER;
         } else {
