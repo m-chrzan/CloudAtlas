@@ -15,27 +15,12 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import pl.edu.mimuw.cloudatlas.agent.messages.RequestStateMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.SetAttributeMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.*;
 import pl.edu.mimuw.cloudatlas.interpreter.Interpreter;
 import pl.edu.mimuw.cloudatlas.interpreter.InterpreterException;
 import pl.edu.mimuw.cloudatlas.interpreter.Main;
 import pl.edu.mimuw.cloudatlas.interpreter.QueryResult;
-import pl.edu.mimuw.cloudatlas.model.Attribute;
-import pl.edu.mimuw.cloudatlas.model.AttributesMap;
-import pl.edu.mimuw.cloudatlas.model.PathName;
-import pl.edu.mimuw.cloudatlas.model.ValueContact;
-import pl.edu.mimuw.cloudatlas.model.Value;
-import pl.edu.mimuw.cloudatlas.model.ValueNull;
-import pl.edu.mimuw.cloudatlas.model.ValueQuery;
-import pl.edu.mimuw.cloudatlas.model.ValueSet;
-import pl.edu.mimuw.cloudatlas.model.ValueTime;
-import pl.edu.mimuw.cloudatlas.model.Type;
-import pl.edu.mimuw.cloudatlas.model.TypePrimitive;
-import pl.edu.mimuw.cloudatlas.model.ZMI;
+import pl.edu.mimuw.cloudatlas.model.*;
 import pl.edu.mimuw.cloudatlas.api.Api;
 
 public class NewApiImplementation implements Api {
@@ -138,6 +123,12 @@ public class NewApiImplementation implements Api {
     }
 
     public void setFallbackContacts(Set<ValueContact> contacts) throws RemoteException {
-        // this.contacts = contacts;
+        try {
+            UpdateContactsMessage message = new UpdateContactsMessage("", System.currentTimeMillis(), contacts);
+            eventBus.addMessage(message);
+        } catch (Exception e) {
+            System.out.println("ERROR: failed to set contacts");
+            throw new RemoteException("Failed to set contacts", e);
+        }
     }
 }
