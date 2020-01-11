@@ -30,8 +30,6 @@ public class SchedulerTest {
         eventBusThread.start();
     }
 
-    private
-
     public HashMap<ModuleType, Module> initializeModule() {
         HashMap<ModuleType, Module> modules = new HashMap<ModuleType, Module>();
         modules.put(ModuleType.TIMER_SCHEDULER, new TimerScheduler(ModuleType.TIMER_SCHEDULER));
