@@ -2,6 +2,7 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -50,6 +51,9 @@ public class GossipGirl extends Module {
                 break;
             case QUERY:
                 handleQuery((QueryMessage) message);
+                break;
+            case CLEAN:
+                cleanOldGossips();
                 break;
             default:
                 throw new InvalidMessageType("This type of message cannot be handled by GossipGirl");
@@ -187,6 +191,14 @@ public class GossipGirl extends Module {
             }
         } else {
             System.out.println("ERROR: GossipGirl got query for a nonexistent gossip");
+        }
+    }
+
+    private void cleanOldGossips() {
+        Iterator<Entry<Long, GossipGirlState>> iterator = gossipStates.entrySet().iterator();
+        while (iterator.hasNext()) {
+            GossipGirlState state = iterator.next().getValue();
+            // TODO: remove
         }
     }
 }

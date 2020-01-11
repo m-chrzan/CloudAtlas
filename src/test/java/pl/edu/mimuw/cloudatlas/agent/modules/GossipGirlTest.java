@@ -15,6 +15,7 @@ import java.util.Set;
 import pl.edu.mimuw.cloudatlas.agent.MockExecutor;
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.AttributesMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.CleanOldGossipsMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.HejkaMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.GossipGirlMessage;
@@ -407,6 +408,28 @@ public class GossipGirlTest {
 
         gossipGirl.handleTyped(attributesMessage2);
         gossipGirl.handleTyped(queryMessage2);
+    }
+
+    @Test
+    public void cleanupOldGossips() throws Exception {
+        gossipGirl.handleTyped(hejkaMessage);
+        executor.messagesToPass.take();
+        gossipGirl.handleTyped(stateMessage);
+        executor.messagesToPass.take();
+
+        gossipGirl.handleTyped(attributesMessage1);
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+
+        CleanOldGossipsMessage message = new CleanOldGossipsMessage("", 0, TestUtil.addToTime(ValueUtils.currentTime(), 10));
+        gossipGirl.handleTyped(message);
+        gossipGirl.handleTyped(attributesMessage2);
+
+        assertEquals(0, executor.messagesToPass.size());
     }
 
     private void assertQueryMessage(AgentMessage message, String recipientPath, String name, String query) throws Exception {
