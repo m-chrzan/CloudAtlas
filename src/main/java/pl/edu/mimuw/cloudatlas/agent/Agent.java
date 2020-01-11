@@ -62,7 +62,8 @@ public class Agent {
         Integer port = Integer.getInteger("UDUPServer.port");
         Integer timeout = Integer.getInteger("UDUPServer.timeout");
         Integer bufsize = Integer.getInteger("UDUPServer.bufsize");
-        UDUPServer server = new UDUPServer(InetAddress.getByName("127.0.0.1"), port, bufsize);
+        InetAddress serverAddr = InetAddress.getByName(System.getProperty("UDUPServer.hostname"));
+        UDUPServer server = new UDUPServer(serverAddr, port, bufsize);
         modules.put(ModuleType.UDP, new UDUP(port, timeout, bufsize, server));
         return modules;
     }
