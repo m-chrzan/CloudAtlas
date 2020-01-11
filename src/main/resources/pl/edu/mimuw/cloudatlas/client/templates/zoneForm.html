@@ -1,18 +1,27 @@
 <!DOCTYPE html>
-
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
-    <title>CloudAtlas Client - home</title>
+    <title>Contacts query form</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 
 <body>
 
 <div th:replace="fragments/navbar :: navbar"></div>
-<div class="jumbotron">
-    <h1 class="display-4" th:text="${homeMessage}"></h1>
+
+<h4 th:text="${currentZone}" class="d-flex justify-content-center mt-2"></h4>
+<div id="zoneAttribForm" class="d-flex justify-content-center mt-2">
+    <form action="#" th:action="@{/zones}" th:object="${zoneName}" method="post">
+        <div class="form-group">
+            <label for="ZoneName1">Change zone name</label>
+            <input type="text" class="form-control" id="ZoneName1" rows="3" th:field="*{string}"/>
+            <small id="passwordHelpBlock" class="form-text text-muted" th:text="${availableZones}">
+            </small>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
