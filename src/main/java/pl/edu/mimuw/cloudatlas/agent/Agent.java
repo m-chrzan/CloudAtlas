@@ -155,6 +155,7 @@ public class Agent {
                         PathName gossipLevel = gossipGirlStrategies.selectStrategy(zoneSelectionStrategy);
                         ValueContact contact = selectContactFromLevel(gossipLevel);
                         if (contact != null) {
+                            System.out.println("INFO: found a contact " + contact.toString());
                             InitiateGossipMessage message = new InitiateGossipMessage("", 0, new PathName("/uw/violet07"), contact);
                             sendMessage(message);
                         } else {
@@ -188,7 +189,7 @@ public class Agent {
     }
 
     private static ValueContact selectFallbackContact() throws Exception {
-        return selectContactFromSet(new HashSet());
+        return null;
     }
 
     private static ZMI selectZMI(List<ZMI> zmis) throws Exception {
