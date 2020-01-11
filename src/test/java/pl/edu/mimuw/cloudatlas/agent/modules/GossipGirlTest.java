@@ -362,6 +362,54 @@ public class GossipGirlTest {
         assertQueryMessage(receivedMessage5, "/son/bro", "&query", "SELECT sum(foo) AS foo");
     }
 
+    @Test
+    public void receiverModifiesStateOnReceivedInfo() throws Exception {
+        gossipGirl.handleTyped(hejkaMessage);
+        executor.messagesToPass.take();
+        gossipGirl.handleTyped(stateMessage);
+        executor.messagesToPass.take();
+
+        gossipGirl.handleTyped(attributesMessage1);
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+
+        AgentMessage receivedMessage1 = executor.messagesToPass.poll();
+        assertNotNull(receivedMessage1);
+        assertEquals(ModuleType.STATE, receivedMessage1.getDestinationModule());
+        StanikMessage stanikMessage1 = (StanikMessage) receivedMessage1;
+        assertEquals(StanikMessage.Type.UPDATE_ATTRIBUTES, stanikMessage1.getType());
+        UpdateAttributesMessage updateMessage1 = (UpdateAttributesMessage) stanikMessage1;
+        assertEquals("/son/bro", updateMessage1.getPathName());
+        // TODO: this should be modified by GTP
+        assertEquals(testTime, updateMessage1.getAttributes().getOrNull("timestamp"));
+        assertEquals(new ValueInt(140l), updateMessage1.getAttributes().getOrNull("foo"));
+        assertEquals(new ValueString(":wq"), updateMessage1.getAttributes().getOrNull("bar"));
+
+        gossipGirl.handleTyped(queryMessage1);
+        AgentMessage receivedMessage2 = executor.messagesToPass.poll();
+        assertNotNull(receivedMessage2);
+        assertEquals(ModuleType.STATE, receivedMessage2.getDestinationModule());
+        StanikMessage stanikMessage2 = (StanikMessage) receivedMessage2;
+        assertEquals(StanikMessage.Type.UPDATE_QUERIES, stanikMessage2.getType());
+        UpdateQueriesMessage updateMessage2 = (UpdateQueriesMessage) stanikMessage2;
+        assertEquals(1, updateMessage2.getQueries().keySet().size());
+        assertThat(updateMessage2.getQueries().keySet(), hasItems(new Attribute("&one")));
+        assertEquals(updateMessage2.getQueries().get(new Attribute("&one")),
+                new SimpleImmutableEntry(
+                    new ValueQuery("SELECT 3 AS one"),
+                    // TODO: this should be modified by GTP
+                    TestUtil.addToTime(testTime, 10)
+                )
+        );
+
+        gossipGirl.handleTyped(attributesMessage2);
+        gossipGirl.handleTyped(queryMessage2);
+        assertTrue(false);
+    }
+
     private void assertQueryMessage(AgentMessage message, String recipientPath, String name, String query) throws Exception {
         assertUDUPMessage(
                 message,
