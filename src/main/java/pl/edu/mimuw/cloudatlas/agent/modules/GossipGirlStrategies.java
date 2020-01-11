@@ -66,7 +66,22 @@ public class GossipGirlStrategies {
         ROUND_ROBIN_SAME_FREQ,
         ROUND_ROBIN_EXP_FREQ,
         RANDOM_UNFIORM,
-        RANDOM_DECR_EXP
+        RANDOM_DECR_EXP;
+
+        public static ZoneSelectionStrategy stringToStrategy(String strategyString) throws Exception {
+            switch (strategyString) {
+                case "round_robin":
+                    return ROUND_ROBIN_SAME_FREQ;
+                case "round_robin_exp":
+                    return ROUND_ROBIN_EXP_FREQ;
+                case "random":
+                    return RANDOM_UNFIORM;
+                case "random_exp":
+                    return RANDOM_DECR_EXP;
+                default:
+                    throw new Exception("Invalid strategy string");
+            }
+        }
     }
 
     private String updateRoundRobinExpFreqs() {

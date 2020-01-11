@@ -30,6 +30,10 @@ ext.gossipPeriod = {
     return System.getProperty("gossipPeriod") ?: 5 * 1000
 }
 
+ext.gossipStrategy = {
+    return System.getProperty("gossipPeriod") ?: "round_robin"
+}
+
 ext.UDUPHostname = {
     return System.getProperty("hostname") ?: "localhost"
 }
@@ -89,6 +93,7 @@ task runAgent(type: JavaExec) {
     systemProperty 'freshness_period', freshnessPeriod()
     systemProperty 'query_period', queryPeriod()
     systemProperty 'gossip_period', gossipPeriod()
+    systemProperty 'gossip_strategy', gossipStrategy()
     systemProperty 'UDUPServer.hostname', UDUPHostname()
     systemProperty 'UDUPServer.port', port()
     systemProperty 'UDUPServer.timeout', port()
