@@ -312,7 +312,7 @@ public class GossipGirlTest {
     @Test
     public void receiverSendsNoCoTamOnState() throws Exception {
         gossipGirl.handleTyped(hejkaMessage);
-        executor.messagesToPass.poll();
+        executor.messagesToPass.take();
 
         gossipGirl.handleTyped(stateMessage);
         AgentMessage receivedMessage = executor.messagesToPass.poll();
@@ -335,6 +335,31 @@ public class GossipGirlTest {
         assertThat(querySet, hasItems(new Attribute("&one")));
         assertThat(querySet, hasItems(new Attribute("&two")));
         assertThat(querySet, hasItems(new Attribute("&query")));
+    }
+
+    @Test
+    public void receiverSendsInfoOnFirstReceivedInfo() throws Exception {
+        gossipGirl.handleTyped(hejkaMessage);
+        executor.messagesToPass.take();
+        gossipGirl.handleTyped(stateMessage);
+        executor.messagesToPass.take();
+
+        gossipGirl.handleTyped(attributesMessage1);
+
+        // 3 ZMIs, 2 queries, 1 own attributes update
+        assertEquals(6, executor.messagesToPass.size());
+
+        AgentMessage receivedMessage1 = executor.messagesToPass.poll();
+        assertAttributeMessage(receivedMessage1, "/son/bro", "/daughter");
+        AgentMessage receivedMessage2 = executor.messagesToPass.poll();
+        assertAttributeMessage(receivedMessage2, "/son/bro", "/son/sis");
+        AgentMessage receivedMessage3 = executor.messagesToPass.poll();
+        assertAttributeMessage(receivedMessage3, "/son/bro", "/son/grand");
+
+        AgentMessage receivedMessage4 = executor.messagesToPass.poll();
+        assertQueryMessage(receivedMessage4, "/son/bro", "&two", "SELECT 2 AS two");
+        AgentMessage receivedMessage5 = executor.messagesToPass.poll();
+        assertQueryMessage(receivedMessage5, "/son/bro", "&query", "SELECT sum(foo) AS foo");
     }
 
     private void assertQueryMessage(AgentMessage message, String recipientPath, String name, String query) throws Exception {

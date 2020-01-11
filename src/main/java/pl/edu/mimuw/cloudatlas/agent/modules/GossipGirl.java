@@ -133,27 +133,34 @@ public class GossipGirl extends Module {
         GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
         if (state != null) {
             state.handleNoCoTam(message);
-            for (ZMI zmi : state.getZMIsToSend()) {
-                AttributesMessage attributesMessage = new AttributesMessage("", 0, zmi.getPathName(), zmi.getAttributes(), state.theirGossipId);
-                UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, attributesMessage);
-                sendMessage(udupMessage);
-            }
-
-            for (Entry<Attribute, ValueQuery> query : state.getQueriesToSend()) {
-                QueryMessage queryMessage = new QueryMessage("", 0, query.getKey(), query.getValue(), state.theirGossipId);
-                UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, queryMessage);
-                sendMessage(udupMessage);
-            }
-            state.sentInfo();
+            sendInfo(state);
         } else {
             System.out.println("ERROR: GossipGirl got state for a nonexistent gossip");
         }
     }
 
+    private void sendInfo(GossipGirlState state) throws InterruptedException {
+        for (ZMI zmi : state.getZMIsToSend()) {
+            AttributesMessage attributesMessage = new AttributesMessage("", 0, zmi.getPathName(), zmi.getAttributes(), state.theirGossipId);
+            UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, attributesMessage);
+            sendMessage(udupMessage);
+        }
+
+        for (Entry<Attribute, ValueQuery> query : state.getQueriesToSend()) {
+            QueryMessage queryMessage = new QueryMessage("", 0, query.getKey(), query.getValue(), state.theirGossipId);
+            UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, queryMessage);
+            sendMessage(udupMessage);
+        }
+        state.sentInfo();
+    }
+
     private void handleAttributes(AttributesMessage message) throws InterruptedException {
         GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
         if (state != null) {
-            state.gotAttributesFor(message.getPath());
+            state.gotAttributes(message);
+            if (state.state == GossipGirlState.State.SEND_INFO) {
+                sendInfo(state);
+            }
             UpdateAttributesMessage updateMessage = new UpdateAttributesMessage("", 0, message.getPath().toString(), message.getAttributes());
             sendMessage(updateMessage);
             if (state.state == GossipGirlState.State.FINISHED) {

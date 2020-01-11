@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import pl.edu.mimuw.cloudatlas.agent.messages.AttributesMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.HejkaMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.NoCoTamMessage;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
@@ -28,6 +29,7 @@ public class GossipGirlState {
         SEND_HEJKA,
         SEND_NO_CO_TAM,
         SEND_INFO,
+        SEND_INFO_AND_FINISH,
         WAIT_FOR_NO_CO_TAM,
         WAIT_FOR_FIRST_INFO,
         WAIT_FOR_INFO,
@@ -107,7 +109,6 @@ public class GossipGirlState {
     public void handleHejka(HejkaMessage message) {
         switch (state) {
             case APPLY_HEJKA:
-                System.out.println("setting sender gossip id to " + message.getSenderGossipId());
                 theirGossipId = message.getSenderGossipId();
                 theirZoneTimestamps = message.getZoneTimestamps();
                 theirQueryTimestamps = message.getQueryTimestamps();
@@ -262,21 +263,39 @@ public class GossipGirlState {
             case SEND_INFO:
                 state = State.WAIT_FOR_INFO;
                 break;
+            case SEND_INFO_AND_FINISH:
+                state = State.FINISHED;
+                break;
             default:
                 System.out.println("ERROR: tried to set gossip state when not expected");
                 state = State.ERROR;
         }
     }
 
-    public void gotAttributesFor(PathName path) {
+    public void gotAttributes(AttributesMessage message) {
         switch (state) {
             case WAIT_FOR_INFO:
-                if (!waitingForZones.remove(path)) {
+                if (!waitingForZones.remove(message.getPath())) {
                     System.out.println("DEBUG: got zone attributes we weren't expecting");
                 }
                 if (waitingForZones.isEmpty() && waitingForQueries.isEmpty()) {
                     System.out.println("INFO: done waiting for info");
                     state = state.FINISHED;
+                }
+                break;
+            case WAIT_FOR_FIRST_INFO:
+                // TODO: use offset to setup GTP
+                setZonesToSend();
+                setQueriesToSend();
+                setWaitingFor();
+                state = State.SEND_INFO;
+
+                if (!waitingForZones.remove(message.getPath())) {
+                    System.out.println("DEBUG: got zone attributes we weren't expecting");
+                }
+                if (waitingForZones.isEmpty() && waitingForQueries.isEmpty()) {
+                    System.out.println("INFO: done waiting for info");
+                    state = state.SEND_INFO_AND_FINISH;
                 }
                 break;
             default:
