@@ -24,7 +24,8 @@ import java.util.*;
  * /attribs - GET - displays attribute submission form
  * /attribs - POST - posts attribute submission data
  * /values - GET - displays attributes values
- * /values - POST - posts zone change data
+ * /zones - GET - displays zone change data
+ * /zones - POST - posts zone change data
  * /attribNumValues - REST API to get numerical attribute values
  * /attribAllValues - REST API to get all attribute values
  */
@@ -325,9 +326,6 @@ public class ClientController {
 
     @GetMapping("/values")
     public String valuesPage(Model model) {
-        model.addAttribute("availableZones", getAvailableZonesString());
-        model.addAttribute("currentZone", "Current zone: " + this.currentZoneName);
-        model.addAttribute("zoneName", new DataStringInput());
         return "attribChart";
     }
 
@@ -439,13 +437,21 @@ public class ClientController {
         return processAttribValues(getValuesTable(false));
     }
 
-    @PostMapping("/values")
-    public String valuesPage(@ModelAttribute DataStringInput zoneName, Model model) {
+    @GetMapping("/zones")
+    public String zonesGetPage(Model model) {
+        model.addAttribute("availableZones", getAvailableZonesString());
+        model.addAttribute("currentZone", "Current zone: " + this.currentZoneName);
+        model.addAttribute("zoneName", new DataStringInput());
+        return "zoneForm";
+    }
+
+    @PostMapping("/zones")
+    public String zonesPostPage(@ModelAttribute DataStringInput zoneName, Model model) {
         this.currentZoneName = zoneName.getString();
         this.attributes.clear();
         model.addAttribute("currentZone", "Current zone: " + this.currentZoneName);
         model.addAttribute("availableZones", getAvailableZonesString());
         model.addAttribute("zoneName", new DataStringInput());
-        return "attribChart";
+        return "zoneForm";
     }
 }
