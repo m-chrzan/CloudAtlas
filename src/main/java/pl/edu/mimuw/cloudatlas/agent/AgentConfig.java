@@ -16,10 +16,11 @@ import java.util.Map;
 
 public class AgentConfig {
     private HashMap<ModuleType, Executor> executors;
-    HashMap<ModuleType, Module> modules;
+    private HashMap<ModuleType, Module> modules;
+    private ArrayList<Thread> executorThreads;
 
     public HashMap<ModuleType, Executor> getExecutors() {
-        return executors;
+        return this.executors;
     }
 
     public void runRegistry(EventBus eventBus) {
@@ -58,21 +59,21 @@ public class AgentConfig {
 
     public static HashMap<ModuleType, Executor> initializeExecutors(
             HashMap<ModuleType, Module> modules) {
-        HashMap<ModuleType, Executor> executors = new HashMap<ModuleType, Executor>();
+        HashMap<ModuleType, Executor> newExecutors = new HashMap<ModuleType, Executor>();
 
         for (Map.Entry<ModuleType, Module> moduleEntry : modules.entrySet()) {
             Module module = moduleEntry.getValue();
             Executor executor = new Executor(module);
-            executors.put(moduleEntry.getKey(), executor);
+            newExecutors.put(moduleEntry.getKey(), executor);
         }
 
-        return executors;
+        return newExecutors;
     }
 
-    public static ArrayList<Thread> initializeExecutorThreads(HashMap<ModuleType, Executor> executors) {
+    public static ArrayList<Thread> initializeExecutorThreads(HashMap<ModuleType, Executor> currentExecutors) {
         ArrayList<Thread> executorThreads = new ArrayList<Thread>();
 
-        for (Map.Entry<ModuleType, Executor> executorEntry : executors.entrySet()) {
+        for (Map.Entry<ModuleType, Executor> executorEntry : currentExecutors.entrySet()) {
             Thread thread = new Thread(executorEntry.getValue());
             thread.setDaemon(true);
             System.out.println("Initializing executor " + executorEntry.getKey());
@@ -83,27 +84,28 @@ public class AgentConfig {
         return executorThreads;
     }
 
-    public void closeExecutors(ArrayList<Thread> executorThreads) {
-        for (Thread executorThread : executorThreads) {
+    public void closeExecutors() {
+        for (Thread executorThread : this.executorThreads) {
             executorThread.interrupt();
         }
     }
 
     public void runModulesAsThreads() {
         try {
-            modules = initializeModules();
+            this.modules = initializeModules();
         } catch (UnknownHostException | SocketException e) {
             System.out.println("Module initialization failed");
             e.printStackTrace();
             return;
         }
 
-        executors = initializeExecutors(modules);
-        ArrayList<Thread> executorThreads = initializeExecutorThreads(executors);
+        this.executors = initializeExecutors(this.modules);
+        System.out.println(this.executors);
+        this.executorThreads = initializeExecutorThreads(this.executors);
     }
 
-    void startNonModuleThreads(EventBus eventBus) {
-        Thread UDUPServerThread = new Thread(((UDUP) modules.get(ModuleType.UDP)).getServer());
+    public void startNonModuleThreads(EventBus eventBus) {
+        Thread UDUPServerThread = new Thread(((UDUP) this.modules.get(ModuleType.UDP)).getServer());
         Thread eventBusThread = new Thread(eventBus);
         System.out.println("Initializing event bus");
         eventBusThread.start();
