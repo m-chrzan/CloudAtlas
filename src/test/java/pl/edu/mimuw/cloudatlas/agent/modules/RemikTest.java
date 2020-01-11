@@ -3,6 +3,7 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
@@ -49,7 +50,7 @@ public class RemikTest {
 
         ZMI zmi = new ZMI();
         zmi.getAttributes().add("timestamp", new ValueTime(42l));
-        StateMessage response = new StateMessage("", ModuleType.RMI, 0, 0, zmi, new HashMap());
+        StateMessage response = new StateMessage("", ModuleType.RMI, 0, 0, zmi, new HashMap(), new HashSet());
         remik.handleTyped(response);
 
         ResponseMessage passedResponse = future.get(100, TimeUnit.MILLISECONDS);

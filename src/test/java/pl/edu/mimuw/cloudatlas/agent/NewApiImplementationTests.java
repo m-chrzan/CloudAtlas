@@ -58,7 +58,7 @@ public class NewApiImplementationTests {
         RequestStateMessage requestMessage = (RequestStateMessage) message;
 
         ZMI root = new ZMI();
-        StateMessage responseMessage = new StateMessage("", ModuleType.RMI, 0, 0, root, null);
+        StateMessage responseMessage = new StateMessage("", ModuleType.RMI, 0, 0, root, null, null);
         requestMessage.getFuture().complete(responseMessage);
 
         apiThread.join(100);
@@ -88,7 +88,7 @@ public class NewApiImplementationTests {
 
         ZMI zmi = new ZMI();
         zmi.getAttributes().add("timestamp", new ValueTime(42l));
-        StateMessage response = new StateMessage("", ModuleType.RMI, 0, 0, zmi, new HashMap());
+        StateMessage response = new StateMessage("", ModuleType.RMI, 0, 0, zmi, new HashMap(), null);
         requestMessage.getFuture().complete(response);
 
         apiThread.join(100);
@@ -122,7 +122,7 @@ public class NewApiImplementationTests {
         zmi.addSon(son);
         son.getAttributes().add("name", new ValueString("son"));
         son.getAttributes().add("timestamp", new ValueTime(43l));
-        StateMessage response = new StateMessage("", ModuleType.RMI, 0, 0, zmi, new HashMap());
+        StateMessage response = new StateMessage("", ModuleType.RMI, 0, 0, zmi, new HashMap(), null);
         requestMessage.getFuture().complete(response);
 
         apiThread.join(100);
