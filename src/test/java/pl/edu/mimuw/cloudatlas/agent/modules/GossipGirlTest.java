@@ -407,7 +407,6 @@ public class GossipGirlTest {
 
         gossipGirl.handleTyped(attributesMessage2);
         gossipGirl.handleTyped(queryMessage2);
-        assertTrue(false);
     }
 
     private void assertQueryMessage(AgentMessage message, String recipientPath, String name, String query) throws Exception {
