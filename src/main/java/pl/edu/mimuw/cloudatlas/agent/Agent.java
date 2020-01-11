@@ -163,7 +163,7 @@ public class Agent {
                     } catch (InterruptedException e) {
                         System.out.println("Interrupted while initiating gossip");
                     } catch (Exception e) {
-                        System.out.println("ERROR: something happened");
+                        System.out.println("ERROR: something happened " + e.toString());
                     }
                 }
             };
