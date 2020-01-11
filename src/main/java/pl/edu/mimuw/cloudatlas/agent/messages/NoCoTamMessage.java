@@ -24,6 +24,8 @@ public class NoCoTamMessage extends RemoteGossipGirlMessage {
         this.hejkaReceiveTimestamp = hejkaReceiveTimestamp;
     }
 
+    private NoCoTamMessage() {}
+
     public long getReceiverGossipId() {
         return receiverGossipId;
     }

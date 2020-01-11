@@ -15,6 +15,7 @@ import java.net.UnknownHostException;
 import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 /**
@@ -125,7 +126,11 @@ public class UDUPSerializer {
 
         // messages in chronological order so it's easier to keep track
         kryo.register(AgentMessage.class);
+        kryo.register(AttributesMessage.class);
         kryo.register(GetStateMessage.class);
+        kryo.register(HejkaMessage.class);
+        kryo.register(NoCoTamMessage.class);
+        kryo.register(QueryMessage.class);
         kryo.register(QurnikMessage.class);
         kryo.register(RemikMessage.class);
         kryo.register(RemoveZMIMessage.class);
@@ -150,6 +155,7 @@ public class UDUPSerializer {
         // other
         kryo.register(byte[].class);
         kryo.register(LinkedHashMap.class);
+        kryo.register(HashMap.class);
         kryo.register(ModuleType.class);
     }
 
