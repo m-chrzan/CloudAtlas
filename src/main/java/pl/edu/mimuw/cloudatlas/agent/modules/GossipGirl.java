@@ -35,8 +35,8 @@ public class GossipGirl extends Module {
     }
 
     public void handleTyped(GossipGirlMessage message) throws InterruptedException, InvalidMessageType {
+        System.out.println("INFO: got GossipGirlMessage " + message.getType());
         switch(message.getType()) {
-            System.out.println("INFO: got GossipGirlMessage " + message.getType());
             case INITIATE:
                 initiateGossip((InitiateGossipMessage) message);
                 break;
