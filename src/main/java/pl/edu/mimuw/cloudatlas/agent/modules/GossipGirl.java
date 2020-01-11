@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.AttributesMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.CleanOldGossipsMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.GossipGirlMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.HejkaMessage;
@@ -53,7 +54,7 @@ public class GossipGirl extends Module {
                 handleQuery((QueryMessage) message);
                 break;
             case CLEAN:
-                cleanOldGossips();
+                cleanOldGossips((CleanOldGossipsMessage) message);
                 break;
             default:
                 throw new InvalidMessageType("This type of message cannot be handled by GossipGirl");
@@ -99,6 +100,7 @@ public class GossipGirl extends Module {
     private void setState(StateMessage message) throws InterruptedException {
         GossipGirlState state = gossipStates.get(message.getRequestId());
         if (state != null) {
+            state.setLastAction();
             state.setState(message.getZMI(), message.getQueries());
             if (state.state == GossipGirlState.State.SEND_HEJKA) {
                 HejkaMessage hejka = new HejkaMessage(
@@ -136,6 +138,7 @@ public class GossipGirl extends Module {
     private void handleNoCoTam(NoCoTamMessage message) throws InterruptedException {
         GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
         if (state != null) {
+            state.setLastAction();
             state.handleNoCoTam(message);
             sendInfo(state);
         } else {
@@ -161,6 +164,7 @@ public class GossipGirl extends Module {
     private void handleAttributes(AttributesMessage message) throws InterruptedException {
         GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
         if (state != null) {
+            state.setLastAction();
             state.gotAttributes(message);
             if (state.state == GossipGirlState.State.SEND_INFO) {
                 sendInfo(state);
@@ -178,6 +182,7 @@ public class GossipGirl extends Module {
     private void handleQuery(QueryMessage message) throws InterruptedException {
         GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
         if (state != null) {
+            state.setLastAction();
             state.gotQuery(message.getName());
             Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
             queries.put(
@@ -194,11 +199,13 @@ public class GossipGirl extends Module {
         }
     }
 
-    private void cleanOldGossips() {
+    private void cleanOldGossips(CleanOldGossipsMessage message) {
         Iterator<Entry<Long, GossipGirlState>> iterator = gossipStates.entrySet().iterator();
         while (iterator.hasNext()) {
             GossipGirlState state = iterator.next().getValue();
-            // TODO: remove
+            if (state.lastAction.isLowerThan(message.getAgeThreshold()).getValue()) {
+                iterator.remove();
+            }
         }
     }
 }
