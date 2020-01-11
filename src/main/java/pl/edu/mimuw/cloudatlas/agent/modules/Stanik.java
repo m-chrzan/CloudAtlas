@@ -1,33 +1,11 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 
-import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.RemoveZMIMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.SetAttributeMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.StanikMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
-import pl.edu.mimuw.cloudatlas.agent.messages.UpdateQueriesMessage;
-import pl.edu.mimuw.cloudatlas.model.Attribute;
-import pl.edu.mimuw.cloudatlas.model.AttributesMap;
-import pl.edu.mimuw.cloudatlas.model.AttributesUtil;
-import pl.edu.mimuw.cloudatlas.model.PathName;
-import pl.edu.mimuw.cloudatlas.model.Type;
-import pl.edu.mimuw.cloudatlas.model.TypePrimitive;
-import pl.edu.mimuw.cloudatlas.model.Value;
-import pl.edu.mimuw.cloudatlas.model.ValueBoolean;
-import pl.edu.mimuw.cloudatlas.model.ValueDuration;
-import pl.edu.mimuw.cloudatlas.model.ValueQuery;
-import pl.edu.mimuw.cloudatlas.model.ValueString;
-import pl.edu.mimuw.cloudatlas.model.ValueTime;
-import pl.edu.mimuw.cloudatlas.model.ValueUtils;
-import pl.edu.mimuw.cloudatlas.model.ZMI;
+import pl.edu.mimuw.cloudatlas.agent.messages.*;
+import pl.edu.mimuw.cloudatlas.model.*;
 
 public class Stanik extends Module {
     private class InvalidUpdateAttributesMessage extends Exception {
@@ -39,6 +17,8 @@ public class Stanik extends Module {
     private ZMI hierarchy;
     private HashMap<Attribute, Entry<ValueQuery, ValueTime>> queries;
     private long freshnessPeriod;
+    private Set<ValueContact> contacts;
+    private ValueTime contactsTimestamp;
 
     public Stanik(long freshnessPeriod) {
         super(ModuleType.STATE);
@@ -46,6 +26,8 @@ public class Stanik extends Module {
         queries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
         hierarchy.getAttributes().add("timestamp", new ValueTime(0l));
         this.freshnessPeriod = freshnessPeriod;
+        this.contactsTimestamp = ValueUtils.currentTime();
+        this.contacts = new HashSet<>();
     }
 
     public Stanik() {
@@ -69,6 +51,8 @@ public class Stanik extends Module {
             case UPDATE_QUERIES:
                 handleUpdateQueries((UpdateQueriesMessage) message);
                 break;
+            case UPDATE_CONTACTS:
+                handleUpdateContacts((UpdateContactsMessage) message);
             default:
                 throw new InvalidMessageType("This type of message cannot be handled by Stanik");
         }
@@ -250,5 +234,12 @@ public class Stanik extends Module {
 
     public HashMap<Attribute, Entry<ValueQuery, ValueTime>> getQueries() {
         return queries;
+    }
+
+    private void handleUpdateContacts(UpdateContactsMessage message) {
+        if (message.getContacts() != null && !message.getContacts().isEmpty() &&
+                ValueUtils.valueLower(contactsTimestamp, new ValueTime(message.getTimestamp()))) {
+            this.contacts = message.getContacts();
+        }
     }
 }

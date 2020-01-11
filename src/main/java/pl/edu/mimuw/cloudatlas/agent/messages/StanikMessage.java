@@ -9,7 +9,8 @@ public abstract class StanikMessage extends AgentMessage {
         REMOVE_ZMI,
         SET_ATTRIBUTE,
         UPDATE_ATTRIBUTES,
-        UPDATE_QUERIES
+        UPDATE_QUERIES,
+        UPDATE_CONTACTS
     }
 
     private Type type;
