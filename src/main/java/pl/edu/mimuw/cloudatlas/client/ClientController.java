@@ -53,6 +53,7 @@ public class ClientController {
             }
         };
         this.currentZoneName = "/uw/violet07";
+        fetchAttributeData(); // fetch attribute data as early as possible
     }
 
     @GetMapping("/")
