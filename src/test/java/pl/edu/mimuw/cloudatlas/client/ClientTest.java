@@ -2,6 +2,7 @@ package pl.edu.mimuw.cloudatlas.client;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
+import org.junit.Ignore;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -126,6 +127,7 @@ public class ClientTest {
                 .andExpect(content().string(CoreMatchers.containsString("Attribute submitted successfully")));
     }
 
+    @Ignore
     @Test
     public void numericalRESTApiCheck() throws Exception {
         Thread.sleep(10000);
@@ -135,6 +137,7 @@ public class ClientTest {
                 .andExpect(content().string(CoreMatchers.containsString("num_processes")));
     }
 
+    @Ignore
     @Test
     public void allValuesRESTApiCheck() throws Exception {
         Thread.sleep(10000);

@@ -71,7 +71,7 @@ public class HierarchyConfig {
         List<ZMI> siblings = getSiblings(root, path);
         filterEmptyContacts(siblings);
         if (siblings.isEmpty()) {
-            return selectFallbackContact();
+            return selectFallbackContact(response.getContacts());
         }
         ZMI zmi = selectZMI(siblings);
         ValueSet contactsValue = (ValueSet) zmi.getAttributes().getOrNull("contacts");
@@ -80,8 +80,12 @@ public class HierarchyConfig {
     }
 
     // TODO
-    private ValueContact selectFallbackContact() throws Exception {
-        return null;
+    private ValueContact selectFallbackContact(Set<ValueContact> contacts) throws Exception {
+        if (contacts.isEmpty()) {
+            return null;
+        } else {
+            return selectContactFromSet(contacts);
+        }
     }
 
     private ZMI selectZMI(List<ZMI> zmis) throws Exception {
@@ -96,9 +100,9 @@ public class HierarchyConfig {
         throw new Exception("empty list passed to selectZMI");
     }
 
-    private ValueContact selectContactFromSet(Set<Value> contacts) throws Exception {
+    private <T> ValueContact selectContactFromSet(Set<T> contacts) throws Exception {
         int i = random.nextInt(contacts.size());
-        for (Value contact : contacts) {
+        for (T contact : contacts) {
             if (i == 0) {
                 return (ValueContact) contact;
             }

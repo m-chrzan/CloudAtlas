@@ -38,7 +38,7 @@ public class Agent {
         agentConfig.runRegistry(eventBus);
         agentConfig.startNonModuleThreads(eventBus);
 
-        initZones(eventBus);
+        // initZones(eventBus);
 
         // TODO: make query period confiurable with config file and from tests
 

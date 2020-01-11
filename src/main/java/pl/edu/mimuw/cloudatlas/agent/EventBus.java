@@ -54,6 +54,7 @@ public class EventBus implements Runnable {
     }
 
     public void addMessage(AgentMessage msg) throws InterruptedException {
+        System.out.println("INFO: message added for " + msg.getDestinationModule().toString());
         this.events.put(msg);
     }
 }
