@@ -39,7 +39,7 @@ public class StanikTest {
 
     @Before
     public void setupLocals() {
-        stanik = new Stanik(freshnessPeriod);
+        stanik = new Stanik(new PathName("/new"), freshnessPeriod);
         executor = new MockExecutor(stanik);
         testTime = ValueUtils.currentTime();
     }
@@ -57,8 +57,9 @@ public class StanikTest {
         ZMI zmi = stateMessage.getZMI();
         assertNull(zmi.getFather());
         assertTrue(zmi.getSons().isEmpty());
-        assertEquals(2, TestUtil.iterableSize(zmi.getAttributes()));
+        assertEquals(3, TestUtil.iterableSize(zmi.getAttributes()));
         assertEquals(new ValueInt(0l), zmi.getAttributes().getOrNull("level"));
+        assertEquals(new ValueString("/new"), zmi.getAttributes().getOrNull("owner"));
         Map<Attribute, Entry<ValueQuery, ValueTime>> queries = stateMessage.getQueries();
         assertEquals(0, TestUtil.iterableSize(queries.keySet()));
     }
@@ -126,10 +127,11 @@ public class StanikTest {
 
         StateMessage newReceivedMessage = (StateMessage) executor.messagesToPass.poll();
         AttributesMap actualAttributes = newReceivedMessage.getZMI().findDescendant("/new").getAttributes();
-        assertEquals(5, TestUtil.iterableSize(actualAttributes));
+        assertEquals(6, TestUtil.iterableSize(actualAttributes));
         assertEquals(new ValueInt(1337l), actualAttributes.getOrNull("foo"));
         assertEquals(new ValueString("baz"), actualAttributes.getOrNull("bar"));
         assertEquals(new ValueString("new"), actualAttributes.getOrNull("name"));
+        assertEquals(new ValueString("/new"), actualAttributes.getOrNull("owner"));
         assertEquals(testTime, actualAttributes.getOrNull("timestamp"));
         assertEquals(new ValueInt(1l), actualAttributes.getOrNull("level"));
     }

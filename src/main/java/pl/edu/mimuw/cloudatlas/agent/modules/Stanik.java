@@ -19,9 +19,11 @@ public class Stanik extends Module {
     private long freshnessPeriod;
     private Set<ValueContact> contacts;
     private ValueTime contactsTimestamp;
+    private PathName ourPath;
 
-    public Stanik(long freshnessPeriod) {
+    public Stanik(PathName ourPath, long freshnessPeriod) {
         super(ModuleType.STATE);
+        this.ourPath = ourPath;
         hierarchy = new ZMI();
         queries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
         hierarchy.getAttributes().add("timestamp", new ValueTime(0l));
@@ -30,8 +32,8 @@ public class Stanik extends Module {
         this.contacts = new HashSet<>();
     }
 
-    public Stanik() {
-        this(60 * 1000);
+    public Stanik(PathName ourPath) {
+        this(ourPath, 60 * 1000);
     }
 
     public void handleTyped(StanikMessage message) throws InterruptedException, InvalidMessageType {
@@ -61,7 +63,7 @@ public class Stanik extends Module {
 
     public void handleGetState(GetStateMessage message) throws InterruptedException {
         pruneHierarchy();
-        addLevels();
+        addValues();
         StateMessage response = new StateMessage(
             "",
             message.getRequestingModule(),
@@ -79,14 +81,17 @@ public class Stanik extends Module {
         pruneZMI(hierarchy, now);
     }
 
-    private void addLevels() {
-        addLevelsRecursive(hierarchy, 0);
+    private void addValues() {
+        addValuesRecursive(hierarchy, 0);
     }
 
-    private void addLevelsRecursive(ZMI zmi, long level) {
+    private void addValuesRecursive(ZMI zmi, long level) {
         zmi.getAttributes().addOrChange("level", new ValueInt(level));
+        if (ValueUtils.isPrefix(zmi.getPathName(), ourPath)) {
+            zmi.getAttributes().addOrChange("owner", new ValueString(ourPath.toString()));
+        }
         for (ZMI son : zmi.getSons()) {
-            addLevelsRecursive(son, level + 1);
+            addValuesRecursive(son, level + 1);
         }
     }
 
