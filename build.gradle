@@ -46,6 +46,10 @@ ext.UDUPServerBufsize = {
     return System.getProperty("bufsize") ?: 512;
 }
 
+ext.querySignerHostname = {
+    return System.getProperty("querySignerHostname") ?: "localhost"
+}
+
 /*
 Possible options:
 RoundRobinExp
@@ -110,6 +114,7 @@ task runAgent(type: JavaExec) {
     systemProperty 'UDUPServer.bufsize', UDUPServerBufsize()
     systemProperty 'Gossip.zone_strategy', zoneSelectionStrategy()
     systemProperty 'zone_path', zonePath()
+    systemProperty 'query_signer_hostname', querySignerHostname()
 }
 
 task runClient(type: JavaExec) {
@@ -117,6 +122,7 @@ task runClient(type: JavaExec) {
     main = 'pl.edu.mimuw.cloudatlas.client.Client'
     systemProperty 'agent_hostname', hostname()
     systemProperty 'zone_path', zonePath()
+    systemProperty 'query_signer_hostname', querySignerHostname()
 }
 
 task runFetcher(type: JavaExec) {
@@ -130,4 +136,10 @@ task runInterpreter(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.interpreter.Main'
     standardInput = System.in
+}
+
+task runQuerySigner(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'pl.edu.mimuw.cloudatlas.querysigner.QuerySigner'
+    systemProperty 'query_signer_hostname', querySignerHostname()
 }

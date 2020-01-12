@@ -60,7 +60,7 @@ public class ApiImplementation implements Api {
         }
     }
 
-    public void installQuery(String name, String queryCode) throws RemoteException {
+    public void installQuery(String name, String queryCode, byte[] querySignature) throws RemoteException {
         Pattern queryNamePattern = Pattern.compile("&[a-zA-Z][\\w_]*");
         Matcher matcher = queryNamePattern.matcher(name);
         if (!matcher.matches()) {
@@ -85,7 +85,7 @@ public class ApiImplementation implements Api {
         }
     }
 
-    public void uninstallQuery(String queryName) throws RemoteException {
+    public void uninstallQuery(String queryName, byte[] querySignature) throws RemoteException {
         uninstallQueryInHierarchy(root, new Attribute(queryName));
     }
 

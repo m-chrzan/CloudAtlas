@@ -27,9 +27,9 @@ public interface Api extends Remote {
 
     public AttributesMap getZoneAttributeValues(String zoneName) throws RemoteException;
 
-    public void installQuery(String queryName, String query) throws RemoteException;
+    public void installQuery(String queryName, String query, byte[] querySignature) throws RemoteException;
 
-    public void uninstallQuery(String queryName) throws RemoteException;
+    public void uninstallQuery(String queryName, byte[] querySignature) throws RemoteException;
 
     public void setAttributeValue(String zoneName, String attributeName, Value value) throws RemoteException;
 

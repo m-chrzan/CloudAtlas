@@ -15,6 +15,28 @@ public class ValueQuery extends Value {
     private String code;
     // Parsed query
     private Program query;
+
+    public byte[] getSignature() {
+        return signature;
+    }
+
+    public void setSignature(byte[] signature) {
+        this.signature = signature;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    // Query signature
+    private byte[] signature;
+    // Query signing timestamp
+    private long timestamp;
+
     /**
      * Constructs a new <code>ValueQuery</code> object.
      *
