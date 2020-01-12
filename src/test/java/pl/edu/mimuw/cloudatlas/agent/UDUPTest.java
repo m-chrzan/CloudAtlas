@@ -20,6 +20,7 @@ import java.net.UnknownHostException;
 
 // TODO add serialization tests that target custom serializers (type collections!)
 
+@Ignore
 public class UDUPTest {
 
     @Test
