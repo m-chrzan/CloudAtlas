@@ -23,7 +23,7 @@ public class UDUPServer implements Runnable {
     private final AtomicBoolean running;
 
     public UDUPServer(InetAddress addr, int port, int bufSize) throws SocketException {
-        this.socket = new DatagramSocket(port, addr);
+        this.socket = new DatagramSocket(port);
         this.address = addr;
         this.bufSize = bufSize;
         this.partialPackets = new HashMap<>();

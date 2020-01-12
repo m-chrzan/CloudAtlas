@@ -49,7 +49,6 @@ public class EventBus implements Runnable {
     }
 
     public void routeMessage(AgentMessage msg) throws InterruptedException {
-        System.out.println("Event bus routing message");
         executors.get(msg.getDestinationModule()).addMessage(msg);
     }
 
