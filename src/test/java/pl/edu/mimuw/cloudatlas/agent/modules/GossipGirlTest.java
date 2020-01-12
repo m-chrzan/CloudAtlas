@@ -34,6 +34,7 @@ import pl.edu.mimuw.cloudatlas.model.Attribute;
 import pl.edu.mimuw.cloudatlas.model.PathName;
 import pl.edu.mimuw.cloudatlas.model.TestUtil;
 import pl.edu.mimuw.cloudatlas.model.ValueContact;
+import pl.edu.mimuw.cloudatlas.model.ValueDuration;
 import pl.edu.mimuw.cloudatlas.model.ValueInt;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
@@ -57,6 +58,7 @@ public class GossipGirlTest {
     private AttributesMessage attributesMessage2;
     private QueryMessage queryMessage1;
     private QueryMessage queryMessage2;
+    private ValueDuration offset;
 
     private HejkaMessage hejkaMessage;
 
@@ -84,7 +86,10 @@ public class GossipGirlTest {
         Map<PathName, ValueTime> otherZoneTimestamps = makeOtherZoneTimestamps();
         Map<Attribute, ValueTime> otherQueryTimestamps = makeOtherQueryTimestamps();
 
-        noCoTamMessage = new NoCoTamMessage("", 0, 42, 0, otherZoneTimestamps, otherQueryTimestamps, ValueUtils.addToTime(testTime, 10), ValueUtils.addToTime(testTime, 22));
+        noCoTamMessage = new NoCoTamMessage("", 0, 42, 0, otherZoneTimestamps, otherQueryTimestamps, ValueUtils.addToTime(testTime, 10), ValueUtils.addToTime(testTime, 30));
+        noCoTamMessage.setSentTimestamp(ValueUtils.addToTime(testTime, 35));
+        noCoTamMessage.setReceivedTimestamp(ValueUtils.addToTime(testTime, 255));
+        offset = new ValueDuration(-100l);
 
         attributesMessage1 = makeAttributesMessage("/son/bro", makeAttributes1());
         attributesMessage2 = makeAttributesMessage("/son/whodis", makeAttributes2());
@@ -99,7 +104,7 @@ public class GossipGirlTest {
 
 
     public QueryMessage makeQueryMessage(String name, String query) throws Exception {
-        return new QueryMessage("", 0, new Attribute(name), new ValueQuery(query), 0);
+        return new QueryMessage("", 0, new Attribute(name), new ValueQuery(query), 0, offset);
     }
 
     public AttributesMap makeAttributes1() {
@@ -121,12 +126,12 @@ public class GossipGirlTest {
     }
 
     public AttributesMessage makeAttributesMessage(String path, AttributesMap attributes) {
-        return new AttributesMessage("", 0, new PathName(path), attributes, 0);
+        return new AttributesMessage("", 0, new PathName(path), attributes, 0, offset);
     }
 
     public Map<PathName, ValueTime> makeOtherZoneTimestamps() {
         Map<PathName, ValueTime> zoneTimestamps = new HashMap();
-        addOtherZoneTimestamp(zoneTimestamps, "/son/sis", -100);
+        addOtherZoneTimestamp(zoneTimestamps, "/son/sis", -120);
         addOtherZoneTimestamp(zoneTimestamps, "/son/bro", 0);
         addOtherZoneTimestamp(zoneTimestamps, "/son/whodis", -300);
 
@@ -272,8 +277,7 @@ public class GossipGirlTest {
         assertEquals(StanikMessage.Type.UPDATE_ATTRIBUTES, stanikMessage1.getType());
         UpdateAttributesMessage updateMessage1 = (UpdateAttributesMessage) stanikMessage1;
         assertEquals("/son/bro", updateMessage1.getPathName());
-        // TODO: this should be modified by GTP
-        assertEquals(testTime, updateMessage1.getAttributes().getOrNull("timestamp"));
+        assertEquals(ValueUtils.addToTime(testTime, 100), updateMessage1.getAttributes().getOrNull("timestamp"));
         assertEquals(new ValueInt(140l), updateMessage1.getAttributes().getOrNull("foo"));
         assertEquals(new ValueString(":wq"), updateMessage1.getAttributes().getOrNull("bar"));
 
@@ -289,7 +293,6 @@ public class GossipGirlTest {
         assertEquals(updateMessage2.getQueries().get(new Attribute("&one")),
                 new SimpleImmutableEntry(
                     new ValueQuery("SELECT 3 AS one"),
-                    // TODO: this should be modified by GTP
                     ValueUtils.addToTime(testTime, 10)
                 )
         );
@@ -385,8 +388,7 @@ public class GossipGirlTest {
         assertEquals(StanikMessage.Type.UPDATE_ATTRIBUTES, stanikMessage1.getType());
         UpdateAttributesMessage updateMessage1 = (UpdateAttributesMessage) stanikMessage1;
         assertEquals("/son/bro", updateMessage1.getPathName());
-        // TODO: this should be modified by GTP
-        assertEquals(testTime, updateMessage1.getAttributes().getOrNull("timestamp"));
+        assertEquals(ValueUtils.addToTime(testTime, -100), updateMessage1.getAttributes().getOrNull("timestamp"));
         assertEquals(new ValueInt(140l), updateMessage1.getAttributes().getOrNull("foo"));
         assertEquals(new ValueString(":wq"), updateMessage1.getAttributes().getOrNull("bar"));
 
@@ -402,7 +404,6 @@ public class GossipGirlTest {
         assertEquals(updateMessage2.getQueries().get(new Attribute("&one")),
                 new SimpleImmutableEntry(
                     new ValueQuery("SELECT 3 AS one"),
-                    // TODO: this should be modified by GTP
                     ValueUtils.addToTime(testTime, 10)
                 )
         );
@@ -462,6 +463,7 @@ public class GossipGirlTest {
         QueryMessage queryMessage = (QueryMessage) ((UDUPMessage) message).getContent();
         assertEquals(new Attribute(name), queryMessage.getName());
         assertEquals(new ValueQuery(query), queryMessage.getQuery());
+        assertEquals(new ValueDuration(-100l), queryMessage.getOffset());
     }
 
     private void assertAttributeMessage(AgentMessage message, String recipientPath, String zonePath) throws Exception {
@@ -472,6 +474,7 @@ public class GossipGirlTest {
         );
         AttributesMessage attributesMessage = (AttributesMessage) ((UDUPMessage) message).getContent();
         assertEquals(new PathName(zonePath), attributesMessage.getPath());
+        assertEquals(new ValueDuration(-100l), attributesMessage.getOffset());
     }
 
     private void assertUDUPMessage(AgentMessage message, PathName destinationName, GossipGirlMessage.Type type) throws Exception {

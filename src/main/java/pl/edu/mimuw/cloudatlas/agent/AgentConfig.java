@@ -3,6 +3,7 @@ package pl.edu.mimuw.cloudatlas.agent;
 import pl.edu.mimuw.cloudatlas.agent.modules.*;
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 import pl.edu.mimuw.cloudatlas.api.Api;
+import pl.edu.mimuw.cloudatlas.model.PathName;
 
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -43,11 +44,12 @@ public class AgentConfig {
         Integer timeout = Integer.getInteger("UDUPServer.timeout");
         Integer bufsize = Integer.getInteger("UDUPServer.bufsize");
         InetAddress serverAddr = InetAddress.getByName(System.getProperty("UDUPServer.hostname"));
+        String ourPath = System.getProperty("zone_path");
 
         HashMap<ModuleType, Module> modules = new HashMap<ModuleType, Module>();
         modules.put(ModuleType.TIMER_SCHEDULER, new TimerScheduler(ModuleType.TIMER_SCHEDULER));
         modules.put(ModuleType.RMI, new Remik());
-        modules.put(ModuleType.STATE, new Stanik(freshnessPeriod));
+        modules.put(ModuleType.STATE, new Stanik(new PathName(ourPath), freshnessPeriod));
         modules.put(ModuleType.QUERY, new Qurnik());
         modules.put(ModuleType.GOSSIP, new GossipGirl());
 

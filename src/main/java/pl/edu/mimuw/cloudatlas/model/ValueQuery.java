@@ -49,6 +49,8 @@ public class ValueQuery extends Value {
         this.timestamp = System.currentTimeMillis();
     }
 
+    public String getCode() { return code; }
+
     public Program getQuery() {
         return query;
     }

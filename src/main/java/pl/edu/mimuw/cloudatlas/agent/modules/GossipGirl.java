@@ -37,6 +37,7 @@ public class GossipGirl extends Module {
     }
 
     public void handleTyped(GossipGirlMessage message) throws InterruptedException, InvalidMessageType {
+        System.out.println("INFO: got GossipGirlMessage " + message.getType());
         switch(message.getType()) {
             case INITIATE:
                 initiateGossip((InitiateGossipMessage) message);
@@ -64,6 +65,7 @@ public class GossipGirl extends Module {
     public void handleTyped(ResponseMessage message) throws InterruptedException, InvalidMessageType {
         switch(message.getType()) {
             case STATE:
+                System.out.println("INFO: GossipGirl got a StateMessage");
                 setState((StateMessage) message);
                 break;
             default:
@@ -77,6 +79,7 @@ public class GossipGirl extends Module {
         gossipStates.put(gossipId, new GossipGirlState(gossipId, message.getOurPath(), message.getTheirContact(), true));
 
         GetStateMessage getState = new GetStateMessage("", 0, ModuleType.GOSSIP, gossipId);
+        System.out.println("INFO: GossipGirl sending GetStateMessage when initiating");
         sendMessage(getState);
     }
 
@@ -94,12 +97,14 @@ public class GossipGirl extends Module {
         gossipStates.get(gossipId).handleHejka(message);
 
         GetStateMessage getState = new GetStateMessage("", 0, ModuleType.GOSSIP, gossipId);
+        System.out.println("INFO: GossipGirl sending GetStateMessage when responding");
         sendMessage(getState);
     }
 
     private void setState(StateMessage message) throws InterruptedException {
         GossipGirlState state = gossipStates.get(message.getRequestId());
         if (state != null) {
+            System.out.println("INFO: setting state in gossip " + Long.toString(message.getRequestId()));
             state.setLastAction();
             state.setState(message.getZMI(), message.getQueries());
             if (state.state == GossipGirlState.State.SEND_HEJKA) {
@@ -113,6 +118,7 @@ public class GossipGirl extends Module {
                         state.getQueryTimestampsToSend()
                 );
                 UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, hejka);
+                System.out.println("INFO: GossipGirl sending HejkaMessage");
                 sendMessage(udupMessage);
                 state.sentHejka();
             } else if (state.state == GossipGirlState.State.SEND_NO_CO_TAM) {
@@ -127,6 +133,7 @@ public class GossipGirl extends Module {
                         state.hejkaReceiveTimestamp
                 );
                 UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, noCoTam);
+                System.out.println("INFO: GossipGirl sending NoCoTamMessage");
                 sendMessage(udupMessage);
                 state.sentNoCoTam();
             }
@@ -138,24 +145,30 @@ public class GossipGirl extends Module {
     private void handleNoCoTam(NoCoTamMessage message) throws InterruptedException {
         GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
         if (state != null) {
+            System.out.println("INFO: handling NoCoTamMessage in" + Long.toString(message.getReceiverGossipId()));
             state.setLastAction();
             state.handleNoCoTam(message);
+            System.out.println("DEBUG: handled NoCoTam in GossipGirlState");
             sendInfo(state);
+            System.out.println("DEBUG: sent info after NoCoTam");
         } else {
             System.out.println("ERROR: GossipGirl got state for a nonexistent gossip");
         }
     }
 
     private void sendInfo(GossipGirlState state) throws InterruptedException {
+        System.out.println("DEBUG: about to send info");
         for (ZMI zmi : state.getZMIsToSend()) {
-            AttributesMessage attributesMessage = new AttributesMessage("", 0, zmi.getPathName(), zmi.getAttributes(), state.theirGossipId);
+            AttributesMessage attributesMessage = new AttributesMessage("", 0, zmi.getPathName(), zmi.getAttributes(), state.theirGossipId, state.offset);
             UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, attributesMessage);
+            System.out.println("INFO: GossipGirl sending AttributesMessage");
             sendMessage(udupMessage);
         }
 
         for (Entry<Attribute, ValueQuery> query : state.getQueriesToSend()) {
-            QueryMessage queryMessage = new QueryMessage("", 0, query.getKey(), query.getValue(), state.theirGossipId);
+            QueryMessage queryMessage = new QueryMessage("", 0, query.getKey(), query.getValue(), state.theirGossipId, state.offset);
             UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, queryMessage);
+            System.out.println("INFO: GossipGirl sending QueryMessage");
             sendMessage(udupMessage);
         }
         state.sentInfo();
@@ -164,12 +177,14 @@ public class GossipGirl extends Module {
     private void handleAttributes(AttributesMessage message) throws InterruptedException {
         GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
         if (state != null) {
+            System.out.println("INFO: handling Attributes in " + Long.toString(message.getReceiverGossipId()));
             state.setLastAction();
             state.gotAttributes(message);
             if (state.state == GossipGirlState.State.SEND_INFO || state.state == GossipGirlState.State.SEND_INFO_AND_FINISH) {
                 sendInfo(state);
             }
-            UpdateAttributesMessage updateMessage = new UpdateAttributesMessage("", 0, message.getPath().toString(), message.getAttributes());
+            UpdateAttributesMessage updateMessage = new UpdateAttributesMessage("", 0, message.getPath().toString(), state.modifyAttributes(message.getAttributes()));
+            System.out.println("INFO: GossipGirl sending UpdateAttributesMessage");
             sendMessage(updateMessage);
             if (state.state == GossipGirlState.State.FINISHED) {
                 gossipStates.remove(message.getReceiverGossipId());
@@ -182,14 +197,16 @@ public class GossipGirl extends Module {
     private void handleQuery(QueryMessage message) throws InterruptedException {
         GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
         if (state != null) {
+            System.out.println("INFO: handling Query in " + Long.toString(message.getReceiverGossipId()));
             state.setLastAction();
-            state.gotQuery(message.getName());
+            state.gotQuery(message);
             Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
             queries.put(
                 message.getName(),
                 new SimpleImmutableEntry(message.getQuery(), state.getTheirQueryTimestamp(message.getName()))
             );
             UpdateQueriesMessage updateMessage = new UpdateQueriesMessage("", 0, queries);
+            System.out.println("INFO: GossipGirl sending UpdateQueriesMessage");
             sendMessage(updateMessage);
             if (state.state == GossipGirlState.State.FINISHED) {
                 gossipStates.remove(message.getReceiverGossipId());

@@ -2,6 +2,7 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map.Entry;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.*;
@@ -19,19 +20,39 @@ public class Stanik extends Module {
     private long freshnessPeriod;
     private Set<ValueContact> contacts;
     private ValueTime contactsTimestamp;
+    private PathName ourPath;
 
-    public Stanik(long freshnessPeriod) {
+    public Stanik(PathName ourPath, long freshnessPeriod) {
         super(ModuleType.STATE);
+        this.ourPath = ourPath;
         hierarchy = new ZMI();
         queries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
         hierarchy.getAttributes().add("timestamp", new ValueTime(0l));
         this.freshnessPeriod = freshnessPeriod;
         this.contactsTimestamp = ValueUtils.currentTime();
         this.contacts = new HashSet<>();
+        setDefaultQueries();
     }
 
-    public Stanik() {
-        this(60 * 1000);
+    private void setDefaultQueries() {
+        String cardinalityQuery = "SELECT sum(cardinality) AS cardinality";
+        String contactsQuery = "SELECT random(5, unfold(contacts)) AS contacts";
+
+        setDefaultQuery("&cardinality", cardinalityQuery);
+        setDefaultQuery("&contacts", contactsQuery);
+    }
+
+    private void setDefaultQuery(String name, String query) {
+        try {
+            ValueQuery queryValue = new ValueQuery(query);
+            queries.put(new Attribute(name), new SimpleImmutableEntry(queryValue, new ValueTime(0l)));
+        } catch (Exception e) {
+            System.out.println("ERROR: failed to compile default query");
+        }
+    }
+
+    public Stanik(PathName ourPath) {
+        this(ourPath, 60 * 1000);
     }
 
     public void handleTyped(StanikMessage message) throws InterruptedException, InvalidMessageType {
@@ -61,6 +82,7 @@ public class Stanik extends Module {
 
     public void handleGetState(GetStateMessage message) throws InterruptedException {
         pruneHierarchy();
+        addValues();
         StateMessage response = new StateMessage(
             "",
             message.getRequestingModule(),
@@ -76,6 +98,23 @@ public class Stanik extends Module {
     private void pruneHierarchy() {
         ValueTime now = ValueUtils.currentTime();
         pruneZMI(hierarchy, now);
+    }
+
+    private void addValues() {
+        addValuesRecursive(hierarchy, 0);
+    }
+
+    private void addValuesRecursive(ZMI zmi, long level) {
+        zmi.getAttributes().addOrChange("level", new ValueInt(level));
+        if (ValueUtils.isPrefix(zmi.getPathName(), ourPath)) {
+            zmi.getAttributes().addOrChange("owner", new ValueString(ourPath.toString()));
+        }
+        if (zmi.getPathName().equals(ourPath)) {
+            zmi.getAttributes().addOrChange("cardinality", new ValueInt(1l));
+        }
+        for (ZMI son : zmi.getSons()) {
+            addValuesRecursive(son, level + 1);
+        }
     }
 
     private boolean pruneZMI(ZMI zmi, ValueTime time) {
