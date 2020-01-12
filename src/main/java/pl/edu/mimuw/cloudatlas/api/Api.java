@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import pl.edu.mimuw.cloudatlas.model.Value;
 import pl.edu.mimuw.cloudatlas.model.ValueContact;
 import pl.edu.mimuw.cloudatlas.model.AttributesMap;
+import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 
 /**
  *
@@ -27,9 +28,9 @@ public interface Api extends Remote {
 
     public AttributesMap getZoneAttributeValues(String zoneName) throws RemoteException;
 
-    public void installQuery(String queryName, String query, byte[] querySignature) throws RemoteException;
+    public void installQuery(String queryName, ValueQuery query) throws RemoteException;
 
-    public void uninstallQuery(String queryName, byte[] querySignature) throws RemoteException;
+    public void uninstallQuery(String queryName, ValueQuery query) throws RemoteException;
 
     public void setAttributeValue(String zoneName, String attributeName, Value value) throws RemoteException;
 

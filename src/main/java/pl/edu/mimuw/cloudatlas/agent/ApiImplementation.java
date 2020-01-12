@@ -28,6 +28,7 @@ import pl.edu.mimuw.cloudatlas.model.Type;
 import pl.edu.mimuw.cloudatlas.model.TypePrimitive;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
 import pl.edu.mimuw.cloudatlas.api.Api;
+import pl.edu.mimuw.cloudatlas.querysigner.QueryUtils;
 
 public class ApiImplementation implements Api {
     ZMI root;
@@ -60,14 +61,9 @@ public class ApiImplementation implements Api {
         }
     }
 
-    public void installQuery(String name, String queryCode, byte[] querySignature) throws RemoteException {
-        Pattern queryNamePattern = Pattern.compile("&[a-zA-Z][\\w_]*");
-        Matcher matcher = queryNamePattern.matcher(name);
-        if (!matcher.matches()) {
-            throw new RemoteException("Invalid query identifier");
-        }
+    public void installQuery(String name, ValueQuery query) throws RemoteException {
+        QueryUtils.validateQueryName(name);
         try {
-            ValueQuery query = new ValueQuery(queryCode);
             Attribute attributeName = new Attribute(name);
             installQueryInHierarchy(root, attributeName, query);
             executeAllQueries(root);
@@ -85,7 +81,8 @@ public class ApiImplementation implements Api {
         }
     }
 
-    public void uninstallQuery(String queryName, byte[] querySignature) throws RemoteException {
+    public void uninstallQuery(String queryName, ValueQuery query) throws RemoteException {
+        QueryUtils.validateQueryName(queryName);
         uninstallQueryInHierarchy(root, new Attribute(queryName));
     }
 

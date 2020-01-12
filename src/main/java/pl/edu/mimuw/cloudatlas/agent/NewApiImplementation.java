@@ -22,6 +22,7 @@ import pl.edu.mimuw.cloudatlas.interpreter.Main;
 import pl.edu.mimuw.cloudatlas.interpreter.QueryResult;
 import pl.edu.mimuw.cloudatlas.model.*;
 import pl.edu.mimuw.cloudatlas.api.Api;
+import pl.edu.mimuw.cloudatlas.querysigner.QueryUtils;
 
 public class NewApiImplementation implements Api {
     private EventBus eventBus;
@@ -79,14 +80,9 @@ public class NewApiImplementation implements Api {
         }
     }
 
-    public void installQuery(String name, String queryCode, byte[] querySignature) throws RemoteException {
-        Pattern queryNamePattern = Pattern.compile("&[a-zA-Z][\\w_]*");
-        Matcher matcher = queryNamePattern.matcher(name);
-        if (!matcher.matches()) {
-            throw new RemoteException("Invalid query identifier");
-        }
+    public void installQuery(String name, ValueQuery query) throws RemoteException {
+        QueryUtils.validateQueryName(name);
         try {
-            ValueQuery query = new ValueQuery(queryCode);
             Attribute attributeName = new Attribute(name);
             ValueTime timestamp = new ValueTime(System.currentTimeMillis());
             Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
@@ -98,7 +94,8 @@ public class NewApiImplementation implements Api {
         }
     }
 
-    public void uninstallQuery(String queryName, byte[] querySignature) throws RemoteException {
+    public void uninstallQuery(String queryName, ValueQuery query) throws RemoteException {
+        QueryUtils.validateQueryName(queryName);
         try {
             Attribute attributeName = new Attribute(queryName);
             ValueTime timestamp = new ValueTime(System.currentTimeMillis());
