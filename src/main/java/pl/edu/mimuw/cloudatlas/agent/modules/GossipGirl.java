@@ -159,14 +159,14 @@ public class GossipGirl extends Module {
     private void sendInfo(GossipGirlState state) throws InterruptedException {
         System.out.println("DEBUG: about to send info");
         for (ZMI zmi : state.getZMIsToSend()) {
-            AttributesMessage attributesMessage = new AttributesMessage("", 0, zmi.getPathName(), zmi.getAttributes(), state.theirGossipId);
+            AttributesMessage attributesMessage = new AttributesMessage("", 0, zmi.getPathName(), zmi.getAttributes(), state.theirGossipId, state.offset);
             UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, attributesMessage);
             System.out.println("INFO: GossipGirl sending AttributesMessage");
             sendMessage(udupMessage);
         }
 
         for (Entry<Attribute, ValueQuery> query : state.getQueriesToSend()) {
-            QueryMessage queryMessage = new QueryMessage("", 0, query.getKey(), query.getValue(), state.theirGossipId);
+            QueryMessage queryMessage = new QueryMessage("", 0, query.getKey(), query.getValue(), state.theirGossipId, state.offset);
             UDUPMessage udupMessage = new UDUPMessage("", 0, state.theirContact, queryMessage);
             System.out.println("INFO: GossipGirl sending QueryMessage");
             sendMessage(udupMessage);
@@ -183,7 +183,7 @@ public class GossipGirl extends Module {
             if (state.state == GossipGirlState.State.SEND_INFO || state.state == GossipGirlState.State.SEND_INFO_AND_FINISH) {
                 sendInfo(state);
             }
-            UpdateAttributesMessage updateMessage = new UpdateAttributesMessage("", 0, message.getPath().toString(), message.getAttributes());
+            UpdateAttributesMessage updateMessage = new UpdateAttributesMessage("", 0, message.getPath().toString(), state.modifyAttributes(message.getAttributes()));
             System.out.println("INFO: GossipGirl sending UpdateAttributesMessage");
             sendMessage(updateMessage);
             if (state.state == GossipGirlState.State.FINISHED) {
@@ -199,7 +199,7 @@ public class GossipGirl extends Module {
         if (state != null) {
             System.out.println("INFO: handling Query in " + Long.toString(message.getReceiverGossipId()));
             state.setLastAction();
-            state.gotQuery(message.getName());
+            state.gotQuery(message);
             Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
             queries.put(
                 message.getName(),

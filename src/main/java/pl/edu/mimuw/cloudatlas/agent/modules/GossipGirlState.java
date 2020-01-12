@@ -13,9 +13,13 @@ import java.util.Set;
 import pl.edu.mimuw.cloudatlas.agent.messages.AttributesMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.HejkaMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.NoCoTamMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.QueryMessage;
 import pl.edu.mimuw.cloudatlas.model.Attribute;
+import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.PathName;
 import pl.edu.mimuw.cloudatlas.model.ValueContact;
+import pl.edu.mimuw.cloudatlas.model.ValueDuration;
+import pl.edu.mimuw.cloudatlas.model.ValueInt;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 import pl.edu.mimuw.cloudatlas.model.ValueUtils;
@@ -48,18 +52,21 @@ public class GossipGirlState {
     public ValueTime hejkaSendTimestamp;
     public ValueTime hejkaReceiveTimestamp;
     public ValueTime noCoTamSendTimestamp;
-    public ValueTime noCoTamSendReceiveTimestamp;
+    public ValueTime noCoTamReceiveTimestamp;
+    public ValueDuration offset;
     private Map<PathName, ValueTime> theirZoneTimestamps;
     private Map<Attribute, ValueTime> theirQueryTimestamps;
     private List<PathName> zonesToSend;
     private List<Attribute> queriesToSend;
     private Set<PathName> waitingForZones;
     private Set<Attribute> waitingForQueries;
+    private boolean initiating;
 
     public GossipGirlState(long gossipId, PathName ourPath, ValueContact theirContact, boolean initiating) {
         this.gossipId = gossipId;
         this.ourPath = ourPath;
         this.theirContact = theirContact;
+        this.initiating = initiating;
         System.out.println("INFO: initializing Gossip state, their contact " + theirContact.toString());
         if (initiating) {
             state = State.WAIT_FOR_STATE_INITIALIZER;
@@ -139,6 +146,9 @@ public class GossipGirlState {
                 theirQueryTimestamps = message.getQueryTimestamps();
                 hejkaSendTimestamp = message.getHejkaSendTimestamp();
                 hejkaReceiveTimestamp = message.getHejkaReceiveTimestamp();
+                noCoTamSendTimestamp = message.getSentTimestamp();
+                noCoTamReceiveTimestamp = message.getReceivedTimestamp();
+                computeOffset();
                 System.out.println("DEBUG: set basic stuff");
                 setZonesToSend();
                 setQueriesToSend();
@@ -150,6 +160,23 @@ public class GossipGirlState {
                 System.out.println("ERROR: tried to set gossip state when not expected");
                 state = State.ERROR;
         }
+    }
+
+    public void computeOffset() {
+        ValueDuration rtd = (ValueDuration) (noCoTamReceiveTimestamp.subtract(hejkaSendTimestamp))
+                .subtract(noCoTamSendTimestamp.subtract(hejkaReceiveTimestamp));
+        offset = (ValueDuration) (noCoTamSendTimestamp.addValue(rtd.divide(new ValueInt(2l))))
+                .subtract(noCoTamReceiveTimestamp);
+        System.out.println("INFO: GossipGirlState calculated offset: " + offset.toString());
+    }
+
+    public AttributesMap modifyAttributes(AttributesMap attributes) {
+        ValueDuration delta = offset;
+        if (!initiating) {
+            delta = delta.negate();
+        }
+        attributes.addOrChange("timestamp", attributes.getOrNull("timestamp").subtract(delta));
+        return attributes;
     }
 
     private void setWaitingFor() {
@@ -305,6 +332,7 @@ public class GossipGirlState {
                 setZonesToSend();
                 setQueriesToSend();
                 setWaitingFor();
+                offset = message.getOffset();
                 state = State.SEND_INFO;
 
                 if (!waitingForZones.remove(message.getPath())) {
@@ -321,10 +349,26 @@ public class GossipGirlState {
         }
     }
 
-    public void gotQuery(Attribute name) {
+    public void gotQuery(QueryMessage message) {
         switch (state) {
+            case WAIT_FOR_FIRST_INFO:
+                // TODO: use offset to setup GTP
+                offset = message.getOffset();
+                setZonesToSend();
+                setQueriesToSend();
+                setWaitingFor();
+                state = State.SEND_INFO;
+
+                if (!waitingForQueries.remove(message.getName())) {
+                    System.out.println("DEBUG: got query we weren't expecting");
+                }
+                if (waitingForZones.isEmpty() && waitingForQueries.isEmpty()) {
+                    System.out.println("INFO: done waiting for info");
+                    state = state.SEND_INFO_AND_FINISH;
+                }
+                break;
             case WAIT_FOR_INFO:
-                if (!waitingForQueries.remove(name)) {
+                if (!waitingForQueries.remove(message.getName())) {
                     System.out.println("DEBUG: got query we weren't expecting");
                 }
                 if (waitingForZones.isEmpty() && waitingForQueries.isEmpty()) {
