@@ -3,7 +3,6 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -170,12 +169,16 @@ public class GossipGirlState {
         System.out.println("INFO: GossipGirlState calculated offset: " + offset.toString());
     }
 
-    public AttributesMap modifyAttributes(AttributesMap attributes) {
+    public ValueDuration delta() {
         ValueDuration delta = offset;
         if (!initiating) {
             delta = delta.negate();
         }
-        attributes.addOrChange("timestamp", attributes.getOrNull("timestamp").subtract(delta));
+        return delta;
+    }
+
+    public AttributesMap modifyAttributes(AttributesMap attributes) {
+        attributes.addOrChange("timestamp", attributes.getOrNull("timestamp").subtract(delta()));
         return attributes;
     }
 
@@ -220,7 +223,7 @@ public class GossipGirlState {
         System.out.println("DEBUG: timestamps to send: " + getZoneTimestampsToSend().toString());
         for (Entry<PathName, ValueTime> timestampedPath : getZoneTimestampsToSend().entrySet()) {
             ValueTime theirTimestamp = theirZoneTimestamps.get(timestampedPath.getKey());
-            if (theirTimestamp == null || ValueUtils.valueLower(theirTimestamp, timestampedPath.getValue())) {
+            if (theirTimestamp == null || ValueUtils.valueLower(theirTimestamp.subtract(delta()), timestampedPath.getValue())) {
                 zonesToSend.add(timestampedPath.getKey());
             }
         }
@@ -310,10 +313,10 @@ public class GossipGirlState {
                 break;
             case WAIT_FOR_FIRST_INFO:
                 // TODO: use offset to setup GTP
+                offset = message.getOffset();
                 setZonesToSend();
                 setQueriesToSend();
                 setWaitingFor();
-                offset = message.getOffset();
                 state = State.SEND_INFO;
 
                 if (!waitingForZones.remove(message.getPath())) {
