@@ -92,7 +92,7 @@ public class Fetcher {
     }
 
     // https://jj09.net/interprocess-communication-python-java/
-    private static void fetchData() {
+    private static void fetchData(String zonePath) {
         BufferedReader bufferRead;
         ArrayList deserializedAttribs;
         String jsonAttribs;
@@ -111,8 +111,7 @@ public class Fetcher {
                 deserializedAttribs = deserializeAttribs(jsonAttribs);
                 for (int i = 0; i < fetcherAttributeNames.size(); i++) {
                     api.setAttributeValue(
-                            // TODO enable setup in config
-                            "/uw/violet08",
+                            zonePath,
                             fetcherAttributeNames.get(i),
                             packAttributeValue(
                                     deserializedAttribs.get(i),
@@ -144,7 +143,8 @@ public class Fetcher {
     }
 
     public static void main(String[] args) {
+        String zonePath = System.getProperty("zone_path");
         parseArgs(args);
-        fetchData();
+        fetchData(zonePath);
     }
 }

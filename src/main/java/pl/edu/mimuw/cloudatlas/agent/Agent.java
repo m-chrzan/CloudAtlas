@@ -44,12 +44,13 @@ public class Agent {
 
         // TODO config setup
         String zonePath = System.getProperty("zone_path");
+        System.out.println("zonePAth " + zonePath);
         String selectionStrategy = System.getProperty("Gossip.zone_strategy");
         Long queryPeriod = Long.getLong("query_period");
         Long gossipPeriod = Long.getLong("gossip_period");
 
         HierarchyConfig hierarchyConfig = new HierarchyConfig(eventBus, zonePath, selectionStrategy);
         hierarchyConfig.startQueries(queryPeriod);
-        hierarchyConfig.startGossip(gossipPeriod);
+        hierarchyConfig.startGossip(gossipPeriod, zonePath);
     }
 }

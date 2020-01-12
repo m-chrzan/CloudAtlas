@@ -57,9 +57,8 @@ ext.zoneSelectionStrategy = {
     return System.getProperty("zoneStrategy") ?: "RandomUniform"
 }
 
-// TODO nie bangla zmienianie
 ext.zonePath = {
-    return System.getProperty("zonePath") ?: "/uw/violet08"
+    return System.getProperty("zonePath") ?: "/uw/violet07"
 }
 
 repositories {
@@ -117,12 +116,14 @@ task runClient(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.client.Client'
     systemProperty 'agent_hostname', hostname()
+    systemProperty 'zone_path', zonePath()
 }
 
 task runFetcher(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.fetcher.Fetcher'
     args(hostname() , 1099)
+    systemProperty 'zone_path', zonePath()
 }
 
 task runInterpreter(type: JavaExec) {
