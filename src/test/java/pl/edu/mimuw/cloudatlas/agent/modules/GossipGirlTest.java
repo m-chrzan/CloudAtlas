@@ -8,6 +8,7 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import java.net.InetAddress;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -78,7 +79,7 @@ public class GossipGirlTest {
         testTime = ValueUtils.currentTime();
         setupHierarchy();
         setupQueries();
-        stateMessage = new StateMessage("", ModuleType.GOSSIP, 0, 0, initiatorHierarchy, initiatorQueries);
+        stateMessage = new StateMessage("", ModuleType.GOSSIP, 0, 0, initiatorHierarchy, initiatorQueries, new HashSet());
 
         Map<PathName, ValueTime> otherZoneTimestamps = makeOtherZoneTimestamps();
         Map<Attribute, ValueTime> otherQueryTimestamps = makeOtherQueryTimestamps();

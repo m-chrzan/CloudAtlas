@@ -2,6 +2,7 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -63,7 +64,7 @@ public class QurnikTest {
                     new ValueTime(0l)
                 )
         );
-        StateMessage message = new StateMessage("", ModuleType.QUERY, 0, 0, root, queries);
+        StateMessage message = new StateMessage("", ModuleType.QUERY, 0, 0, root, queries, new HashSet());
         long timeBefore = System.currentTimeMillis();
         qurnik.handleTyped(message);
         long timeAfter = System.currentTimeMillis();
@@ -168,7 +169,7 @@ public class QurnikTest {
         ZMI root = setupSampleHierarchy();
 
         Map<Attribute, Entry<ValueQuery, ValueTime>> queries = setupSampleQueries();
-        StateMessage message = new StateMessage("", ModuleType.QUERY, 0, 0, root, queries);
+        StateMessage message = new StateMessage("", ModuleType.QUERY, 0, 0, root, queries, new HashSet());
         long timeBefore = System.currentTimeMillis();
         qurnik.handleTyped(message);
         long timeAfter = System.currentTimeMillis();
@@ -224,7 +225,7 @@ public class QurnikTest {
                     new ValueTime(44l)
                 )
         );
-        StateMessage message = new StateMessage("", ModuleType.QUERY, 0, 0, root, queries);
+        StateMessage message = new StateMessage("", ModuleType.QUERY, 0, 0, root, queries, new HashSet());
         long timeBefore = System.currentTimeMillis();
         qurnik.handleTyped(message);
         long timeAfter = System.currentTimeMillis();

@@ -30,20 +30,35 @@ ext.gossipPeriod = {
     return System.getProperty("gossipPeriod") ?: 5 * 1000
 }
 
-ext.UDUPHostname = {
+ext.UDUPServerHostname = {
     return System.getProperty("hostname") ?: "localhost"
 }
 
-ext.port = {
+ext.UDUPServerPort = {
     return System.getProperty("port") ?: 5999;
 }
 
-ext.timeout = {
+ext.UDUPServerTimeout = {
     return System.getProperty("timeout") ?: 5000;
 }
 
-ext.bufsize = {
+ext.UDUPServerBufsize = {
     return System.getProperty("bufsize") ?: 512;
+}
+
+/*
+Possible options:
+RoundRobinExp
+RoundRobinUniform
+RandomExp
+RandomUniform
+ */
+ext.zoneSelectionStrategy = {
+    return System.getProperty("zoneStrategy") ?: "RandomUniform"
+}
+
+ext.zonePath = {
+    return System.getProperty("zonePath") ?: "/uw/violet07"
 }
 
 repositories {
@@ -89,10 +104,12 @@ task runAgent(type: JavaExec) {
     systemProperty 'freshness_period', freshnessPeriod()
     systemProperty 'query_period', queryPeriod()
     systemProperty 'gossip_period', gossipPeriod()
-    systemProperty 'UDUPServer.hostname', UDUPHostname()
-    systemProperty 'UDUPServer.port', port()
-    systemProperty 'UDUPServer.timeout', port()
-    systemProperty 'UDUPServer.bufsize', port()
+    systemProperty 'UDUPServer.hostname', UDUPServerHostname()
+    systemProperty 'UDUPServer.port', UDUPServerPort()
+    systemProperty 'UDUPServer.timeout', UDUPServerTimeout()
+    systemProperty 'UDUPServer.bufsize', UDUPServerBufsize()
+    systemProperty 'Gossip.zone_strategy', zoneSelectionStrategy()
+    systemProperty 'zone_path', zonePath()
 }
 
 task runClient(type: JavaExec) {

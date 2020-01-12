@@ -22,12 +22,17 @@ public class EventBus implements Runnable {
 
     // Allows for testing with a mock EventBus
     protected EventBus() {
+        this.events = new LinkedBlockingQueue<AgentMessage>();
     }
 
     EventBus(HashMap<ModuleType, Executor> executors) {
         this.executors = executors;
         setEventBusReference();
         this.events = new LinkedBlockingQueue<AgentMessage>();
+    }
+
+    public void setEvents(LinkedBlockingQueue<AgentMessage> events) {
+        this.events = events;
     }
 
     public void run() {
@@ -49,6 +54,7 @@ public class EventBus implements Runnable {
     }
 
     public void addMessage(AgentMessage msg) throws InterruptedException {
+        System.out.println("INFO: message added for " + msg.getDestinationModule().toString());
         this.events.put(msg);
     }
 }

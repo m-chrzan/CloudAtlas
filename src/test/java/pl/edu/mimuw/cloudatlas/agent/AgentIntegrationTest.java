@@ -3,6 +3,7 @@ package pl.edu.mimuw.cloudatlas.agent;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -34,6 +35,7 @@ import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 
+@Ignore
 public class AgentIntegrationTest {
     private static Process registryProcess;
     private static Process agentProcess;

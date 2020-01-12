@@ -23,8 +23,8 @@ public class SchedulerTest {
 
     public SchedulerTest() {
         this.modules = initializeModule();
-        this.executors = Agent.initializeExecutors(modules);
-        this.executorThreads = Agent.initializeExecutorThreads(executors);
+        this.executors = AgentConfig.initializeExecutors(modules);
+        this.executorThreads = AgentConfig.initializeExecutorThreads(executors);
         this.eventBus = new EventBus(executors);
         this.eventBusThread = new Thread(eventBus);
         eventBusThread.start();

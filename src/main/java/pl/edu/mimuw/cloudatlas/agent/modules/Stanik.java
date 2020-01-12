@@ -53,8 +53,9 @@ public class Stanik extends Module {
                 break;
             case UPDATE_CONTACTS:
                 handleUpdateContacts((UpdateContactsMessage) message);
+                break;
             default:
-                throw new InvalidMessageType("This type of message cannot be handled by Stanik");
+                throw new InvalidMessageType("This type of message cannot be handled by Stanik" + message.getType().toString());
         }
     }
 
@@ -66,7 +67,8 @@ public class Stanik extends Module {
             0,
             message.getRequestId(),
             hierarchy.clone(),
-            (HashMap<Attribute, Entry<ValueQuery, ValueTime>>) queries.clone()
+            (HashMap<Attribute, Entry<ValueQuery, ValueTime>>) queries.clone(),
+            contacts
         );
         sendMessage(response);
     }
