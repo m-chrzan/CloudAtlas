@@ -60,6 +60,7 @@ public class GossipGirlState {
         this.gossipId = gossipId;
         this.ourPath = ourPath;
         this.theirContact = theirContact;
+        System.out.println("INFO: initializing Gossip state, their contact " + theirContact.toString());
         if (initiating) {
             state = State.WAIT_FOR_STATE_INITIALIZER;
         } else {
@@ -129,16 +130,20 @@ public class GossipGirlState {
     }
 
     public void handleNoCoTam(NoCoTamMessage message) {
+        System.out.println("DEBUG: in GossipGirlState handleNoCoTam");
         switch (state) {
             case WAIT_FOR_NO_CO_TAM:
+                System.out.println("DEBUG: lets do this");
                 theirGossipId = message.getSenderGossipId();
                 theirZoneTimestamps = message.getZoneTimestamps();
                 theirQueryTimestamps = message.getQueryTimestamps();
                 hejkaSendTimestamp = message.getHejkaSendTimestamp();
                 hejkaReceiveTimestamp = message.getHejkaReceiveTimestamp();
+                System.out.println("DEBUG: set basic stuff");
                 setZonesToSend();
                 setQueriesToSend();
                 setWaitingFor();
+                System.out.println("DEBUG: set big stuff");
                 state = State.SEND_INFO;
                 break;
             default:
@@ -168,6 +173,8 @@ public class GossipGirlState {
 
     public Map<PathName, ValueTime> getZoneTimestampsToSend() {
         Map<PathName, ValueTime> timestamps = new HashMap();
+        System.out.println("Getting zone timestamps to send to " + theirContact.getName().toString());
+        System.out.println("hierarchy is " + hierarchy.toString());
         collectZoneTimestamps(timestamps, hierarchy, theirContact.getName());
         return timestamps;
     }
@@ -183,12 +190,14 @@ public class GossipGirlState {
 
     public void setZonesToSend() {
         zonesToSend = new LinkedList();
+        System.out.println("DEBUG: timestamps to send: " + getZoneTimestampsToSend().toString());
         for (Entry<PathName, ValueTime> timestampedPath : getZoneTimestampsToSend().entrySet()) {
             ValueTime theirTimestamp = theirZoneTimestamps.get(timestampedPath.getKey());
             if (theirTimestamp == null || ValueUtils.valueLower(theirTimestamp, timestampedPath.getValue())) {
                 zonesToSend.add(timestampedPath.getKey());
             }
         }
+        System.out.println("DEBUG: zones to send: " + zonesToSend.toString());
     }
 
     public void setQueriesToSend() {
@@ -199,6 +208,7 @@ public class GossipGirlState {
                 queriesToSend.add(timestampedQuery.getKey());
             }
         }
+        System.out.println("DEBUG: Queries to send: " + queriesToSend.toString());
     }
 
     public List<ZMI> getZMIsToSend() {
@@ -227,6 +237,7 @@ public class GossipGirlState {
     }
 
     public void collectZoneTimestamps(Map<PathName, ValueTime> timestamps, ZMI currentZMI, PathName recipientPath) {
+        System.out.println("collecting timestamps, on " + currentZMI.getPathName().toString());
         for (ZMI zmi : currentZMI.getSons()) {
             if (interestedIn(recipientPath, zmi.getPathName())) {
                 ValueTime timestamp = (ValueTime) zmi.getAttributes().getOrNull("timestamp");

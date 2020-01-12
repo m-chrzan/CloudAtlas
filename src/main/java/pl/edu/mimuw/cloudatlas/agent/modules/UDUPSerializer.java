@@ -159,6 +159,7 @@ public class UDUPSerializer {
         kryo.register(Value.class);
         kryo.register(ValueBoolean.class);
         kryo.register(ValueContact.class);
+        kryo.register(ValueDouble.class);
         kryo.register(ValueDuration.class);
         kryo.register(ValueDouble.class);
         kryo.register(ValueInt.class);
