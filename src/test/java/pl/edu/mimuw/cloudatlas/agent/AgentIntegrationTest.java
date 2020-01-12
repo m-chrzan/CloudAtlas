@@ -48,9 +48,9 @@ public class AgentIntegrationTest {
     @BeforeClass
     public static void bindApi() throws Exception {
         registryProcess = Runtime.getRuntime().exec("./scripts/registry");
-        Thread.sleep(10000);
+        Thread.sleep(5000);
         agentProcess = Runtime.getRuntime().exec("./gradlew runAgent -Dhostname=localhost -DfreshnessPeriod=10000000 -DqueryPeriod=100");
-        Thread.sleep(10000);
+        Thread.sleep(5000);
 
         registry = LocateRegistry.getRegistry("localhost");
         api = (Api) registry.lookup("Api");
