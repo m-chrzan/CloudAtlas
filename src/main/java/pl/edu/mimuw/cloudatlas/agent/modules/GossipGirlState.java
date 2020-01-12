@@ -280,26 +280,7 @@ public class GossipGirlState {
     }
 
     public boolean interestedIn(PathName recipientPath, PathName zmiPath) {
-        return isPrefix(zmiPath.levelUp(), recipientPath) && !isPrefix(zmiPath, recipientPath);
-    }
-
-    public boolean isPrefix(PathName prefix, PathName path) {
-        List<String> prefixComponents = prefix.getComponents();
-        List<String> pathComponents = path.getComponents();
-
-        if (prefixComponents.size() > pathComponents.size()) {
-            return false;
-        }
-
-        Iterator<String> prefixIterator = prefixComponents.iterator();
-        Iterator<String> pathIterator = pathComponents.iterator();
-
-        while (prefixIterator.hasNext()) {
-            if (!prefixIterator.next().equals(pathIterator.next())) {
-                return false;
-            }
-        }
-        return true;
+        return ValueUtils.isPrefix(zmiPath.levelUp(), recipientPath) && !ValueUtils.isPrefix(zmiPath, recipientPath);
     }
 
     public void sentInfo() {
