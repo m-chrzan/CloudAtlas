@@ -204,6 +204,7 @@ public class GossipGirl extends Module {
         while (iterator.hasNext()) {
             GossipGirlState state = iterator.next().getValue();
             if (state.lastAction.isLowerThan(message.getAgeThreshold()).getValue()) {
+                System.out.println("INFO: GossipGirl removing old gossip " + Long.toString(state.gossipId));
                 iterator.remove();
             }
         }

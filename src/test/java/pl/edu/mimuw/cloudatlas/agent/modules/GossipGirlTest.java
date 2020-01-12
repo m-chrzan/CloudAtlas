@@ -429,7 +429,6 @@ public class GossipGirlTest {
         CleanOldGossipsMessage message = new CleanOldGossipsMessage("", 0, TestUtil.addToTime(ValueUtils.currentTime(), 10));
         gossipGirl.handleTyped(message);
         gossipGirl.handleTyped(attributesMessage2);
-
         assertEquals(0, executor.messagesToPass.size());
     }
 
