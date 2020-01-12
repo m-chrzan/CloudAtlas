@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import org.assertj.core.data.MapEntry;
 import pl.edu.mimuw.cloudatlas.agent.messages.*;
 import pl.edu.mimuw.cloudatlas.model.*;
 
@@ -13,10 +14,8 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.Remote;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.text.DateFormat;
+import java.util.*;
 
 /**
  * Serializes classes to and from byte arrays for UDP use
@@ -75,12 +74,16 @@ public class UDUPSerializer {
             public void write(Kryo kryo, Output output, Object object) {
                 ValueList vl = (ValueList) object;
                 kryo.writeObject(output, ((TypeCollection) vl.getType()).getElementType());
-                kryo.writeObject(output, vl.getValue());
+                ArrayList<Value> al = new ArrayList<>();
+                for (Value v : vl.getValue()) {
+                    al.add(v);
+                }
+                kryo.writeObject(output, al);
             }
 
             @Override
             public Object read(Kryo kryo, Input input, Class type) {
-                Type t = kryo.readObject(input, Type.class);
+                TypePrimitive t = kryo.readObject(input, TypePrimitive.class);
                 ArrayList list = kryo.readObject(input, ArrayList.class);
                 return new ValueList(list, t);
             }
@@ -91,14 +94,42 @@ public class UDUPSerializer {
             public void write(Kryo kryo, Output output, Object object) {
                 ValueSet vs = (ValueSet) object;
                 kryo.writeObject(output, ((TypeCollection) vs.getType()).getElementType());
-                kryo.writeObject(output, vs.getValue());
+                HashSet<Value> hs = new HashSet();
+                for (Value v : vs.getValue()) {
+                    hs.add(v);
+                }
+                kryo.writeObject(output, hs);
             }
 
             @Override
             public Object read(Kryo kryo, Input input, Class type) {
-                Type t = kryo.readObject(input, Type.class);
+                TypePrimitive t = kryo.readObject(input, TypePrimitive.class);
                 HashSet set = kryo.readObject(input, HashSet.class);
                 return new ValueSet(set, t);
+            }
+        });
+
+        kryo.register(AttributesMap.class, new Serializer() {
+            @Override
+            public void write(Kryo kryo, Output output, Object object) {
+                AttributesMap attribMap = (AttributesMap) object;
+                HashMap<Attribute, Value> hashMap = new HashMap<>();
+
+                for (Map.Entry<Attribute, Value> e : attribMap) {
+                    hashMap.put(e.getKey(), e.getValue());
+                }
+
+                kryo.writeObject(output, hashMap);
+            }
+
+            @Override
+            public Object read(Kryo kryo, Input input, Class type) {
+                HashMap<Attribute, Value> hashMap = kryo.readObject(input, HashMap.class);
+                AttributesMap attribMap = new AttributesMap();
+                for (Map.Entry<Attribute, Value> e : hashMap.entrySet()) {
+                    attribMap.add(e.getKey(), e.getValue());
+                }
+                return attribMap;
             }
         });
 
@@ -107,6 +138,7 @@ public class UDUPSerializer {
         kryo.register(ValueBoolean.class);
         kryo.register(ValueContact.class);
         kryo.register(ValueDuration.class);
+        kryo.register(ValueDouble.class);
         kryo.register(ValueInt.class);
         kryo.register(ValueNull.class);
         kryo.register(ValueQuery.class);
@@ -121,6 +153,7 @@ public class UDUPSerializer {
         kryo.register(AttributesUtil.class);
 
         kryo.register(Type.class);
+        kryo.register(Type.PrimaryType.class);
         kryo.register(TypeCollection.class);
         kryo.register(TypePrimitive.class);
 
@@ -156,7 +189,10 @@ public class UDUPSerializer {
         kryo.register(byte[].class);
         kryo.register(LinkedHashMap.class);
         kryo.register(HashMap.class);
+        kryo.register(HashSet.class);
         kryo.register(ModuleType.class);
+        kryo.register(DateFormat.class);
+        kryo.register(ArrayList.class);
     }
 
     public UDUPMessage deserialize(byte[] packetData) {
@@ -169,6 +205,7 @@ public class UDUPSerializer {
     public byte[] serialize(UDUPMessage msg) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Output kryoOut = new Output(out);
+        System.out.println("SERIALIZING " + msg.getContent());
         kryo.writeObject(kryoOut, msg);
         kryoOut.flush();
         kryoOut.close();
