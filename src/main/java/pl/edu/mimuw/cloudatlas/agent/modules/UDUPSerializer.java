@@ -6,6 +6,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import org.assertj.core.data.MapEntry;
 import pl.edu.mimuw.cloudatlas.agent.messages.*;
+import pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Program;
 import pl.edu.mimuw.cloudatlas.model.*;
 
 import java.io.ByteArrayInputStream;
@@ -133,6 +134,27 @@ public class UDUPSerializer {
             }
         });
 
+        kryo.register(ValueQuery.class, new Serializer() {
+            @Override
+            public void write(Kryo kryo, Output output, Object object) {
+                ValueQuery vq = (ValueQuery) object;
+                kryo.writeObject(output, vq.getCode());
+            }
+
+            @Override
+            public Object read(Kryo kryo, Input input, Class type) {
+                String code = kryo.readObject(input, String.class);
+                ValueQuery vq = null;
+                try {
+                    vq = new ValueQuery(code);
+                } catch (Exception e) {
+                    System.out.println("Value query deserialization failed");
+                    e.printStackTrace();
+                }
+                return vq;
+            }
+        });
+
         // model
         kryo.register(Value.class);
         kryo.register(ValueBoolean.class);
@@ -141,7 +163,6 @@ public class UDUPSerializer {
         kryo.register(ValueDouble.class);
         kryo.register(ValueInt.class);
         kryo.register(ValueNull.class);
-        kryo.register(ValueQuery.class);
         kryo.register(ValueSet.class);
         kryo.register(ValueString.class);
         kryo.register(ValueTime.class);
