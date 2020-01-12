@@ -23,7 +23,6 @@ public class ValueQuery extends Value {
     /**
      * Constructs a new <code>ValueQuery</code> object.
      *
-     * @param name the name of the query
      * @param query the code of the query
      */
     public ValueQuery(String query) throws Exception {
@@ -60,10 +59,6 @@ public class ValueQuery extends Value {
     public long getTimestamp() { return timestamp; }
 
     public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
-
-    public String getCode() {
-        return code;
-    }
 
     @Override
     public Type getType() {
