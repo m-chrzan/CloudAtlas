@@ -60,7 +60,7 @@ public class SchedulerTest {
                     }
                 }));
 
-        Thread.sleep(1000);
+        Thread.sleep(300);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class SchedulerTest {
                 }));
 
 
-        Thread.sleep(1000);
+        Thread.sleep(300);
     }
 
     @Test
@@ -129,6 +129,6 @@ public class SchedulerTest {
                     }
                 }));
 
-        Thread.sleep(1000);
+        Thread.sleep(300);
     }
 }

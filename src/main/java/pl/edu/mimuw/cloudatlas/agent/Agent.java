@@ -46,9 +46,12 @@ public class Agent {
         String selectionStrategy = System.getProperty("Gossip.zone_strategy");
         Long queryPeriod = Long.getLong("query_period");
         Long gossipPeriod = Long.getLong("gossip_period");
+        Long freshnessPeriod = Long.getLong("freshness_period");
 
         HierarchyConfig hierarchyConfig = new HierarchyConfig(eventBus, zonePath, selectionStrategy);
         hierarchyConfig.startQueries(queryPeriod);
         hierarchyConfig.startGossip(gossipPeriod, zonePath);
+        // TODO: should this be different than ZMI freshness period?
+        hierarchyConfig.startCleaningGossips(freshnessPeriod);
     }
 }

@@ -30,7 +30,7 @@ public class UDUPTest {
         UDUPServer server2 = null;
         UDUPMessage msg1 = null;
         boolean testSuccess = true;
-        int timeout = 5000;
+        int timeout = 500;
 
         try {
             System.out.println("Starting udp1");
@@ -72,7 +72,7 @@ public class UDUPTest {
         udpThread2.start();
 
         try {
-            Thread.sleep(500);
+            Thread.sleep(100);
             if (udp1 == null | udp2 == null) {
                 testSuccess = false;
             } else {
@@ -102,7 +102,7 @@ public class UDUPTest {
         UDUPServer server2 = null;
         UDUPMessage msg1 = null;
         boolean testSuccess = true;
-        int timeout = 3000;
+        int timeout = 1000;
 
         try {
             System.out.println("Starting udp1");
@@ -144,7 +144,7 @@ public class UDUPTest {
         udpThread2.start();
 
         try {
-            Thread.sleep(500);
+            Thread.sleep(100);
             if (udp1 == null | udp2 == null) {
                 testSuccess = false;
             } else {
@@ -177,7 +177,7 @@ public class UDUPTest {
         UDUPMessage msg2 = null;
         UDUPMessage msg3 = null;
         boolean testSuccess = true;
-        int timeout = 3000;
+        int timeout = 1000;
 
         try {
             System.out.println("Starting udp1");
@@ -231,7 +231,7 @@ public class UDUPTest {
         udpThread2.start();
 
         try {
-            Thread.sleep(500);
+            Thread.sleep(100);
             if (udp1 == null | udp2 == null) {
                 testSuccess = false;
             } else {

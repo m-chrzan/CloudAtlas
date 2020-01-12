@@ -9,8 +9,4 @@ public class TestUtil {
 
         return count;
     }
-
-    public static ValueTime addToTime(ValueTime time, long millis) {
-        return time.addValue(new ValueDuration(millis));
-    }
 }
