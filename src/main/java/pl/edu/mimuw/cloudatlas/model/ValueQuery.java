@@ -15,23 +15,6 @@ public class ValueQuery extends Value {
     private String code;
     // Parsed query
     private Program query;
-
-    public byte[] getSignature() {
-        return signature;
-    }
-
-    public void setSignature(byte[] signature) {
-        this.signature = signature;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
     // Query signature
     private byte[] signature;
     // Query signing timestamp
@@ -47,15 +30,37 @@ public class ValueQuery extends Value {
         this.code = query;
         Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
         this.query = (new parser(lex)).pProgram();
+        this.signature = null;
+        this.timestamp = System.currentTimeMillis();
+    }
+
+    public ValueQuery(String query, byte[] querySignature) throws Exception {
+        this.code = query;
+        Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
+        this.query = (new parser(lex)).pProgram();
+        this.signature = querySignature;
+        this.timestamp = System.currentTimeMillis();
     }
 
     private ValueQuery() {
         this.code = null;
         this.query = null;
+        this.signature = null;
+        this.timestamp = System.currentTimeMillis();
     }
 
     public Program getQuery() {
         return query;
+    }
+
+    public byte[] getSignature() { return signature; }
+
+    public long getTimestamp() { return timestamp; }
+
+    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+
+    public String getCode() {
+        return code;
     }
 
     @Override
