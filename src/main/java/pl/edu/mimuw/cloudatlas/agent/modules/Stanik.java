@@ -2,6 +2,7 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map.Entry;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.*;
@@ -30,6 +31,24 @@ public class Stanik extends Module {
         this.freshnessPeriod = freshnessPeriod;
         this.contactsTimestamp = ValueUtils.currentTime();
         this.contacts = new HashSet<>();
+        setDefaultQueries();
+    }
+
+    private void setDefaultQueries() {
+        String cardinalityQuery = "SELECT sum(cardinality) AS cardinality";
+        String contactsQuery = "SELECT random(5, unfold(contacts)) AS contacts";
+
+        setDefaultQuery("&cardinality", cardinalityQuery);
+        setDefaultQuery("&contacts", contactsQuery);
+    }
+
+    private void setDefaultQuery(String name, String query) {
+        try {
+            ValueQuery queryValue = new ValueQuery(query);
+            queries.put(new Attribute(name), new SimpleImmutableEntry(queryValue, new ValueTime(0l)));
+        } catch (Exception e) {
+            System.out.println("ERROR: failed to compile default query");
+        }
     }
 
     public Stanik(PathName ourPath) {
@@ -89,6 +108,9 @@ public class Stanik extends Module {
         zmi.getAttributes().addOrChange("level", new ValueInt(level));
         if (ValueUtils.isPrefix(zmi.getPathName(), ourPath)) {
             zmi.getAttributes().addOrChange("owner", new ValueString(ourPath.toString()));
+        }
+        if (zmi.getPathName().equals(ourPath)) {
+            zmi.getAttributes().addOrChange("cardinality", new ValueInt(1l));
         }
         for (ZMI son : zmi.getSons()) {
             addValuesRecursive(son, level + 1);

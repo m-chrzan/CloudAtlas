@@ -61,7 +61,7 @@ public class StanikTest {
         assertEquals(new ValueInt(0l), zmi.getAttributes().getOrNull("level"));
         assertEquals(new ValueString("/new"), zmi.getAttributes().getOrNull("owner"));
         Map<Attribute, Entry<ValueQuery, ValueTime>> queries = stateMessage.getQueries();
-        assertEquals(0, TestUtil.iterableSize(queries.keySet()));
+        assertEquals(2, TestUtil.iterableSize(queries.keySet()));
     }
 
     @Test
@@ -127,11 +127,12 @@ public class StanikTest {
 
         StateMessage newReceivedMessage = (StateMessage) executor.messagesToPass.poll();
         AttributesMap actualAttributes = newReceivedMessage.getZMI().findDescendant("/new").getAttributes();
-        assertEquals(6, TestUtil.iterableSize(actualAttributes));
+        assertEquals(7, TestUtil.iterableSize(actualAttributes));
         assertEquals(new ValueInt(1337l), actualAttributes.getOrNull("foo"));
         assertEquals(new ValueString("baz"), actualAttributes.getOrNull("bar"));
         assertEquals(new ValueString("new"), actualAttributes.getOrNull("name"));
         assertEquals(new ValueString("/new"), actualAttributes.getOrNull("owner"));
+        assertEquals(new ValueInt(1l), actualAttributes.getOrNull("cardinality"));
         assertEquals(testTime, actualAttributes.getOrNull("timestamp"));
         assertEquals(new ValueInt(1l), actualAttributes.getOrNull("level"));
     }
@@ -223,7 +224,7 @@ public class StanikTest {
         stanik.handleTyped(message);
 
         HashMap<Attribute, Entry<ValueQuery, ValueTime>> actualQueries = stanik.getQueries();
-        assertEquals(1, TestUtil.iterableSize(actualQueries.keySet()));
+        assertEquals(3, TestUtil.iterableSize(actualQueries.keySet()));
         assertTrue(actualQueries.containsKey(new Attribute("&query")));
         Entry<ValueQuery, ValueTime> timestampedQuery = actualQueries.get(new Attribute("&query"));
         assertEquals(new ValueTime(42l), timestampedQuery.getValue());
@@ -247,7 +248,7 @@ public class StanikTest {
         stanik.handleTyped(otherMessage);
 
         HashMap<Attribute, Entry<ValueQuery, ValueTime>> actualQueries = stanik.getQueries();
-        assertEquals(4, TestUtil.iterableSize(actualQueries.keySet()));
+        assertEquals(6, TestUtil.iterableSize(actualQueries.keySet()));
         assertTrue(actualQueries.containsKey(new Attribute("&query1")));
         assertTrue(actualQueries.containsKey(new Attribute("&query2")));
         assertTrue(actualQueries.containsKey(new Attribute("&query3")));
