@@ -32,6 +32,8 @@ public class ValueQuery extends Value {
         this.query = null;
     }
 
+    public String getCode() { return code; }
+
     public Program getQuery() {
         return query;
     }

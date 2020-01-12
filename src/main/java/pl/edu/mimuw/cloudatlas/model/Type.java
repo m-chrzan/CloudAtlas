@@ -49,6 +49,8 @@ public abstract class Type implements Serializable {
         this.primaryType = primaryType;
     }
 
+    public Type() { this.primaryType = PrimaryType.NULL; };
+
     /**
      * Returns the primary type of this type.
      *
