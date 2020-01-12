@@ -36,6 +36,7 @@ public class GossipGirlState {
         FINISHED,
         ERROR
     }
+    public ValueTime lastAction;
     public PathName ourPath;
     public ValueContact theirContact;
     public long gossipId;
@@ -64,6 +65,11 @@ public class GossipGirlState {
         } else {
             state = State.APPLY_HEJKA;
         }
+        this.lastAction = ValueUtils.currentTime();
+    }
+
+    public void setLastAction() {
+        lastAction = ValueUtils.currentTime();
     }
 
     public void setState(ZMI hierarchy, Map<Attribute, Entry<ValueQuery, ValueTime>> queries) {
