@@ -432,6 +432,27 @@ public class GossipGirlTest {
         assertEquals(0, executor.messagesToPass.size());
     }
 
+    @Test
+    public void dontCleanFreshGossips() throws Exception {
+        gossipGirl.handleTyped(hejkaMessage);
+        executor.messagesToPass.take();
+        gossipGirl.handleTyped(stateMessage);
+        executor.messagesToPass.take();
+
+        gossipGirl.handleTyped(attributesMessage1);
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+        executor.messagesToPass.take();
+
+        CleanOldGossipsMessage message = new CleanOldGossipsMessage("", 0, TestUtil.addToTime(testTime, -10));
+        gossipGirl.handleTyped(message);
+        gossipGirl.handleTyped(attributesMessage2);
+        assertEquals(1, executor.messagesToPass.size());
+    }
+
     private void assertQueryMessage(AgentMessage message, String recipientPath, String name, String query) throws Exception {
         assertUDUPMessage(
                 message,
