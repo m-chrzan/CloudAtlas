@@ -61,6 +61,7 @@ public class Stanik extends Module {
 
     public void handleGetState(GetStateMessage message) throws InterruptedException {
         pruneHierarchy();
+        addLevels();
         StateMessage response = new StateMessage(
             "",
             message.getRequestingModule(),
@@ -76,6 +77,17 @@ public class Stanik extends Module {
     private void pruneHierarchy() {
         ValueTime now = ValueUtils.currentTime();
         pruneZMI(hierarchy, now);
+    }
+
+    private void addLevels() {
+        addLevelsRecursive(hierarchy, 0);
+    }
+
+    private void addLevelsRecursive(ZMI zmi, long level) {
+        zmi.getAttributes().addOrChange("level", new ValueInt(level));
+        for (ZMI son : zmi.getSons()) {
+            addLevelsRecursive(son, level + 1);
+        }
     }
 
     private boolean pruneZMI(ZMI zmi, ValueTime time) {

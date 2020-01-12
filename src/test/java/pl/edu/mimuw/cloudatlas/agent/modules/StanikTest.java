@@ -57,7 +57,8 @@ public class StanikTest {
         ZMI zmi = stateMessage.getZMI();
         assertNull(zmi.getFather());
         assertTrue(zmi.getSons().isEmpty());
-        assertEquals(1, TestUtil.iterableSize(zmi.getAttributes()));
+        assertEquals(2, TestUtil.iterableSize(zmi.getAttributes()));
+        assertEquals(new ValueInt(0l), zmi.getAttributes().getOrNull("level"));
         Map<Attribute, Entry<ValueQuery, ValueTime>> queries = stateMessage.getQueries();
         assertEquals(0, TestUtil.iterableSize(queries.keySet()));
     }
@@ -109,6 +110,28 @@ public class StanikTest {
         assertEquals(new ValueString("baz"), actualAttributes.getOrNull("bar"));
         assertEquals(new ValueString("new"), actualAttributes.getOrNull("name"));
         assertEquals(testTime, actualAttributes.getOrNull("timestamp"));
+    }
+
+    @Test
+    public void newZoneHasNewLevel() throws Exception {
+        AttributesMap attributes = new AttributesMap();
+        attributes.add("foo", new ValueInt(1337l));
+        attributes.add("bar", new ValueString("baz"));
+        attributes.add("name", new ValueString("new"));
+        attributes.add("timestamp", testTime);
+        UpdateAttributesMessage message = new UpdateAttributesMessage("test_msg", 0, "/new", attributes);
+        stanik.handleTyped(message);
+        GetStateMessage newMessage = new GetStateMessage("test_msg2", 123, ModuleType.TEST, 43);
+        stanik.handleTyped(newMessage);
+
+        StateMessage newReceivedMessage = (StateMessage) executor.messagesToPass.poll();
+        AttributesMap actualAttributes = newReceivedMessage.getZMI().findDescendant("/new").getAttributes();
+        assertEquals(5, TestUtil.iterableSize(actualAttributes));
+        assertEquals(new ValueInt(1337l), actualAttributes.getOrNull("foo"));
+        assertEquals(new ValueString("baz"), actualAttributes.getOrNull("bar"));
+        assertEquals(new ValueString("new"), actualAttributes.getOrNull("name"));
+        assertEquals(testTime, actualAttributes.getOrNull("timestamp"));
+        assertEquals(new ValueInt(1l), actualAttributes.getOrNull("level"));
     }
 
     @Test
