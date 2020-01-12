@@ -158,7 +158,7 @@ public class GossipGirl extends Module {
         GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
         if (state != null) {
             state.gotAttributes(message);
-            if (state.state == GossipGirlState.State.SEND_INFO) {
+            if (state.state == GossipGirlState.State.SEND_INFO || state.state == GossipGirlState.State.SEND_INFO_AND_FINISH) {
                 sendInfo(state);
             }
             UpdateAttributesMessage updateMessage = new UpdateAttributesMessage("", 0, message.getPath().toString(), message.getAttributes());

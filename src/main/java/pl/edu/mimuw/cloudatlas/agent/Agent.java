@@ -42,7 +42,6 @@ public class Agent {
 
         // TODO: make query period confiurable with config file and from tests
 
-        // TODO config setup
         String zonePath = System.getProperty("zone_path");
         String selectionStrategy = System.getProperty("Gossip.zone_strategy");
         Long queryPeriod = Long.getLong("query_period");
@@ -50,6 +49,6 @@ public class Agent {
 
         HierarchyConfig hierarchyConfig = new HierarchyConfig(eventBus, zonePath, selectionStrategy);
         hierarchyConfig.startQueries(queryPeriod);
-        hierarchyConfig.startGossip(gossipPeriod);
+        hierarchyConfig.startGossip(gossipPeriod, zonePath);
     }
 }
