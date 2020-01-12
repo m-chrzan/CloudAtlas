@@ -1,7 +1,5 @@
 package pl.edu.mimuw.cloudatlas.querysigner;
 
-import pl.edu.mimuw.cloudatlas.agent.EventBus;
-import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.querysignerapi.QuerySignerApi;
 
 import java.rmi.registry.LocateRegistry;
@@ -9,10 +7,18 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 public class QuerySigner {
+    public static class InvalidQueryException extends Exception {
+        InvalidQueryException() {
+            super("Query invalid");
+        }
+    }
 
     public static void runRegistry() {
         try {
-            QuerySignerApiImplementation api = new QuerySignerApiImplementation();
+            // TODO reading from files
+            String publicKey = System.getProperty("public_key");
+            String privateKey = System.getProperty("private_key");
+            QuerySignerApiImplementation api = new QuerySignerApiImplementation(publicKey.getBytes(), privateKey.getBytes());
             QuerySignerApi apiStub =
                     (QuerySignerApi) UnicastRemoteObject.exportObject(api, 0);
             Registry registry = LocateRegistry.getRegistry();

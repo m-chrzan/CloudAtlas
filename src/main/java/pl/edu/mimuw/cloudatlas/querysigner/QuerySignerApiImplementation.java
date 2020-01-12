@@ -1,5 +1,6 @@
 package pl.edu.mimuw.cloudatlas.querysigner;
 
+import pl.edu.mimuw.cloudatlas.ByteSerializer;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.querysignerapi.QuerySignerApi;
 
@@ -9,27 +10,27 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.rmi.RemoteException;
 import java.security.*;
+import java.security.interfaces.RSAPrivateCrtKey;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class QuerySignerApiImplementation implements QuerySignerApi {
+    private final static String ENCRYPTION_ALGORITHM = "RSA";
+    private final static String DIGEST_ALGORITHM = "SHA-256";
     private PublicKey publicKey;
     private PrivateKey privateKey;
-    private final static String ENCRYPTION_ALGORITHM = "RSA";
-    private final static int NUM_KEY_BITS = 1024;
     private Map<String, ValueQuery> queries;
     private Set<String> attribsSetByQueries;
+    private ByteSerializer byteSerializer;
 
-    QuerySignerApiImplementation() {
+    QuerySignerApiImplementation(byte[] serializedPublicKey, byte[] serializedPrivateKey) {
+        this.byteSerializer = new ByteSerializer();
+        this.publicKey = (PublicKey) byteSerializer.deserialize(serializedPublicKey, PublicKey.class);
+        this.privateKey = (PrivateKey) byteSerializer.deserialize(serializedPrivateKey, PrivateKey.class);
         this.queries = new HashMap<>();
         this.attribsSetByQueries = new HashSet<>();
-        try {
-            generateKeys();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
     }
 
     private String byteArrayToString(byte[] arr, int offset, int len) {
@@ -44,19 +45,10 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
         return sb.toString();
     }
 
-    private void generateKeys() throws NoSuchAlgorithmException {
-        KeyPairGenerator keyGenerator =
-                KeyPairGenerator.getInstance(ENCRYPTION_ALGORITHM);
-        keyGenerator.initialize(NUM_KEY_BITS);
-        KeyPair keyPair = keyGenerator.generateKeyPair();
-        this.privateKey = keyPair.getPrivate();
-        this.publicKey = keyPair.getPublic();
-    }
-
-    private byte[] encryptQuery(String query) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+    private byte[] encryptQuery(byte[] query) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         Cipher signCipher = Cipher.getInstance(ENCRYPTION_ALGORITHM);
         signCipher.init(Cipher.ENCRYPT_MODE, privateKey);
-        byte[] encryptedBytes = signCipher.doFinal(query.getBytes());
+        byte[] encryptedBytes = signCipher.doFinal(query);
         System.out.println(
                 "Bytes encrypted with " + ENCRYPTION_ALGORITHM +
                         ": " + byteArrayToString(
@@ -64,7 +56,7 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
         return encryptedBytes;
     }
 
-    private String decryptQuery(byte[] encryptedQuery) throws NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException {
+    private byte[] decryptQuery(byte[] encryptedQuery) throws NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException {
         Cipher verifyCipher = Cipher.getInstance(ENCRYPTION_ALGORITHM);
         verifyCipher.init(Cipher.DECRYPT_MODE, publicKey);
         byte[] decryptedBytes = verifyCipher.doFinal(encryptedQuery);
@@ -72,27 +64,65 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
                 "Bytes decrypted with " + ENCRYPTION_ALGORITHM +
                         ": " + byteArrayToString(
                         decryptedBytes, 0, decryptedBytes.length));
-        return new String(decryptedBytes);
+        return decryptedBytes;
+    }
+
+    private byte[] cryptographicHash(byte[] serializedQuery) throws NoSuchAlgorithmException {
+        MessageDigest digestGenerator =
+                MessageDigest.getInstance(DIGEST_ALGORITHM);
+        byte[] digest = digestGenerator.digest(serializedQuery);
+        System.out.println(
+                DIGEST_ALGORITHM + " digest: " +
+                        byteArrayToString(
+                                digest, 0, digest.length));
+        return digest;
+    }
+
+    // TODO
+    private byte[] serializeQuery(String queryName, String queryCode) {
+        return byteSerializer.serialize(queryName + queryCode);
     }
 
     @Override
-    public byte[] signQuery(String queryName, String queryCode) throws RemoteException {
+    public ValueQuery signInstallQuery(String queryName, String queryCode) throws RemoteException {
+        QueryUtils.validateQueryName(queryName);
         try {
-            return encryptQuery(queryName + queryCode);
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            byte[] serializedQuery = serializeQuery(queryName, queryCode);
+            byte[] hashedQuery = cryptographicHash(serializedQuery);
+            byte[] querySignature = encryptQuery(hashedQuery);
+            return new ValueQuery(queryCode, querySignature);
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RemoteException(e.getLocalizedMessage());
         }
     }
 
     @Override
-    public String checkQuery(byte[] encryptedQuery, String queryName, String queryCode) throws RemoteException {
+    public void validateInstallQuery(String queryName, ValueQuery query) throws RemoteException {
+        QueryUtils.validateQueryName(queryName);
         try {
-            return decryptQuery(encryptedQuery);
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException e) {
+            byte[] decryptedQuery = decryptQuery(query.getSignature());
+            byte[] serializedQuery = serializeQuery(queryName, query.getCode());
+            byte[] hashedSerializedQuery = cryptographicHash(serializedQuery);
+            if (hashedSerializedQuery != decryptedQuery) {
+                throw new QuerySigner.InvalidQueryException();
+            }
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | InvalidKeyException | QuerySigner.InvalidQueryException e) {
             e.printStackTrace();
             throw new RemoteException(e.getLocalizedMessage());
         }
+    }
+
+    // TODO
+    @Override
+    public ValueQuery signUninstallQuery(String queryName) throws RemoteException {
+        return null;
+    }
+
+    // TODO
+    @Override
+    public void validateUninstallQuery(String queryName, ValueQuery query) throws RemoteException {
+
     }
 
     @Override

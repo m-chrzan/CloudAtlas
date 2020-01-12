@@ -35,7 +35,6 @@ import java.util.*;
 public class ClientController {
     private Api agentApi;
     private QuerySignerApi querySignerApi;
-    private Map<String, byte[]> querySignatures;
     private Map<ValueTime, AttributesMap> attributes;
     private String currentZoneName;
     private static final int MAX_ENTRIES = 10;
@@ -60,7 +59,6 @@ public class ClientController {
             }
         };
         this.currentZoneName = System.getProperty("zone_path");
-        this.querySignatures = new HashMap<>();
         fetchAttributeData(); // fetch attribute data as early as possible
     }
 
@@ -81,9 +79,8 @@ public class ClientController {
         boolean success = true;
 
         try {
-            byte[] querySignature = this.querySignerApi.signQuery(queryObject.getName(), queryObject.getValue());
-            querySignatures.put(queryObject.getName(), querySignature);
-            this.agentApi.installQuery(queryObject.getName(), queryObject.getValue(), querySignature);
+            ValueQuery query = this.querySignerApi.signInstallQuery(queryObject.getName(), queryObject.getValue());
+            this.agentApi.installQuery(queryObject.getName(), query);
         } catch (Exception e) {
             success = false;
             System.err.println("Client exception:");
@@ -108,7 +105,8 @@ public class ClientController {
         boolean success = true;
 
         try {
-            this.agentApi.uninstallQuery(queryObject.getName(), querySignatures.get(queryObject.getName()));
+            ValueQuery query = querySignerApi.signUninstallQuery(queryObject.getName());
+            this.agentApi.uninstallQuery(queryObject.getName(), query);
         } catch (Exception e) {
             success = false;
             System.err.println("Client exception:");
