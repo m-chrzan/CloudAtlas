@@ -37,7 +37,7 @@ public class HierarchyConfig {
         }
     }
 
-    public void startGossip(long gossipPeriod) {
+    public void startGossip(long gossipPeriod, String zonePath) {
         Supplier<TimerScheduledTask> taskSupplier = () ->
                 new TimerScheduledTask() {
                     public void run() {
@@ -47,7 +47,7 @@ public class HierarchyConfig {
                             ValueContact contact = selectContactFromLevel(gossipLevel);
                             if (contact != null) {
                                 System.out.println("INFO: found a contact " + contact.toString());
-                                InitiateGossipMessage message = new InitiateGossipMessage("", 0, new PathName("/uw/violet07"), contact);
+                                InitiateGossipMessage message = new InitiateGossipMessage("", 0, new PathName(zonePath), contact);
                                 sendMessage(message);
                             } else {
                                 System.out.println("DEBUG: couldn't find contact for gossip");
@@ -152,5 +152,21 @@ public class HierarchyConfig {
                 };
 
         AgentUtils.startRecursiveTask(taskSupplier, queriesPeriod, eventBus);
+    }
+
+    public void startCleaningGossips(long gossipCleanPeriod) {
+        Supplier<TimerScheduledTask> taskSupplier = () ->
+                new TimerScheduledTask() {
+                    public void run() {
+                        try {
+                            System.out.println("INFO: Scheduling old gossip cleanup");
+                            sendMessage(new CleanOldGossipsMessage("", 0, ValueUtils.addToTime(ValueUtils.currentTime(), -gossipCleanPeriod)));
+                        } catch (InterruptedException e) {
+                            System.out.println("Interrupted while triggering queries");
+                        }
+                    }
+                };
+
+        AgentUtils.startRecursiveTask(taskSupplier, gossipCleanPeriod, eventBus);
     }
 }

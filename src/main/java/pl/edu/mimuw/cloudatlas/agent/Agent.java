@@ -42,14 +42,16 @@ public class Agent {
 
         // TODO: make query period confiurable with config file and from tests
 
-        // TODO config setup
         String zonePath = System.getProperty("zone_path");
         String selectionStrategy = System.getProperty("Gossip.zone_strategy");
         Long queryPeriod = Long.getLong("query_period");
         Long gossipPeriod = Long.getLong("gossip_period");
+        Long freshnessPeriod = Long.getLong("freshness_period");
 
         HierarchyConfig hierarchyConfig = new HierarchyConfig(eventBus, zonePath, selectionStrategy);
         hierarchyConfig.startQueries(queryPeriod);
-        hierarchyConfig.startGossip(gossipPeriod);
+        hierarchyConfig.startGossip(gossipPeriod, zonePath);
+        // TODO: should this be different than ZMI freshness period?
+        hierarchyConfig.startCleaningGossips(freshnessPeriod);
     }
 }

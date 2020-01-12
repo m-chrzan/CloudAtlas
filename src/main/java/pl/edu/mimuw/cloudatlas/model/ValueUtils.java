@@ -12,4 +12,8 @@ public class ValueUtils {
     public static ValueTime currentTime() {
         return new ValueTime(System.currentTimeMillis());
     }
+
+    public static ValueTime addToTime(ValueTime time, long millis) {
+        return time.addValue(new ValueDuration(millis));
+    }
 }

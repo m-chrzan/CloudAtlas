@@ -2,10 +2,12 @@ package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.AttributesMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.CleanOldGossipsMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.GossipGirlMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.HejkaMessage;
@@ -51,6 +53,9 @@ public class GossipGirl extends Module {
                 break;
             case QUERY:
                 handleQuery((QueryMessage) message);
+                break;
+            case CLEAN:
+                cleanOldGossips((CleanOldGossipsMessage) message);
                 break;
             default:
                 throw new InvalidMessageType("This type of message cannot be handled by GossipGirl");
@@ -100,6 +105,7 @@ public class GossipGirl extends Module {
         GossipGirlState state = gossipStates.get(message.getRequestId());
         if (state != null) {
             System.out.println("INFO: setting state in gossip " + Long.toString(message.getRequestId()));
+            state.setLastAction();
             state.setState(message.getZMI(), message.getQueries());
             if (state.state == GossipGirlState.State.SEND_HEJKA) {
                 HejkaMessage hejka = new HejkaMessage(
@@ -140,6 +146,7 @@ public class GossipGirl extends Module {
         GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
         if (state != null) {
             System.out.println("INFO: handling NoCoTamMessage in" + Long.toString(message.getReceiverGossipId()));
+            state.setLastAction();
             state.handleNoCoTam(message);
             System.out.println("DEBUG: handled NoCoTam in GossipGirlState");
             sendInfo(state);
@@ -171,8 +178,9 @@ public class GossipGirl extends Module {
         GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
         if (state != null) {
             System.out.println("INFO: handling Attributes in " + Long.toString(message.getReceiverGossipId()));
+            state.setLastAction();
             state.gotAttributes(message);
-            if (state.state == GossipGirlState.State.SEND_INFO) {
+            if (state.state == GossipGirlState.State.SEND_INFO || state.state == GossipGirlState.State.SEND_INFO_AND_FINISH) {
                 sendInfo(state);
             }
             UpdateAttributesMessage updateMessage = new UpdateAttributesMessage("", 0, message.getPath().toString(), message.getAttributes());
@@ -190,6 +198,7 @@ public class GossipGirl extends Module {
         GossipGirlState state = gossipStates.get(message.getReceiverGossipId());
         if (state != null) {
             System.out.println("INFO: handling Query in " + Long.toString(message.getReceiverGossipId()));
+            state.setLastAction();
             state.gotQuery(message.getName());
             Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
             queries.put(
@@ -204,6 +213,17 @@ public class GossipGirl extends Module {
             }
         } else {
             System.out.println("ERROR: GossipGirl got query for a nonexistent gossip");
+        }
+    }
+
+    private void cleanOldGossips(CleanOldGossipsMessage message) {
+        Iterator<Entry<Long, GossipGirlState>> iterator = gossipStates.entrySet().iterator();
+        while (iterator.hasNext()) {
+            GossipGirlState state = iterator.next().getValue();
+            if (state.lastAction.isLowerThan(message.getAgeThreshold()).getValue()) {
+                System.out.println("INFO: GossipGirl removing old gossip " + Long.toString(state.gossipId));
+                iterator.remove();
+            }
         }
     }
 }

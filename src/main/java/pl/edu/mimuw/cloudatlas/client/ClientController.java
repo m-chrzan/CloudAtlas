@@ -53,7 +53,7 @@ public class ClientController {
                 return size() > MAX_ENTRIES;
             }
         };
-        this.currentZoneName = "/uw/violet07";
+        this.currentZoneName = System.getProperty("zone_path");
         fetchAttributeData(); // fetch attribute data as early as possible
     }
 
