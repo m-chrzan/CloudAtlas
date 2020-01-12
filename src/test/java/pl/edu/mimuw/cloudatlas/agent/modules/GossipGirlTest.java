@@ -84,7 +84,7 @@ public class GossipGirlTest {
         Map<PathName, ValueTime> otherZoneTimestamps = makeOtherZoneTimestamps();
         Map<Attribute, ValueTime> otherQueryTimestamps = makeOtherQueryTimestamps();
 
-        noCoTamMessage = new NoCoTamMessage("", 0, 42, 0, otherZoneTimestamps, otherQueryTimestamps, TestUtil.addToTime(testTime, 10), TestUtil.addToTime(testTime, 22));
+        noCoTamMessage = new NoCoTamMessage("", 0, 42, 0, otherZoneTimestamps, otherQueryTimestamps, ValueUtils.addToTime(testTime, 10), ValueUtils.addToTime(testTime, 22));
 
         attributesMessage1 = makeAttributesMessage("/son/bro", makeAttributes1());
         attributesMessage2 = makeAttributesMessage("/son/whodis", makeAttributes2());
@@ -93,7 +93,7 @@ public class GossipGirlTest {
 
         hejkaMessage = new HejkaMessage("", 0, 123, new PathName("/son/bro"), new PathName("/son/grand"), otherZoneTimestamps, otherQueryTimestamps);
         hejkaMessage.setSentTimestamp(testTime);
-        hejkaMessage.setReceivedTimestamp(TestUtil.addToTime(testTime, 15));
+        hejkaMessage.setReceivedTimestamp(ValueUtils.addToTime(testTime, 15));
         hejkaMessage.setSenderAddress(theirContact.getAddress());
     }
 
@@ -114,7 +114,7 @@ public class GossipGirlTest {
     public AttributesMap makeAttributes2() {
         AttributesMap attributes = new AttributesMap();
         attributes.add("name", new ValueString("whodis"));
-        attributes.add("timestamp", TestUtil.addToTime(testTime, -300));
+        attributes.add("timestamp", ValueUtils.addToTime(testTime, -300));
         attributes.add("foo", new ValueInt(61l));
         attributes.add("bar", new ValueString("nice"));
         return attributes;
@@ -142,11 +142,11 @@ public class GossipGirlTest {
     }
 
     public void addOtherQueryTimestamp(Map<Attribute, ValueTime> timestamps, String name, long offset) {
-        timestamps.put(new Attribute(name), TestUtil.addToTime(testTime, offset));
+        timestamps.put(new Attribute(name), ValueUtils.addToTime(testTime, offset));
     }
 
     public void addOtherZoneTimestamp(Map<PathName, ValueTime> timestamps, String path, long offset) {
-        timestamps.put(new PathName(path), TestUtil.addToTime(testTime, offset));
+        timestamps.put(new PathName(path), ValueUtils.addToTime(testTime, offset));
     }
 
     public void setupHierarchy() {
@@ -290,7 +290,7 @@ public class GossipGirlTest {
                 new SimpleImmutableEntry(
                     new ValueQuery("SELECT 3 AS one"),
                     // TODO: this should be modified by GTP
-                    TestUtil.addToTime(testTime, 10)
+                    ValueUtils.addToTime(testTime, 10)
                 )
         );
 
@@ -403,7 +403,7 @@ public class GossipGirlTest {
                 new SimpleImmutableEntry(
                     new ValueQuery("SELECT 3 AS one"),
                     // TODO: this should be modified by GTP
-                    TestUtil.addToTime(testTime, 10)
+                    ValueUtils.addToTime(testTime, 10)
                 )
         );
 
@@ -426,7 +426,7 @@ public class GossipGirlTest {
         executor.messagesToPass.take();
         executor.messagesToPass.take();
 
-        CleanOldGossipsMessage message = new CleanOldGossipsMessage("", 0, TestUtil.addToTime(ValueUtils.currentTime(), 10));
+        CleanOldGossipsMessage message = new CleanOldGossipsMessage("", 0, ValueUtils.addToTime(ValueUtils.currentTime(), 10));
         gossipGirl.handleTyped(message);
         gossipGirl.handleTyped(attributesMessage2);
         assertEquals(0, executor.messagesToPass.size());
@@ -447,7 +447,7 @@ public class GossipGirlTest {
         executor.messagesToPass.take();
         executor.messagesToPass.take();
 
-        CleanOldGossipsMessage message = new CleanOldGossipsMessage("", 0, TestUtil.addToTime(testTime, -10));
+        CleanOldGossipsMessage message = new CleanOldGossipsMessage("", 0, ValueUtils.addToTime(testTime, -10));
         gossipGirl.handleTyped(message);
         gossipGirl.handleTyped(attributesMessage2);
         assertEquals(1, executor.messagesToPass.size());

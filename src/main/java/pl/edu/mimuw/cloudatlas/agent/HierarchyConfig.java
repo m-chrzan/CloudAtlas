@@ -153,4 +153,20 @@ public class HierarchyConfig {
 
         AgentUtils.startRecursiveTask(taskSupplier, queriesPeriod, eventBus);
     }
+
+    public void startCleaningGossips(long gossipCleanPeriod) {
+        Supplier<TimerScheduledTask> taskSupplier = () ->
+                new TimerScheduledTask() {
+                    public void run() {
+                        try {
+                            System.out.println("INFO: Scheduling old gossip cleanup");
+                            sendMessage(new CleanOldGossipsMessage("", 0, ValueUtils.addToTime(ValueUtils.currentTime(), -gossipCleanPeriod)));
+                        } catch (InterruptedException e) {
+                            System.out.println("Interrupted while triggering queries");
+                        }
+                    }
+                };
+
+        AgentUtils.startRecursiveTask(taskSupplier, gossipCleanPeriod, eventBus);
+    }
 }
