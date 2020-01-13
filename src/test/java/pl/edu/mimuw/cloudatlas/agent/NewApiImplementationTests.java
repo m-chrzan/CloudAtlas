@@ -28,6 +28,7 @@ import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
+import pl.edu.mimuw.cloudatlas.querysigner.QueryData;
 
 public class NewApiImplementationTests {
     private NewApiImplementation api;
@@ -138,7 +139,7 @@ public class NewApiImplementationTests {
         String name = "&query";
         String queryCode = "SELECT 1 AS one";
         long timeBefore = System.currentTimeMillis();
-        api.installQuery(name, queryCode);
+        api.installQuery(name, new QueryData(queryCode, new byte[0]));
         long timeAfter = System.currentTimeMillis();
 
         assertEquals(1, eventBus.events.size());
@@ -159,7 +160,7 @@ public class NewApiImplementationTests {
     public void testUninstallQuery() throws Exception {
         String name = "&query";
         long timeBefore = System.currentTimeMillis();
-        api.uninstallQuery(name);
+        api.uninstallQuery(name, new QueryData("", new byte[0]));
         long timeAfter = System.currentTimeMillis();
 
         assertEquals(1, eventBus.events.size());

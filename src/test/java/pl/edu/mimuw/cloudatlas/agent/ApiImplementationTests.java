@@ -22,6 +22,7 @@ import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueString;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
+import pl.edu.mimuw.cloudatlas.querysigner.QueryData;
 
 public class ApiImplementationTests {
     private ApiImplementation api;
@@ -80,7 +81,7 @@ public class ApiImplementationTests {
     public void testInstallQuery() throws Exception {
         String name = "&query";
         String queryCode = "SELECT 1 AS one";
-        api.installQuery(name, queryCode);
+        api.installQuery(name, new QueryData(queryCode, new byte[0]));
         assertAttributeInZmiEquals(name, new ValueQuery(queryCode), "/");
         assertAttributeInZmiEquals(name, new ValueQuery(queryCode), "/uw");
         assertAttributeInZmiEquals(name, new ValueQuery(queryCode), "/pjwstk");
@@ -88,7 +89,9 @@ public class ApiImplementationTests {
 
     @Test
     public void testInstallQueryRuns() throws Exception {
-        api.installQuery("&query", "SELECT 1 AS one");
+        String name = "&query";
+        String queryCode = "SELECT 1 AS one";
+        api.installQuery(name, new QueryData(queryCode, new byte[0]));
         assertAttributeInZmiEquals("one", new ValueInt(1l), "/");
         assertAttributeInZmiEquals("one", new ValueInt(1l), "/uw");
         assertAttributeInZmiEquals("one", new ValueInt(1l), "/pjwstk");
@@ -96,7 +99,9 @@ public class ApiImplementationTests {
 
     @Test
     public void testInstallQueryRuns2() throws Exception {
-        api.installQuery("&query", "SELECT sum(num_processes) AS num_processes");
+        String name = "&query";
+        String queryCode = "SELECT sum(num_processes) AS num_processes";
+        api.installQuery(name, new QueryData(queryCode, new byte[0]));
         assertAttributeInZmiEquals("num_processes", new ValueInt(362l), "/uw");
         assertAttributeInZmiEquals("num_processes", new ValueInt(437l), "/pjwstk");
         assertAttributeInZmiEquals("num_processes", new ValueInt(799l), "/");
@@ -107,7 +112,7 @@ public class ApiImplementationTests {
         String name = "query";
         String queryCode = "SELECT 1 AS one";
         try {
-            api.installQuery(name, queryCode);
+            api.installQuery(name, new QueryData(queryCode, new byte[0]));
             assertTrue("should have thrown", false);
         } catch (Exception e) {
             assertEquals("Invalid query identifier", e.getMessage());
@@ -123,8 +128,8 @@ public class ApiImplementationTests {
     public void testUninstallQuery() throws Exception {
         String name = "&query";
         String queryCode = "SELECT 1 AS one";
-        api.installQuery(name, queryCode);
-        api.uninstallQuery(name);
+        api.installQuery(name, new QueryData(queryCode, new byte[0]));
+        api.uninstallQuery(name, new QueryData(queryCode, new byte[0]));
         AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
         assertNull(attributes.getOrNull(name));
     }
@@ -147,7 +152,7 @@ public class ApiImplementationTests {
 
     @Test
     public void testSetAttributeValueRunsQueries() throws Exception {
-        api.installQuery("&query", "SELECT sum(num_processes) AS num_processes");
+        api.installQuery("&query", new QueryData("SELECT sum(num_processes) AS num_processes", new byte[0]));
         Value numProcesses = new ValueInt(42l);
         api.setAttributeValue("/uw/khaki13", "num_processes", numProcesses);
         assertAttributeInZmiEquals("num_processes", new ValueInt(297l), "/uw");
