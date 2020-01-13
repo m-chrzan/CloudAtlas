@@ -24,10 +24,8 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
     private Set<String> attribsSetByQueries;
     private ByteSerializer byteSerializer;
 
-    QuerySignerApiImplementation(PublicKey publicKey, PrivateKey privateKey) {// (byte[] serializedPublicKey, byte[] serializedPrivateKey) {
+    QuerySignerApiImplementation(PublicKey publicKey, PrivateKey privateKey) {
         this.byteSerializer = new ByteSerializer();
-//        this.publicKey = (PublicKey) byteSerializer.deserialize(serializedPublicKey, PublicKey.class);
-//        this.privateKey = (PrivateKey) byteSerializer.deserialize(serializedPrivateKey, PrivateKey.class);
         this.publicKey = publicKey;
         this.privateKey = privateKey;
         this.queries = new HashMap<>();
@@ -79,7 +77,6 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
         return digest;
     }
 
-    // TODO
     private byte[] serializeQuery(String queryName, String queryCode) {
         return byteSerializer.serialize(queryName + queryCode);
     }
