@@ -110,35 +110,35 @@ public class AgentIntegrationTest {
         assertEquals(new ValueList(phpModules, TypePrimitive.STRING), attributes.get("php_modules"));
     }
 
-    @Test
-    public void testInstallQuery() throws Exception {
-        String name = "&query";
-        String queryCode = "SELECT 1 AS one";
-        api.installQuery(name, queryCode);
-        // TODO: test something here
-    }
+//    @Test
+//    public void testInstallQuery() throws Exception {
+//        String name = "&query";
+//        String queryCode = "SELECT 1 AS one";
+//        api.installQuery(name, queryCode);
+//        // TODO: test something here
+//    }
 
-    @Test
-    public void testInstallQueryRuns() throws Exception {
-        String name = "&query";
-        String queryCode = "SELECT 1 AS one";
-        api.installQuery(name, queryCode);
-
-        Thread.sleep(queriesInterval * 2);
-        AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
-        assertEquals(new ValueInt(1l), attributes.getOrNull("one"));
-    }
-
-    @Test
-    public void testUninstallQuery() throws Exception {
-        String name = "&query";
-        String queryCode = "SELECT 1 AS one";
-        api.installQuery(name, queryCode);
-        api.uninstallQuery(name);
-        AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
-        assertNull(attributes.getOrNull(name));
-        // TODO: test this correctly
-    }
+//    @Test
+//    public void testInstallQueryRuns() throws Exception {
+//        String name = "&query";
+//        String queryCode = "SELECT 1 AS one";
+//        api.installQuery(name, queryCode);
+//
+//        Thread.sleep(queriesInterval * 2);
+//        AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
+//        assertEquals(new ValueInt(1l), attributes.getOrNull("one"));
+//    }
+//
+//    @Test
+//    public void testUninstallQuery() throws Exception {
+//        String name = "&query";
+//        String queryCode = "SELECT 1 AS one";
+//        api.installQuery(name, queryCode);
+//        api.uninstallQuery(name);
+//        AttributesMap attributes = api.getZoneAttributeValues("/pjwstk");
+//        assertNull(attributes.getOrNull(name));
+//        // TODO: test this correctly
+//    }
 
     @Test
     public void testSetAttributeValueChange() throws Exception {
