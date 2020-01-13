@@ -65,6 +65,14 @@ ext.zonePath = {
     return System.getProperty("zonePath") ?: "/uw/violet07"
 }
 
+ext.publicKeyFilename = {
+    return System.getProperty("publicKeyFilename") ?: "build/tmp/query_signer.pub"
+}
+
+ext.privateKeyFilename = {
+    return System.getProperty("privateKeyFilename") ?: "build/tmp/query_signer"
+}
+
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
@@ -114,7 +122,7 @@ task runAgent(type: JavaExec) {
     systemProperty 'UDUPServer.bufsize', UDUPServerBufsize()
     systemProperty 'Gossip.zone_strategy', zoneSelectionStrategy()
     systemProperty 'zone_path', zonePath()
-    systemProperty 'query_signer_hostname', querySignerHostname()
+    systemProperty 'public_key_file', publicKeyFilename()
 }
 
 task runClient(type: JavaExec) {
@@ -141,5 +149,13 @@ task runInterpreter(type: JavaExec) {
 task runQuerySigner(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.querysigner.QuerySigner'
+    systemProperty 'query_signer_hostname', querySignerHostname()
+    systemProperty 'public_key_file', publicKeyFilename()
+    systemProperty 'private_key_file', privateKeyFilename()
+}
+
+task runKeyGenerator(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = 'pl.edu.mimuw.cloudatlas.KeyGenerator'
     systemProperty 'query_signer_hostname', querySignerHostname()
 }
