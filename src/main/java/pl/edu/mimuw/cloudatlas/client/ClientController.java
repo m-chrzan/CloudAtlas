@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.model.*;
+import pl.edu.mimuw.cloudatlas.querysigner.QueryData;
+import pl.edu.mimuw.cloudatlas.querysignerapi.QuerySignerApi;
 
 import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
@@ -32,17 +34,21 @@ import java.util.*;
 
 @Controller
 public class ClientController {
-    private Api api;
-
+    private Api agentApi;
+    private QuerySignerApi querySignerApi;
     private Map<ValueTime, AttributesMap> attributes;
     private String currentZoneName;
     private static final int MAX_ENTRIES = 10;
 
     ClientController() {
         try {
-            String hostname = System.getProperty("agent_hostname");	
-            Registry registry = LocateRegistry.getRegistry(hostname);
-            this.api = (Api) registry.lookup("Api");
+            String agentHostname = System.getProperty("agent_hostname");
+            Registry registry = LocateRegistry.getRegistry(agentHostname);
+            this.agentApi = (Api) registry.lookup("Api");
+
+            String querySignerHostname = System.getProperty("querysigner_hostname");
+            Registry querySignerRegistry = LocateRegistry.getRegistry(querySignerHostname);
+            this.querySignerApi = (QuerySignerApi) querySignerRegistry.lookup("QuerySignerApi");
         } catch (Exception e) {
             System.err.println("Client exception:");
             e.printStackTrace();
@@ -74,7 +80,8 @@ public class ClientController {
         boolean success = true;
 
         try {
-            this.api.installQuery(queryObject.getName(), queryObject.getValue());
+            QueryData query = this.querySignerApi.signInstallQuery(queryObject.getName(), queryObject.getValue());
+            this.agentApi.installQuery(queryObject.getName(), query);
         } catch (Exception e) {
             success = false;
             System.err.println("Client exception:");
@@ -99,7 +106,8 @@ public class ClientController {
         boolean success = true;
 
         try {
-            this.api.uninstallQuery(queryObject.getName());
+            QueryData query = querySignerApi.signUninstallQuery(queryObject.getName());
+            this.agentApi.uninstallQuery(queryObject.getName(), query);
         } catch (Exception e) {
             success = false;
             System.err.println("Client exception:");
@@ -153,7 +161,7 @@ public class ClientController {
 
         try {
             contactObjects = parseContactsString(contactsObject);
-            this.api.setFallbackContacts(contactObjects);
+            this.agentApi.setFallbackContacts(contactObjects);
         } catch (Exception e) {
             success = false;
             System.err.println("Client exception:");
@@ -284,7 +292,7 @@ public class ClientController {
 
         try {
             attributeValue = parseAttributeValue(attributeObject);
-            api.setAttributeValue(
+            agentApi.setAttributeValue(
                     attributeObject.getZoneName(),
                     attributeObject.getAttributeName(),
                     attributeValue);
@@ -309,7 +317,7 @@ public class ClientController {
         String availableZonesString = "";
 
         try {
-            availableZones = api.getZoneSet();
+            availableZones = agentApi.getZoneSet();
             availableZonesString = availableZones.toString().substring(1, availableZones.toString().length() - 1);
         } catch (Exception e) {
             success = false;
@@ -336,7 +344,7 @@ public class ClientController {
 
         try {
             if (!this.currentZoneName.isEmpty()) {
-                attribData = api.getZoneAttributeValues(this.currentZoneName);
+                attribData = agentApi.getZoneAttributeValues(this.currentZoneName);
                 currentTime = new ValueTime(System.currentTimeMillis());
                 this.attributes.put(currentTime, attribData);
             }

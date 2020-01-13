@@ -6,6 +6,7 @@ import pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Program;
 import pl.edu.mimuw.cloudatlas.interpreter.query.parser;
 import pl.edu.mimuw.cloudatlas.interpreter.query.Yylex;
 import pl.edu.mimuw.cloudatlas.model.Value;
+import pl.edu.mimuw.cloudatlas.querysigner.QueryData;
 
 /**
  * A class that holds a CloudAtlas query.
@@ -15,21 +16,45 @@ public class ValueQuery extends Value {
     private String code;
     // Parsed query
     private Program query;
+    // Query signature
+    private byte[] signature;
+    // Query signing timestamp
+    private long timestamp;
+
     /**
      * Constructs a new <code>ValueQuery</code> object.
      *
-     * @param name the name of the query
      * @param query the code of the query
      */
     public ValueQuery(String query) throws Exception {
         this.code = query;
         Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
         this.query = (new parser(lex)).pProgram();
+        this.signature = null;
+        this.timestamp = System.currentTimeMillis();
+    }
+
+    public ValueQuery(String query, byte[] querySignature) throws Exception {
+        this.code = query;
+        Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
+        this.query = (new parser(lex)).pProgram();
+        this.signature = querySignature;
+        this.timestamp = System.currentTimeMillis();
+    }
+
+    public ValueQuery(QueryData queryData) throws Exception {
+        this.code = queryData.getCode();
+        Yylex lex = new Yylex(new ByteArrayInputStream(queryData.getCode().getBytes()));
+        this.query = (new parser(lex)).pProgram();
+        this.signature = queryData.getSignature();
+        this.timestamp = System.currentTimeMillis();
     }
 
     private ValueQuery() {
         this.code = null;
         this.query = null;
+        this.signature = null;
+        this.timestamp = System.currentTimeMillis();
     }
 
     public String getCode() { return code; }
@@ -37,6 +62,12 @@ public class ValueQuery extends Value {
     public Program getQuery() {
         return query;
     }
+
+    public byte[] getSignature() { return signature; }
+
+    public long getTimestamp() { return timestamp; }
+
+    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
 
     @Override
     public Type getType() {

@@ -22,6 +22,8 @@ import pl.edu.mimuw.cloudatlas.interpreter.Main;
 import pl.edu.mimuw.cloudatlas.interpreter.QueryResult;
 import pl.edu.mimuw.cloudatlas.model.*;
 import pl.edu.mimuw.cloudatlas.api.Api;
+import pl.edu.mimuw.cloudatlas.querysigner.QueryData;
+import pl.edu.mimuw.cloudatlas.querysigner.QueryUtils;
 
 public class NewApiImplementation implements Api {
     private EventBus eventBus;
@@ -79,18 +81,13 @@ public class NewApiImplementation implements Api {
         }
     }
 
-    public void installQuery(String name, String queryCode) throws RemoteException {
-        Pattern queryNamePattern = Pattern.compile("&[a-zA-Z][\\w_]*");
-        Matcher matcher = queryNamePattern.matcher(name);
-        if (!matcher.matches()) {
-            throw new RemoteException("Invalid query identifier");
-        }
+    public void installQuery(String name, QueryData query) throws RemoteException {
+        QueryUtils.validateQueryName(name);
         try {
-            ValueQuery query = new ValueQuery(queryCode);
             Attribute attributeName = new Attribute(name);
             ValueTime timestamp = new ValueTime(System.currentTimeMillis());
             Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
-            queries.put(attributeName, new SimpleImmutableEntry(query, timestamp));
+            queries.put(attributeName, new SimpleImmutableEntry(new ValueQuery(query), timestamp));
             UpdateQueriesMessage message = new UpdateQueriesMessage("", 0, queries);
             eventBus.addMessage(message);
         } catch (Exception e) {
@@ -98,7 +95,8 @@ public class NewApiImplementation implements Api {
         }
     }
 
-    public void uninstallQuery(String queryName) throws RemoteException {
+    public void uninstallQuery(String queryName, QueryData query) throws RemoteException {
+        QueryUtils.validateQueryName(queryName);
         try {
             Attribute attributeName = new Attribute(queryName);
             ValueTime timestamp = new ValueTime(System.currentTimeMillis());
