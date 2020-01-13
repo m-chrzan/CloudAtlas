@@ -153,9 +153,3 @@ task runQuerySigner(type: JavaExec) {
     systemProperty 'public_key_file', publicKeyFilename()
     systemProperty 'private_key_file', privateKeyFilename()
 }
-
-task runKeyGenerator(type: JavaExec) {
-    classpath = sourceSets.main.runtimeClasspath
-    main = 'pl.edu.mimuw.cloudatlas.KeyGenerator'
-    systemProperty 'query_signer_hostname', querySignerHostname()
-}

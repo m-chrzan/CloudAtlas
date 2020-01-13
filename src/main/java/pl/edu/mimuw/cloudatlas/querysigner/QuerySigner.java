@@ -1,8 +1,5 @@
 package pl.edu.mimuw.cloudatlas.querysigner;
 
-import pl.edu.mimuw.cloudatlas.KeyGenerator;
-import pl.edu.mimuw.cloudatlas.agent.NewApiImplementation;
-import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.querysignerapi.QuerySignerApi;
 
 import java.io.IOException;
@@ -22,15 +19,14 @@ public class QuerySigner {
     private static QuerySignerApiImplementation initApi() throws IOException {
         String publicKeyFile = System.getProperty("public_key_file");
         String privateKeyFile = System.getProperty("private_key_file");
-        PublicKey publicKey = null; //KeyGenerator.getPublicKey(KeyGenerator.readKeyFromFile(publicKeyFile));
-        PrivateKey privateKey = null; // KeyGenerator.getPrivateKey(KeyGenerator.readKeyFromFile(privateKeyFile));
+        PublicKey publicKey = KeyUtils.getPublicKey(publicKeyFile);
+        PrivateKey privateKey = KeyUtils.getPrivateKey(privateKeyFile);
         return new QuerySignerApiImplementation(publicKey, privateKey);
     }
 
     public static void runRegistry() {
         try {
             QuerySignerApiImplementation api = initApi();
-//            NewApiImplementation apii = new NewApiImplementation(null);
             QuerySignerApi apiStub =
                     (QuerySignerApi) UnicastRemoteObject.exportObject(api, 0);
             Registry registry = LocateRegistry.getRegistry();
