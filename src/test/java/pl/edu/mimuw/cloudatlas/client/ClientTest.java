@@ -30,7 +30,6 @@ public class ClientTest {
     private static Process registryProcess;
     private static Process agentProcess;
     private static Process querySignerProcess;
-
     private static Registry registry;
     private static Api api;
 
@@ -38,11 +37,11 @@ public class ClientTest {
     public static void bindApi() throws Exception {
         registryProcess = Runtime.getRuntime().exec("./scripts/registry");
         Thread.sleep(2000);
-        registryProcess = Runtime.getRuntime().exec("./scripts/generate_keys.sh");
+//        Runtime.getRuntime().exec("./scripts/generate_keys.sh");
         agentProcess = Runtime.getRuntime().exec("./gradlew runAgent -Dhostname=localhost -DfreshnessPeriod=10000000");
         Thread.sleep(3000);
-        querySignerProcess = Runtime.getRuntime().exec("./gradlew runQuerySigner");
-        Thread.sleep(3000);
+//        querySignerProcess = Runtime.getRuntime().exec("./gradlew runQuerySigner");
+//        Thread.sleep(3000);
 
         registry = LocateRegistry.getRegistry("localhost");
         api = (Api) registry.lookup("Api");
