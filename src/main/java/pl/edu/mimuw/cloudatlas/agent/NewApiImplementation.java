@@ -22,6 +22,7 @@ import pl.edu.mimuw.cloudatlas.interpreter.Main;
 import pl.edu.mimuw.cloudatlas.interpreter.QueryResult;
 import pl.edu.mimuw.cloudatlas.model.*;
 import pl.edu.mimuw.cloudatlas.api.Api;
+import pl.edu.mimuw.cloudatlas.querysigner.QueryData;
 import pl.edu.mimuw.cloudatlas.querysigner.QueryUtils;
 
 public class NewApiImplementation implements Api {
@@ -80,13 +81,13 @@ public class NewApiImplementation implements Api {
         }
     }
 
-    public void installQuery(String name, ValueQuery query) throws RemoteException {
+    public void installQuery(String name, QueryData query) throws RemoteException {
         QueryUtils.validateQueryName(name);
         try {
             Attribute attributeName = new Attribute(name);
             ValueTime timestamp = new ValueTime(System.currentTimeMillis());
             Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
-            queries.put(attributeName, new SimpleImmutableEntry(query, timestamp));
+            queries.put(attributeName, new SimpleImmutableEntry(new ValueQuery(query), timestamp));
             UpdateQueriesMessage message = new UpdateQueriesMessage("", 0, queries);
             eventBus.addMessage(message);
         } catch (Exception e) {
@@ -94,7 +95,7 @@ public class NewApiImplementation implements Api {
         }
     }
 
-    public void uninstallQuery(String queryName, ValueQuery query) throws RemoteException {
+    public void uninstallQuery(String queryName, QueryData query) throws RemoteException {
         QueryUtils.validateQueryName(queryName);
         try {
             Attribute attributeName = new Attribute(queryName);

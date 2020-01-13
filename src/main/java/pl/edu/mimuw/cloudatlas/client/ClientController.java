@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import pl.edu.mimuw.cloudatlas.api.Api;
 import pl.edu.mimuw.cloudatlas.model.*;
+import pl.edu.mimuw.cloudatlas.querysigner.QueryData;
 import pl.edu.mimuw.cloudatlas.querysignerapi.QuerySignerApi;
 
 import java.net.InetAddress;
@@ -79,7 +80,7 @@ public class ClientController {
         boolean success = true;
 
         try {
-            ValueQuery query = this.querySignerApi.signInstallQuery(queryObject.getName(), queryObject.getValue());
+            QueryData query = this.querySignerApi.signInstallQuery(queryObject.getName(), queryObject.getValue());
             this.agentApi.installQuery(queryObject.getName(), query);
         } catch (Exception e) {
             success = false;
@@ -105,7 +106,7 @@ public class ClientController {
         boolean success = true;
 
         try {
-            ValueQuery query = querySignerApi.signUninstallQuery(queryObject.getName());
+            QueryData query = querySignerApi.signUninstallQuery(queryObject.getName());
             this.agentApi.uninstallQuery(queryObject.getName(), query);
         } catch (Exception e) {
             success = false;

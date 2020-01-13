@@ -6,6 +6,7 @@ import pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Program;
 import pl.edu.mimuw.cloudatlas.interpreter.query.parser;
 import pl.edu.mimuw.cloudatlas.interpreter.query.Yylex;
 import pl.edu.mimuw.cloudatlas.model.Value;
+import pl.edu.mimuw.cloudatlas.querysigner.QueryData;
 
 /**
  * A class that holds a CloudAtlas query.
@@ -38,6 +39,14 @@ public class ValueQuery extends Value {
         Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
         this.query = (new parser(lex)).pProgram();
         this.signature = querySignature;
+        this.timestamp = System.currentTimeMillis();
+    }
+
+    public ValueQuery(QueryData queryData) throws Exception {
+        this.code = queryData.getCode();
+        Yylex lex = new Yylex(new ByteArrayInputStream(queryData.getCode().getBytes()));
+        this.query = (new parser(lex)).pProgram();
+        this.signature = queryData.getSignature();
         this.timestamp = System.currentTimeMillis();
     }
 

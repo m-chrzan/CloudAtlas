@@ -10,7 +10,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.rmi.RemoteException;
 import java.security.*;
-import java.security.interfaces.RSAPrivateCrtKey;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,10 +24,12 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
     private Set<String> attribsSetByQueries;
     private ByteSerializer byteSerializer;
 
-    QuerySignerApiImplementation(byte[] serializedPublicKey, byte[] serializedPrivateKey) {
+    QuerySignerApiImplementation(PublicKey publicKey, PrivateKey privateKey) {// (byte[] serializedPublicKey, byte[] serializedPrivateKey) {
         this.byteSerializer = new ByteSerializer();
-        this.publicKey = (PublicKey) byteSerializer.deserialize(serializedPublicKey, PublicKey.class);
-        this.privateKey = (PrivateKey) byteSerializer.deserialize(serializedPrivateKey, PrivateKey.class);
+//        this.publicKey = (PublicKey) byteSerializer.deserialize(serializedPublicKey, PublicKey.class);
+//        this.privateKey = (PrivateKey) byteSerializer.deserialize(serializedPrivateKey, PrivateKey.class);
+        this.publicKey = publicKey;
+        this.privateKey = privateKey;
         this.queries = new HashMap<>();
         this.attribsSetByQueries = new HashSet<>();
     }
@@ -84,13 +85,13 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
     }
 
     @Override
-    public ValueQuery signInstallQuery(String queryName, String queryCode) throws RemoteException {
+    public QueryData signInstallQuery(String queryName, String queryCode) throws RemoteException {
         QueryUtils.validateQueryName(queryName);
         try {
             byte[] serializedQuery = serializeQuery(queryName, queryCode);
             byte[] hashedQuery = cryptographicHash(serializedQuery);
             byte[] querySignature = encryptQuery(hashedQuery);
-            return new ValueQuery(queryCode, querySignature);
+            return new QueryData(queryCode, querySignature);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RemoteException(e.getLocalizedMessage());
@@ -98,7 +99,7 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
     }
 
     @Override
-    public void validateInstallQuery(String queryName, ValueQuery query) throws RemoteException {
+    public void validateInstallQuery(String queryName, QueryData query) throws RemoteException {
         QueryUtils.validateQueryName(queryName);
         try {
             byte[] decryptedQuery = decryptQuery(query.getSignature());
@@ -115,28 +116,13 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
 
     // TODO
     @Override
-    public ValueQuery signUninstallQuery(String queryName) throws RemoteException {
+    public QueryData signUninstallQuery(String queryName) throws RemoteException {
         return null;
     }
 
     // TODO
     @Override
-    public void validateUninstallQuery(String queryName, ValueQuery query) throws RemoteException {
+    public void validateUninstallQuery(String queryName, QueryData query) throws RemoteException {
 
-    }
-
-    @Override
-    public PublicKey getPublicKey() throws RemoteException {
-        return publicKey;
-    }
-
-    @Override
-    public void setPublicKey(PublicKey publicKey) throws RemoteException {
-        this.publicKey = publicKey;
-    }
-
-    @Override
-    public byte[] getQuerySignature(String queryName) throws RemoteException {
-        return queries.get(queryName).getSignature();
     }
 }
