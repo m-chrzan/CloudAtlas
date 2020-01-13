@@ -36,7 +36,7 @@ public class ClientTest {
     @BeforeClass
     public static void bindApi() throws Exception {
         registryProcess = Runtime.getRuntime().exec("./scripts/registry");
-        Thread.sleep(5000);
+        Thread.sleep(10000);
         agentProcess = Runtime.getRuntime().exec("./gradlew runAgent -Dhostname=localhost -DfreshnessPeriod=10000000");
         Thread.sleep(10000);
 
