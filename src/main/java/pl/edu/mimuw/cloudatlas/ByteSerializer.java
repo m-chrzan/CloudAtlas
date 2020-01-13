@@ -9,6 +9,7 @@ import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 import pl.edu.mimuw.cloudatlas.agent.modules.RecursiveScheduledTask;
 import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduledTask;
 import pl.edu.mimuw.cloudatlas.model.*;
+import pl.edu.mimuw.cloudatlas.querysigner.QueryData;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -161,6 +162,7 @@ public class ByteSerializer {
         kryo.register(LinkedHashMap.class);
         kryo.register(HashMap.class);
         kryo.register(ModuleType.class);
+        kryo.register(QueryData.class);
     }
 
     public Object deserialize(byte[] packetData, Class objClass) {

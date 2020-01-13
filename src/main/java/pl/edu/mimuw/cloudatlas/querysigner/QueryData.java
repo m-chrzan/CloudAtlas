@@ -1,8 +1,8 @@
 package pl.edu.mimuw.cloudatlas.querysigner;
 
-import pl.edu.mimuw.cloudatlas.interpreter.query.Absyn.Program;
+import java.io.Serializable;
 
-public class QueryData {
+public class QueryData implements Serializable {
     // Original source code
     private String code;
     // Query signature
