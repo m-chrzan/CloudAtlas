@@ -82,8 +82,8 @@ public class NewApiImplementation implements Api {
             QuerySignerApiImplementation.validateInstallQuery(name, query, this.publicKey);
             Attribute attributeName = new Attribute(name);
             ValueTime timestamp = new ValueTime(System.currentTimeMillis());
-            Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
-            queries.put(attributeName, new SimpleImmutableEntry(new ValueQuery(query), timestamp));
+            Map<Attribute, ValueQuery> queries = new HashMap();
+            queries.put(attributeName, new ValueQuery(query));
             UpdateQueriesMessage message = new UpdateQueriesMessage("", 0, queries);
             eventBus.addMessage(message);
         } catch (Exception e) {
@@ -97,8 +97,8 @@ public class NewApiImplementation implements Api {
             QuerySignerApiImplementation.validateUninstallQuery(queryName, query, this.publicKey);
             Attribute attributeName = new Attribute(queryName);
             ValueTime timestamp = new ValueTime(System.currentTimeMillis());
-            Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
-            queries.put(attributeName, new SimpleImmutableEntry(null, timestamp));
+            Map<Attribute, ValueQuery> queries = new HashMap();
+            queries.put(attributeName, new ValueQuery(query));
             UpdateQueriesMessage message = new UpdateQueriesMessage("", 0, queries);
             eventBus.addMessage(message);
         } catch (Exception e) {

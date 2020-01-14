@@ -16,7 +16,7 @@ public class Stanik extends Module {
     }
 
     private ZMI hierarchy;
-    private HashMap<Attribute, Entry<ValueQuery, ValueTime>> queries;
+    private HashMap<Attribute, ValueQuery> queries;
     private long freshnessPeriod;
     private Set<ValueContact> contacts;
     private ValueTime contactsTimestamp;
@@ -26,7 +26,7 @@ public class Stanik extends Module {
         super(ModuleType.STATE);
         this.ourPath = ourPath;
         hierarchy = new ZMI();
-        queries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
+        queries = new HashMap<Attribute, ValueQuery>();
         hierarchy.getAttributes().add("timestamp", new ValueTime(0l));
         this.freshnessPeriod = freshnessPeriod;
         this.contactsTimestamp = ValueUtils.currentTime();
@@ -45,7 +45,7 @@ public class Stanik extends Module {
     private void setDefaultQuery(String name, String query) {
         try {
             ValueQuery queryValue = new ValueQuery(query);
-            queries.put(new Attribute(name), new SimpleImmutableEntry(queryValue, new ValueTime(0l)));
+            queries.put(new Attribute(name), queryValue);
         } catch (Exception e) {
             System.out.println("ERROR: failed to compile default query");
         }
@@ -89,7 +89,7 @@ public class Stanik extends Module {
             0,
             message.getRequestId(),
             hierarchy.clone(),
-            (HashMap<Attribute, Entry<ValueQuery, ValueTime>>) queries.clone(),
+            (HashMap<Attribute, ValueQuery>) queries.clone(),
             contacts
         );
         sendMessage(response);
@@ -210,11 +210,13 @@ public class Stanik extends Module {
     }
 
     public void handleUpdateQueries(UpdateQueriesMessage message) {
-        for (Entry<Attribute, Entry<ValueQuery, ValueTime>> entry : message.getQueries().entrySet()) {
+        System.out.println("INFO: Stanik handles update queries");
+        for (Entry<Attribute, ValueQuery> entry : message.getQueries().entrySet()) {
             Attribute attribute = entry.getKey();
-            ValueTime timestamp = entry.getValue().getValue();
-            Entry<ValueQuery, ValueTime> currentTimestampedQuery = queries.get(attribute);
-            if (currentTimestampedQuery == null || ValueUtils.valueLower(currentTimestampedQuery.getValue(), timestamp)) {
+            ValueTime timestamp = new ValueTime(entry.getValue().getTimestamp());
+            ValueQuery currentTimestampedQuery = queries.get(attribute);
+            ValueTime currentQueryTimestamp = new ValueTime(currentTimestampedQuery.getTimestamp());
+            if (currentQueryTimestamp == null || ValueUtils.valueLower(currentQueryTimestamp, timestamp)) {
                 queries.put(entry.getKey(), entry.getValue());
             }
         }
@@ -273,7 +275,7 @@ public class Stanik extends Module {
         return hierarchy;
     }
 
-    public HashMap<Attribute, Entry<ValueQuery, ValueTime>> getQueries() {
+    public HashMap<Attribute, ValueQuery> getQueries() {
         return queries;
     }
 

@@ -59,13 +59,14 @@ public class Qurnik extends Module {
 
     private void runQueriesOnState(StateMessage message) throws InterruptedException {
         List<ValueQuery> queries = new LinkedList();
-        for (Entry<ValueQuery, ValueTime> timestampedQuery : message.getQueries().values()) {
-            queries.add(timestampedQuery.getKey());
+        for (ValueQuery timestampedQuery : message.getQueries().values()) {
+            queries.add(timestampedQuery);
         }
         executeAllQueries(message.getZMI(), queries, PathName.ROOT);
     }
 
     private void executeAllQueries(ZMI zmi, List<ValueQuery> queries, PathName currentPath) throws InterruptedException {
+        System.out.println("INFO: Qurnik executing all queries " + queries);
         if(!zmi.getSons().isEmpty()) {
             for(ZMI son : zmi.getSons()) {
                 Value sonName = son.getAttributes().getOrNull("name");

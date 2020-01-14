@@ -200,11 +200,11 @@ public class GossipGirl extends Module {
             System.out.println("INFO: handling Query in " + Long.toString(message.getReceiverGossipId()));
             state.setLastAction();
             state.gotQuery(message);
-            Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
-            queries.put(
-                message.getName(),
-                new SimpleImmutableEntry(message.getQuery(), state.getTheirQueryTimestamp(message.getName()))
-            );
+            Map<Attribute, ValueQuery> queries = new HashMap();
+            ValueQuery vq = message.getQuery();
+            ValueTime timestamp = state.getTheirQueryTimestamp(message.getName());
+            vq.setTimestamp(timestamp.getValue());
+            queries.put(message.getName(), vq);
             UpdateQueriesMessage updateMessage = new UpdateQueriesMessage("", 0, queries);
             System.out.println("INFO: GossipGirl sending UpdateQueriesMessage");
             sendMessage(updateMessage);

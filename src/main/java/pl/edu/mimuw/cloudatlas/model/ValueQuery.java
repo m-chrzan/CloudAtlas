@@ -28,24 +28,30 @@ public class ValueQuery extends Value {
      */
     public ValueQuery(String query) throws Exception {
         this.code = query;
-        Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
-        this.query = (new parser(lex)).pProgram();
+        if (!query.isEmpty()) {
+            Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
+            this.query = (new parser(lex)).pProgram();
+        }
         this.signature = null;
         this.timestamp = System.currentTimeMillis();
     }
 
     public ValueQuery(String query, byte[] querySignature) throws Exception {
         this.code = query;
-        Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
-        this.query = (new parser(lex)).pProgram();
+        if (!query.isEmpty()) {
+            Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
+            this.query = (new parser(lex)).pProgram();
+        }
         this.signature = querySignature;
         this.timestamp = System.currentTimeMillis();
     }
 
     public ValueQuery(QueryData queryData) throws Exception {
         this.code = queryData.getCode();
-        Yylex lex = new Yylex(new ByteArrayInputStream(queryData.getCode().getBytes()));
-        this.query = (new parser(lex)).pProgram();
+        if (!queryData.getCode().isEmpty()) {
+            Yylex lex = new Yylex(new ByteArrayInputStream(queryData.getCode().getBytes()));
+            this.query = (new parser(lex)).pProgram();
+        }
         this.signature = queryData.getSignature();
         this.timestamp = System.currentTimeMillis();
     }

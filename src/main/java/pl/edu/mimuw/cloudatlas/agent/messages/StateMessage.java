@@ -13,10 +13,10 @@ import pl.edu.mimuw.cloudatlas.model.ZMI;
 
 public class StateMessage extends ResponseMessage {
     private ZMI zmi;
-    private Map<Attribute, Entry<ValueQuery, ValueTime>> queries;
+    private Map<Attribute, ValueQuery> queries;
     private Set<ValueContact> contacts;
 
-    public StateMessage(String messageId, ModuleType destinationModule, long timestamp, long requestId, ZMI zmi, Map<Attribute, Entry<ValueQuery, ValueTime>> queries, Set<ValueContact> contacts) {
+    public StateMessage(String messageId, ModuleType destinationModule, long timestamp, long requestId, ZMI zmi, Map<Attribute, ValueQuery> queries, Set<ValueContact> contacts) {
         super(messageId, destinationModule, timestamp, Type.STATE, requestId);
         this.zmi = zmi;
         this.queries = queries;
@@ -29,7 +29,7 @@ public class StateMessage extends ResponseMessage {
         return zmi;
     }
 
-    public Map<Attribute, Entry<ValueQuery, ValueTime>> getQueries() {
+    public Map<Attribute, ValueQuery> getQueries() {
         return queries;
     }
 
