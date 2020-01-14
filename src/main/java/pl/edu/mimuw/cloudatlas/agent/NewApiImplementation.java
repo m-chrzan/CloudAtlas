@@ -1,9 +1,8 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
-import java.io.PrintStream;
-
 import java.rmi.RemoteException;
 
+import java.security.PublicKey;
 import java.util.concurrent.CompletableFuture;
 import java.util.List;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -12,22 +11,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.*;
-import pl.edu.mimuw.cloudatlas.interpreter.Interpreter;
-import pl.edu.mimuw.cloudatlas.interpreter.InterpreterException;
-import pl.edu.mimuw.cloudatlas.interpreter.Main;
-import pl.edu.mimuw.cloudatlas.interpreter.QueryResult;
 import pl.edu.mimuw.cloudatlas.model.*;
 import pl.edu.mimuw.cloudatlas.api.Api;
+import pl.edu.mimuw.cloudatlas.querysigner.*;
 
 public class NewApiImplementation implements Api {
     private EventBus eventBus;
+    private PublicKey publicKey;
 
     public NewApiImplementation(EventBus eventBus) {
         this.eventBus = eventBus;
+        String publicKeyFile = System.getProperty("public_key_file");
+        publicKey = KeyUtils.getPublicKey(publicKeyFile);
     }
 
     public Set<String> getZoneSet() throws RemoteException {
@@ -41,7 +38,7 @@ public class NewApiImplementation implements Api {
                 StateMessage stateMessage = (StateMessage) response;
                 Set<String> zones = new HashSet<String>();
                 collectZoneNames(stateMessage.getZMI(), zones);
-                return zones;
+                return zones;   
             } else {
                 System.out.println("ERROR: getZoneSet didn't receive a StateMessage");
                 throw new Exception("Failed to retrieve zone set");
@@ -79,18 +76,14 @@ public class NewApiImplementation implements Api {
         }
     }
 
-    public void installQuery(String name, String queryCode) throws RemoteException {
-        Pattern queryNamePattern = Pattern.compile("&[a-zA-Z][\\w_]*");
-        Matcher matcher = queryNamePattern.matcher(name);
-        if (!matcher.matches()) {
-            throw new RemoteException("Invalid query identifier");
-        }
+    public void installQuery(String name, QueryData query) throws RemoteException {
         try {
-            ValueQuery query = new ValueQuery(queryCode);
+            QueryUtils.validateQueryName(name);
+            QuerySignerApiImplementation.validateInstallQuery(name, query, this.publicKey);
             Attribute attributeName = new Attribute(name);
             ValueTime timestamp = new ValueTime(System.currentTimeMillis());
-            Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
-            queries.put(attributeName, new SimpleImmutableEntry(query, timestamp));
+            Map<Attribute, ValueQuery> queries = new HashMap();
+            queries.put(attributeName, new ValueQuery(query));
             UpdateQueriesMessage message = new UpdateQueriesMessage("", 0, queries);
             eventBus.addMessage(message);
         } catch (Exception e) {
@@ -98,12 +91,14 @@ public class NewApiImplementation implements Api {
         }
     }
 
-    public void uninstallQuery(String queryName) throws RemoteException {
+    public void uninstallQuery(String queryName, QueryData query) throws RemoteException {
         try {
+            QueryUtils.validateQueryName(queryName);
+            QuerySignerApiImplementation.validateUninstallQuery(queryName, query, this.publicKey);
             Attribute attributeName = new Attribute(queryName);
             ValueTime timestamp = new ValueTime(System.currentTimeMillis());
-            Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
-            queries.put(attributeName, new SimpleImmutableEntry(null, timestamp));
+            Map<Attribute, ValueQuery> queries = new HashMap();
+            queries.put(attributeName, new ValueQuery(query));
             UpdateQueriesMessage message = new UpdateQueriesMessage("", 0, queries);
             eventBus.addMessage(message);
         } catch (Exception e) {

@@ -59,8 +59,8 @@ public class Qurnik extends Module {
 
     private void runQueriesOnState(StateMessage message) throws InterruptedException {
         List<ValueQuery> queries = new LinkedList();
-        for (Entry<ValueQuery, ValueTime> timestampedQuery : message.getQueries().values()) {
-            queries.add(timestampedQuery.getKey());
+        for (ValueQuery timestampedQuery : message.getQueries().values()) {
+            queries.add(timestampedQuery);
         }
         executeAllQueries(message.getZMI(), queries, PathName.ROOT);
     }
@@ -80,7 +80,7 @@ public class Qurnik extends Module {
             Interpreter interpreter = new Interpreter(zmi);
             AttributesMap newAttributes = new AttributesMap();
             for (ValueQuery query : queries) {
-                if (query != null) {
+                if (query != null && query.isInstalled()) {
                     try {
                         List<QueryResult> result = interpreter.interpretProgram(query.getQuery());
                         for(QueryResult r : result) {

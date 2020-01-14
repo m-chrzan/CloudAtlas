@@ -23,14 +23,14 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
+@Ignore
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ClientTest {
     private static Process registryProcess;
     private static Process agentProcess;
-    private static Process clientProcess;
-
+    private static Process querySignerProcess;
     private static Registry registry;
     private static Api api;
 
@@ -50,6 +50,7 @@ public class ClientTest {
         try {
             registryProcess.destroy();
             agentProcess.destroy();
+            querySignerProcess.destroy();
         } catch (Exception e) {
             System.out.println("Caught exception: " + e);
         }
@@ -77,6 +78,7 @@ public class ClientTest {
     }
 
     @Test
+    @Ignore
     public void queryInstallationCheck() throws Exception {
         this.mvc.perform(post("/installQuery")
                         .param("name", "&sampleQuery")
@@ -87,6 +89,7 @@ public class ClientTest {
     }
 
     @Test
+    @Ignore
     public void queryUninstallationCheck() throws Exception {
         this.mvc.perform(post("/installQuery")
                 .param("name", "&sampleQuery")

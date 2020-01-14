@@ -1,12 +1,21 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import java.nio.file.Path;
+import java.rmi.RemoteException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.util.*;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map.Entry;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.*;
 import pl.edu.mimuw.cloudatlas.model.*;
+import pl.edu.mimuw.cloudatlas.querysigner.*;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class Stanik extends Module {
     private class InvalidUpdateAttributesMessage extends Exception {
@@ -16,21 +25,24 @@ public class Stanik extends Module {
     }
 
     private ZMI hierarchy;
-    private HashMap<Attribute, Entry<ValueQuery, ValueTime>> queries;
+    private HashMap<Attribute, ValueQuery> queries;
     private long freshnessPeriod;
     private Set<ValueContact> contacts;
     private ValueTime contactsTimestamp;
     private PathName ourPath;
+    private PublicKey publicKey;
 
     public Stanik(PathName ourPath, long freshnessPeriod) {
         super(ModuleType.STATE);
         this.ourPath = ourPath;
         hierarchy = new ZMI();
-        queries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
+        queries = new HashMap<Attribute, ValueQuery>();
         hierarchy.getAttributes().add("timestamp", new ValueTime(0l));
         this.freshnessPeriod = freshnessPeriod;
         this.contactsTimestamp = ValueUtils.currentTime();
         this.contacts = new HashSet<>();
+        String publicKeyFile = System.getProperty("public_key_file");
+        this.publicKey = KeyUtils.getPublicKey(publicKeyFile);
         setDefaultQueries();
     }
 
@@ -45,7 +57,7 @@ public class Stanik extends Module {
     private void setDefaultQuery(String name, String query) {
         try {
             ValueQuery queryValue = new ValueQuery(query);
-            queries.put(new Attribute(name), new SimpleImmutableEntry(queryValue, new ValueTime(0l)));
+            queries.put(new Attribute(name), queryValue);
         } catch (Exception e) {
             System.out.println("ERROR: failed to compile default query");
         }
@@ -89,7 +101,7 @@ public class Stanik extends Module {
             0,
             message.getRequestId(),
             hierarchy.clone(),
-            (HashMap<Attribute, Entry<ValueQuery, ValueTime>>) queries.clone(),
+            (HashMap<Attribute, ValueQuery>) queries.clone(),
             contacts
         );
         sendMessage(response);
@@ -210,11 +222,32 @@ public class Stanik extends Module {
     }
 
     public void handleUpdateQueries(UpdateQueriesMessage message) {
-        for (Entry<Attribute, Entry<ValueQuery, ValueTime>> entry : message.getQueries().entrySet()) {
+        System.out.println("INFO: Stanik handles update queries");
+        for (Entry<Attribute, ValueQuery> entry : message.getQueries().entrySet()) {
             Attribute attribute = entry.getKey();
-            ValueTime timestamp = entry.getValue().getValue();
-            Entry<ValueQuery, ValueTime> currentTimestampedQuery = queries.get(attribute);
-            if (currentTimestampedQuery == null || ValueUtils.valueLower(currentTimestampedQuery.getValue(), timestamp)) {
+            ValueQuery query = entry.getValue();
+            try {
+                if (query.isInstalled()) {
+                        QuerySignerApiImplementation.validateInstallQuery(
+                                attribute.getName(),
+                                QueryUtils.constructQueryData(query),
+                                this.publicKey);
+
+                } else {
+                    QuerySignerApiImplementation.validateUninstallQuery(
+                            attribute.getName(),
+                            QueryUtils.constructQueryData(query),
+                            this.publicKey);
+                }
+            } catch (RemoteException | IllegalBlockSizeException | InvalidKeyException | BadPaddingException | NoSuchAlgorithmException | NoSuchPaddingException | QuerySigner.InvalidQueryException e) {
+                System.out.println("ERROR: Query " + attribute.getName() + " was not updated in Stanik with error message " + e.getMessage());
+                e.printStackTrace();
+                continue;
+            }
+            ValueTime timestamp = new ValueTime(entry.getValue().getTimestamp());
+            ValueQuery currentTimestampedQuery = queries.get(attribute);
+            if (currentTimestampedQuery == null ||
+                    ValueUtils.valueLower(new ValueTime(currentTimestampedQuery.getTimestamp()), timestamp)) {
                 queries.put(entry.getKey(), entry.getValue());
             }
         }
@@ -273,7 +306,7 @@ public class Stanik extends Module {
         return hierarchy;
     }
 
-    public HashMap<Attribute, Entry<ValueQuery, ValueTime>> getQueries() {
+    public HashMap<Attribute, ValueQuery> getQueries() {
         return queries;
     }
 

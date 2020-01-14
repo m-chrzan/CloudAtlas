@@ -47,7 +47,7 @@ public class GossipGirlState {
     public long timeOffest;
     public State state;
     public ZMI hierarchy;
-    public Map<Attribute, Entry<ValueQuery, ValueTime>> queries;
+    public Map<Attribute, ValueQuery> queries;
     public ValueTime hejkaSendTimestamp;
     public ValueTime hejkaReceiveTimestamp;
     public ValueTime noCoTamSendTimestamp;
@@ -79,7 +79,7 @@ public class GossipGirlState {
         lastAction = ValueUtils.currentTime();
     }
 
-    public void setState(ZMI hierarchy, Map<Attribute, Entry<ValueQuery, ValueTime>> queries) {
+    public void setState(ZMI hierarchy, Map<Attribute, ValueQuery> queries) {
         switch (state) {
             case WAIT_FOR_STATE_INITIALIZER:
                 this.hierarchy = hierarchy;
@@ -211,8 +211,8 @@ public class GossipGirlState {
 
     public Map<Attribute, ValueTime> getQueryTimestampsToSend() {
         Map<Attribute, ValueTime> queryTimestamps= new HashMap();
-        for (Entry<Attribute, Entry<ValueQuery, ValueTime>> query : queries.entrySet()) {
-            queryTimestamps.put(query.getKey(), query.getValue().getValue());
+        for (Entry<Attribute, ValueQuery> query : queries.entrySet()) {
+            queryTimestamps.put(query.getKey(), new ValueTime(query.getValue().getTimestamp()));
         }
 
         return queryTimestamps;
@@ -259,7 +259,7 @@ public class GossipGirlState {
             queryList.add(
                 new SimpleImmutableEntry(
                     name,
-                    queries.get(name).getKey()
+                    queries.get(name)
                 )
             );
         }

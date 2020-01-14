@@ -51,7 +51,7 @@ public class GossipGirlTest {
     private InitiateGossipMessage initiateGossipMessage;
     private ValueTime testTime;
     private ZMI initiatorHierarchy;
-    private Map<Attribute, Entry<ValueQuery, ValueTime>> initiatorQueries;
+    private Map<Attribute, ValueQuery> initiatorQueries;
     private StateMessage stateMessage;
     private NoCoTamMessage noCoTamMessage;
     private AttributesMessage attributesMessage1;
@@ -170,10 +170,10 @@ public class GossipGirlTest {
         addQuery(initiatorQueries, "&query", "SELECT sum(foo) AS foo", testTime);
     }
 
-    public void addQuery(Map<Attribute, Entry<ValueQuery, ValueTime>> queries, String name, String query, ValueTime timestamp) throws Exception {
+    public void addQuery(Map<Attribute, ValueQuery> queries, String name, String query, ValueTime timestamp) throws Exception {
         queries.put(
                 new Attribute(name),
-                new SimpleImmutableEntry(new ValueQuery(query), timestamp)
+                new ValueQuery(query, timestamp.getValue())
         );
     }
 
@@ -291,10 +291,7 @@ public class GossipGirlTest {
         assertEquals(1, updateMessage2.getQueries().keySet().size());
         assertThat(updateMessage2.getQueries().keySet(), hasItems(new Attribute("&one")));
         assertEquals(updateMessage2.getQueries().get(new Attribute("&one")),
-                new SimpleImmutableEntry(
-                    new ValueQuery("SELECT 3 AS one"),
-                    ValueUtils.addToTime(testTime, 10)
-                )
+                new ValueQuery("SELECT 3 AS one", ValueUtils.addToTime(testTime, 10).getValue())
         );
 
         gossipGirl.handleTyped(attributesMessage2);
@@ -402,10 +399,7 @@ public class GossipGirlTest {
         assertEquals(1, updateMessage2.getQueries().keySet().size());
         assertThat(updateMessage2.getQueries().keySet(), hasItems(new Attribute("&one")));
         assertEquals(updateMessage2.getQueries().get(new Attribute("&one")),
-                new SimpleImmutableEntry(
-                    new ValueQuery("SELECT 3 AS one"),
-                    ValueUtils.addToTime(testTime, 10)
-                )
+                    new ValueQuery("SELECT 3 AS one", ValueUtils.addToTime(testTime, 10).getValue())
         );
 
         gossipGirl.handleTyped(attributesMessage2);

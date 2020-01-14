@@ -8,16 +8,16 @@ import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 
 public class UpdateQueriesMessage extends StanikMessage {
-    private Map<Attribute, Entry<ValueQuery, ValueTime>> queries;
+    private Map<Attribute, ValueQuery> queries;
 
-    public UpdateQueriesMessage(String messageId, long timestamp, Map<Attribute, Entry<ValueQuery, ValueTime>> queries) {
+    public UpdateQueriesMessage(String messageId, long timestamp, Map<Attribute, ValueQuery> queries) {
         super(messageId, timestamp, Type.UPDATE_QUERIES);
         this.queries = queries;
     }
 
     public UpdateQueriesMessage() {}
 
-    public Map<Attribute, Entry<ValueQuery, ValueTime>> getQueries() {
+    public Map<Attribute, ValueQuery> getQueries() {
         return queries;
     }
 }

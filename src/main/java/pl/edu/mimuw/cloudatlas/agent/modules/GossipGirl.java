@@ -26,6 +26,7 @@ import pl.edu.mimuw.cloudatlas.model.ValueContact;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
+import pl.edu.mimuw.cloudatlas.querysigner.QuerySignerApiImplementation;
 
 public class GossipGirl extends Module {
     private long nextGossipId = 0;
@@ -200,11 +201,9 @@ public class GossipGirl extends Module {
             System.out.println("INFO: handling Query in " + Long.toString(message.getReceiverGossipId()));
             state.setLastAction();
             state.gotQuery(message);
-            Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
-            queries.put(
-                message.getName(),
-                new SimpleImmutableEntry(message.getQuery(), state.getTheirQueryTimestamp(message.getName()))
-            );
+            Map<Attribute, ValueQuery> queries = new HashMap();
+            ValueQuery vq = message.getQuery();
+            queries.put(message.getName(), vq);
             UpdateQueriesMessage updateMessage = new UpdateQueriesMessage("", 0, queries);
             System.out.println("INFO: GossipGirl sending UpdateQueriesMessage");
             sendMessage(updateMessage);
