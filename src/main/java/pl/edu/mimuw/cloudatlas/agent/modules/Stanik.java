@@ -226,23 +226,28 @@ public class Stanik extends Module {
         for (Entry<Attribute, ValueQuery> entry : message.getQueries().entrySet()) {
             Attribute attribute = entry.getKey();
             ValueQuery query = entry.getValue();
-            try {
-                if (query.isInstalled()) {
+            System.out.println(query.getSignature());
+            System.out.println(query);
+            System.out.println(query.getCode());
+            if (!attribute.getName().equals("&cardinality") && ! attribute.getName().equals("&contacts")) {
+                try {
+                    if (query.isInstalled()) {
                         QuerySignerApiImplementation.validateInstallQuery(
                                 attribute.getName(),
                                 QueryUtils.constructQueryData(query),
                                 this.publicKey);
 
-                } else {
-                    QuerySignerApiImplementation.validateUninstallQuery(
-                            attribute.getName(),
-                            QueryUtils.constructQueryData(query),
-                            this.publicKey);
+                    } else {
+                        QuerySignerApiImplementation.validateUninstallQuery(
+                                attribute.getName(),
+                                QueryUtils.constructQueryData(query),
+                                this.publicKey);
+                    }
+                } catch (RemoteException | IllegalBlockSizeException | InvalidKeyException | BadPaddingException | NoSuchAlgorithmException | NoSuchPaddingException | QuerySigner.InvalidQueryException e) {
+                    System.out.println("ERROR: Query " + attribute.getName() + " was not updated in Stanik with error message " + e.getMessage());
+                    e.printStackTrace();
+                    continue;
                 }
-            } catch (RemoteException | IllegalBlockSizeException | InvalidKeyException | BadPaddingException | NoSuchAlgorithmException | NoSuchPaddingException | QuerySigner.InvalidQueryException e) {
-                System.out.println("ERROR: Query " + attribute.getName() + " was not updated in Stanik with error message " + e.getMessage());
-                e.printStackTrace();
-                continue;
             }
             ValueTime timestamp = new ValueTime(entry.getValue().getTimestamp());
             ValueQuery currentTimestampedQuery = queries.get(attribute);
