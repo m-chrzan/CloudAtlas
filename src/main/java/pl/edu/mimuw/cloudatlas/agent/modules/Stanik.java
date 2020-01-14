@@ -215,8 +215,8 @@ public class Stanik extends Module {
             Attribute attribute = entry.getKey();
             ValueTime timestamp = new ValueTime(entry.getValue().getTimestamp());
             ValueQuery currentTimestampedQuery = queries.get(attribute);
-            ValueTime currentQueryTimestamp = new ValueTime(currentTimestampedQuery.getTimestamp());
-            if (currentQueryTimestamp == null || ValueUtils.valueLower(currentQueryTimestamp, timestamp)) {
+            if (currentTimestampedQuery == null ||
+                    ValueUtils.valueLower(new ValueTime(currentTimestampedQuery.getTimestamp()), timestamp)) {
                 queries.put(entry.getKey(), entry.getValue());
             }
         }

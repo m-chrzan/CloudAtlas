@@ -56,6 +56,16 @@ public class ValueQuery extends Value {
         this.timestamp = System.currentTimeMillis();
     }
 
+    public ValueQuery(String query, long timestamp) throws Exception {
+        this.code = query;
+        if (!query.isEmpty()) {
+            Yylex lex = new Yylex(new ByteArrayInputStream(query.getBytes()));
+            this.query = (new parser(lex)).pProgram();
+        }
+        this.signature = null;
+        this.timestamp = timestamp;
+    }
+
     private ValueQuery() {
         this.code = null;
         this.query = null;
