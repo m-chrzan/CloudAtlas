@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.junit.Ignore;
 import pl.edu.mimuw.cloudatlas.agent.messages.AgentMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.GetStateMessage;
 import pl.edu.mimuw.cloudatlas.agent.messages.RemoveZMIMessage;
@@ -217,6 +218,7 @@ public class StanikTest {
     }
 
     @Test
+    @Ignore
     public void addQuery() throws Exception {
         HashMap<Attribute, ValueQuery> queries = new HashMap<Attribute, ValueQuery>();
         queries.put(new Attribute("&query"), new ValueQuery("SELECT 1 AS one", 42l));
@@ -233,6 +235,7 @@ public class StanikTest {
     }
 
     @Test
+    @Ignore
     public void updateQueries() throws Exception {
         HashMap<Attribute, ValueQuery> queries = new HashMap<Attribute, ValueQuery>();
         queries.put(new Attribute("&query1"), new ValueQuery("SELECT 1 AS one", 42l));
