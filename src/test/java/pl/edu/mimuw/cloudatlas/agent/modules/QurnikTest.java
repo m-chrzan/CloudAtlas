@@ -56,13 +56,10 @@ public class QurnikTest {
         root.addSon(son);
         AttributesMap sonAttributes = new AttributesMap();
         sonAttributes.add("name", new ValueString("son"));
-        Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
+        Map<Attribute, ValueQuery> queries = new HashMap();
         queries.put(
                 new Attribute("&query"),
-                new SimpleImmutableEntry(
-                    new ValueQuery("SELECT 1 AS one"),
-                    new ValueTime(0l)
-                )
+                new ValueQuery("SELECT 1 AS one")
         );
         StateMessage message = new StateMessage("", ModuleType.QUERY, 0, 0, root, queries, new HashSet());
         long timeBefore = System.currentTimeMillis();
@@ -122,43 +119,28 @@ public class QurnikTest {
         return root;
     }
 
-    public Map<Attribute, Entry<ValueQuery, ValueTime>> setupSampleQueries() throws Exception {
-        Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
+    public Map<Attribute, ValueQuery> setupSampleQueries() throws Exception {
+        Map<Attribute, ValueQuery> queries = new HashMap();
 
         queries.put(
                 new Attribute("&query1"),
-                new SimpleImmutableEntry(
-                    new ValueQuery("SELECT sum(x) AS x"),
-                    new ValueTime(0l)
-                )
+                new ValueQuery("SELECT sum(x) AS x")
         );
         queries.put(
                 new Attribute("&query2"),
-                new SimpleImmutableEntry(
-                    new ValueQuery("SELECT min(y) AS y"),
-                    new ValueTime(0l)
-                )
+                new ValueQuery("SELECT min(y) AS y")
         );
         queries.put(
                 new Attribute("&query3"),
-                new SimpleImmutableEntry(
-                    new ValueQuery("SELECT max(z) AS z"),
-                    new ValueTime(0l)
-                )
+                new ValueQuery("SELECT max(z) AS z")
         );
         queries.put(
                 new Attribute("&query4"),
-                new SimpleImmutableEntry(
-                    new ValueQuery("SELECT sum(a + 1) AS a"),
-                    new ValueTime(0l)
-                )
+                new ValueQuery("SELECT sum(a + 1) AS a")
         );
         queries.put(
                 new Attribute("&query5"),
-                new SimpleImmutableEntry(
-                    new ValueQuery("SELECT sum(2 * b) AS b"),
-                    new ValueTime(0l)
-                )
+                new ValueQuery("SELECT sum(2 * b) AS b")
         );
 
         return queries;
@@ -168,7 +150,7 @@ public class QurnikTest {
     public void multipleQueries() throws Exception {
         ZMI root = setupSampleHierarchy();
 
-        Map<Attribute, Entry<ValueQuery, ValueTime>> queries = setupSampleQueries();
+        Map<Attribute, ValueQuery> queries = setupSampleQueries();
         StateMessage message = new StateMessage("", ModuleType.QUERY, 0, 0, root, queries, new HashSet());
         long timeBefore = System.currentTimeMillis();
         qurnik.handleTyped(message);
@@ -209,22 +191,10 @@ public class QurnikTest {
     public void ignoresNullQueries() throws Exception {
         ZMI root = setupSampleHierarchy();
 
-        Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
-        queries.put(new Attribute("&query1"), new SimpleImmutableEntry(
-                    new ValueQuery("SELECT 1 AS one"),
-                    new ValueTime(42l)
-                )
-        );
-        queries.put(new Attribute("&query2"), new SimpleImmutableEntry(
-                    null,
-                    new ValueTime(43l)
-                )
-        );
-        queries.put(new Attribute("&query3"), new SimpleImmutableEntry(
-                    new ValueQuery("SELECT 2 AS two"),
-                    new ValueTime(44l)
-                )
-        );
+        Map<Attribute, ValueQuery> queries = new HashMap();
+        queries.put(new Attribute("&query1"), new ValueQuery("SELECT 1 AS one"));
+        queries.put(new Attribute("&query2"), null);
+        queries.put(new Attribute("&query3"), new ValueQuery("SELECT 2 AS two"));
         StateMessage message = new StateMessage("", ModuleType.QUERY, 0, 0, root, queries, new HashSet());
         long timeBefore = System.currentTimeMillis();
         qurnik.handleTyped(message);

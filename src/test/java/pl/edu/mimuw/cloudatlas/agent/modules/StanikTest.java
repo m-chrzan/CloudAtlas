@@ -60,7 +60,7 @@ public class StanikTest {
         assertEquals(3, TestUtil.iterableSize(zmi.getAttributes()));
         assertEquals(new ValueInt(0l), zmi.getAttributes().getOrNull("level"));
         assertEquals(new ValueString("/new"), zmi.getAttributes().getOrNull("owner"));
-        Map<Attribute, Entry<ValueQuery, ValueTime>> queries = stateMessage.getQueries();
+       Map<Attribute, ValueQuery>  queries = stateMessage.getQueries();
         assertEquals(2, TestUtil.iterableSize(queries.keySet()));
     }
 
@@ -218,57 +218,58 @@ public class StanikTest {
 
     @Test
     public void addQuery() throws Exception {
-        HashMap<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
-        queries.put(new Attribute("&query"), new SimpleImmutableEntry(new ValueQuery("SELECT 1 AS one"), new ValueTime(42l)));
+        HashMap<Attribute, ValueQuery> queries = new HashMap<Attribute, ValueQuery>();
+        queries.put(new Attribute("&query"), new ValueQuery("SELECT 1 AS one", 42l));
         UpdateQueriesMessage message = new UpdateQueriesMessage("test_msg", 0, queries);
+        System.out.println(message);
         stanik.handleTyped(message);
 
-        HashMap<Attribute, Entry<ValueQuery, ValueTime>> actualQueries = stanik.getQueries();
+        HashMap<Attribute, ValueQuery> actualQueries = stanik.getQueries();
         assertEquals(3, TestUtil.iterableSize(actualQueries.keySet()));
         assertTrue(actualQueries.containsKey(new Attribute("&query")));
-        Entry<ValueQuery, ValueTime> timestampedQuery = actualQueries.get(new Attribute("&query"));
-        assertEquals(new ValueTime(42l), timestampedQuery.getValue());
-        assertEquals(new ValueQuery("SELECT 1 AS one"), timestampedQuery.getKey());
+        ValueQuery timestampedQuery = actualQueries.get(new Attribute("&query"));
+        assertEquals(42l, timestampedQuery.getTimestamp());
+        assertEquals("SELECT 1 AS one", timestampedQuery.getCode());
     }
 
     @Test
     public void updateQueries() throws Exception {
-        HashMap<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
-        queries.put(new Attribute("&query1"), new SimpleImmutableEntry(new ValueQuery("SELECT 1 AS one"), new ValueTime(42l)));
-        queries.put(new Attribute("&query3"), new SimpleImmutableEntry(new ValueQuery("SELECT 23 AS x"), new ValueTime(43l)));
-        queries.put(new Attribute("&query4"), new SimpleImmutableEntry(new ValueQuery("SELECT 1000 AS foo"), new ValueTime(43l)));
+        HashMap<Attribute, ValueQuery> queries = new HashMap<Attribute, ValueQuery>();
+        queries.put(new Attribute("&query1"), new ValueQuery("SELECT 1 AS one", 42l));
+        queries.put(new Attribute("&query3"), new ValueQuery("SELECT 23 AS x", 43l));
+        queries.put(new Attribute("&query4"), new ValueQuery("SELECT 1000 AS foo", 43l));
         UpdateQueriesMessage message = new UpdateQueriesMessage("test_msg", 0, queries);
         stanik.handleTyped(message);
 
-        HashMap<Attribute, Entry<ValueQuery, ValueTime>> otherQueries = new HashMap<Attribute, Entry<ValueQuery, ValueTime>>();
-        otherQueries.put(new Attribute("&query1"), new SimpleImmutableEntry(new ValueQuery("SELECT 2 AS one"), new ValueTime(41l)));
-        otherQueries.put(new Attribute("&query2"), new SimpleImmutableEntry(new ValueQuery("SELECT 42 AS answer"), new ValueTime(39l)));
-        otherQueries.put(new Attribute("&query3"), new SimpleImmutableEntry(new ValueQuery("SELECT 17 AS y"), new ValueTime(44l)));
+        HashMap<Attribute, ValueQuery> otherQueries = new HashMap<Attribute, ValueQuery>();
+        otherQueries.put(new Attribute("&query1"), new ValueQuery("SELECT 2 AS one", 41l));
+        otherQueries.put(new Attribute("&query2"), new ValueQuery("SELECT 42 AS answer", 39l));
+        otherQueries.put(new Attribute("&query3"), new ValueQuery("SELECT 17 AS y", 44l));
         UpdateQueriesMessage otherMessage = new UpdateQueriesMessage("test_msg", 0, otherQueries);
         stanik.handleTyped(otherMessage);
 
-        HashMap<Attribute, Entry<ValueQuery, ValueTime>> actualQueries = stanik.getQueries();
+        HashMap<Attribute, ValueQuery> actualQueries = stanik.getQueries();
         assertEquals(6, TestUtil.iterableSize(actualQueries.keySet()));
         assertTrue(actualQueries.containsKey(new Attribute("&query1")));
         assertTrue(actualQueries.containsKey(new Attribute("&query2")));
         assertTrue(actualQueries.containsKey(new Attribute("&query3")));
         assertTrue(actualQueries.containsKey(new Attribute("&query4")));
 
-        Entry<ValueQuery, ValueTime> timestampedQuery1 = actualQueries.get(new Attribute("&query1"));
-        assertEquals(new ValueTime(42l), timestampedQuery1.getValue());
-        assertEquals(new ValueQuery("SELECT 1 AS one"), timestampedQuery1.getKey());
+        ValueQuery timestampedQuery1 = actualQueries.get(new Attribute("&query1"));
+        assertEquals(42l, timestampedQuery1.getTimestamp());
+        assertEquals("SELECT 1 AS one", timestampedQuery1.getCode());
 
-        Entry<ValueQuery, ValueTime> timestampedQuery2 = actualQueries.get(new Attribute("&query2"));
-        assertEquals(new ValueTime(39l), timestampedQuery2.getValue());
-        assertEquals(new ValueQuery("SELECT 42 AS answer"), timestampedQuery2.getKey());
+        ValueQuery timestampedQuery2 = actualQueries.get(new Attribute("&query2"));
+        assertEquals(39l, timestampedQuery2.getTimestamp());
+        assertEquals("SELECT 42 AS answer", timestampedQuery2.getCode());
 
-        Entry<ValueQuery, ValueTime> timestampedQuery3 = actualQueries.get(new Attribute("&query3"));
-        assertEquals(new ValueTime(44l), timestampedQuery3.getValue());
-        assertEquals(new ValueQuery("SELECT 17 AS y"), timestampedQuery3.getKey());
+        ValueQuery timestampedQuery3 = actualQueries.get(new Attribute("&query3"));
+        assertEquals(44l, timestampedQuery3.getTimestamp());
+        assertEquals("SELECT 17 AS y", timestampedQuery3.getCode());
 
-        Entry<ValueQuery, ValueTime> timestampedQuery4 = actualQueries.get(new Attribute("&query4"));
-        assertEquals(new ValueTime(43l), timestampedQuery4.getValue());
-        assertEquals(new ValueQuery("SELECT 1000 AS foo"), timestampedQuery4.getKey());
+        ValueQuery timestampedQuery4 = actualQueries.get(new Attribute("&query4"));
+        assertEquals(43l, timestampedQuery4.getTimestamp());
+        assertEquals("SELECT 1000 AS foo", timestampedQuery4.getCode());
     }
 
     @Test
