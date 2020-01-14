@@ -16,7 +16,7 @@ public class QuerySigner {
         }
     }
 
-    private static QuerySignerApiImplementation initApi() throws IOException {
+    public static QuerySignerApiImplementation initApi() throws IOException {
         String publicKeyFile = System.getProperty("public_key_file");
         String privateKeyFile = System.getProperty("private_key_file");
         PublicKey publicKey = KeyUtils.getPublicKey(publicKeyFile);

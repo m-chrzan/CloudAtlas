@@ -9,8 +9,4 @@ public interface QuerySignerApi extends Remote {
     public QueryData signInstallQuery(String queryName, String queryCode) throws RemoteException;
 
     public QueryData signUninstallQuery(String queryName) throws RemoteException;
-
-    public void validateInstallQuery(String queryName, QueryData query) throws RemoteException;
-
-    public void validateUninstallQuery(String queryName, QueryData query) throws RemoteException;
 }

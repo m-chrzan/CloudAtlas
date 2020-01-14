@@ -1,9 +1,8 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
-import java.io.PrintStream;
-
 import java.rmi.RemoteException;
 
+import java.security.PublicKey;
 import java.util.concurrent.CompletableFuture;
 import java.util.List;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -12,24 +11,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 import pl.edu.mimuw.cloudatlas.agent.messages.*;
-import pl.edu.mimuw.cloudatlas.interpreter.Interpreter;
-import pl.edu.mimuw.cloudatlas.interpreter.InterpreterException;
-import pl.edu.mimuw.cloudatlas.interpreter.Main;
-import pl.edu.mimuw.cloudatlas.interpreter.QueryResult;
 import pl.edu.mimuw.cloudatlas.model.*;
 import pl.edu.mimuw.cloudatlas.api.Api;
-import pl.edu.mimuw.cloudatlas.querysigner.QueryData;
-import pl.edu.mimuw.cloudatlas.querysigner.QueryUtils;
+import pl.edu.mimuw.cloudatlas.querysigner.*;
 
 public class NewApiImplementation implements Api {
     private EventBus eventBus;
+    private PublicKey publicKey;
 
     public NewApiImplementation(EventBus eventBus) {
         this.eventBus = eventBus;
+        String publicKeyFile = System.getProperty("public_key_file");
+        publicKey = KeyUtils.getPublicKey(publicKeyFile);
     }
 
     public Set<String> getZoneSet() throws RemoteException {
@@ -82,8 +77,9 @@ public class NewApiImplementation implements Api {
     }
 
     public void installQuery(String name, QueryData query) throws RemoteException {
-        QueryUtils.validateQueryName(name);
         try {
+            QueryUtils.validateQueryName(name);
+            QuerySignerApiImplementation.validateInstallQuery(name, query, this.publicKey);
             Attribute attributeName = new Attribute(name);
             ValueTime timestamp = new ValueTime(System.currentTimeMillis());
             Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();
