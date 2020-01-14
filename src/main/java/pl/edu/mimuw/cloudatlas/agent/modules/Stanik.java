@@ -226,10 +226,7 @@ public class Stanik extends Module {
         for (Entry<Attribute, ValueQuery> entry : message.getQueries().entrySet()) {
             Attribute attribute = entry.getKey();
             ValueQuery query = entry.getValue();
-            System.out.println(query.getSignature());
-            System.out.println(query);
-            System.out.println(query.getCode());
-            if (query.getSignature() != null && query.getSignature().length != 0) {
+            if (query.getSignature() != null) {
                 try {
                     if (query.isInstalled()) {
                         QuerySignerApiImplementation.validateInstallQuery(
