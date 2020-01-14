@@ -229,7 +229,7 @@ public class Stanik extends Module {
             System.out.println(query.getSignature());
             System.out.println(query);
             System.out.println(query.getCode());
-            if (!attribute.getName().equals("&cardinality") && ! attribute.getName().equals("&contacts")) {
+            if (query.getSignature() != null && query.getSignature().length != 0) {
                 try {
                     if (query.isInstalled()) {
                         QuerySignerApiImplementation.validateInstallQuery(
