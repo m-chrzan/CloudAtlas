@@ -5,12 +5,22 @@
 The agent, fetcher, and interpreter take an optional `-Dhostname=<agent's external hostname`
 argument, which defaults to `localhost`.
 
+### Query Signer
+    # start rmiregistry
+    ./scripts/registry
+    # generate keys
+    ./scripts/generate_keys.sh
+    # run Query Signer
+    ./gradlew runQuerySigner
+    
 ### API Agent
 
     # start rmiregistry
     ./scripts/registry
     # start agent to bind API
     ./gradlew runAgent
+
+Relies on keys generated during query signer setup.
 
 ### Client
 
