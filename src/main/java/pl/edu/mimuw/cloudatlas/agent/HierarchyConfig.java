@@ -79,7 +79,6 @@ public class HierarchyConfig {
         return selectContactFromSet(valueSet);
     }
 
-    // TODO
     private ValueContact selectFallbackContact(Set<ValueContact> contacts) throws Exception {
         if (contacts.isEmpty()) {
             return null;

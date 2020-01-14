@@ -11,9 +11,6 @@ import pl.edu.mimuw.cloudatlas.agent.modules.TimerScheduler;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-// TODO better task tests with counters after enabling messaging from tasks
-// TODO add wrong message test with switched types
-
 public class SchedulerTest {
     private HashMap<ModuleType, Module> modules;
     private HashMap<ModuleType, Executor> executors;

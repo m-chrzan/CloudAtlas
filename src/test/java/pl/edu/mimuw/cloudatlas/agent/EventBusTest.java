@@ -31,7 +31,6 @@ public class EventBusTest {
             @Override
             public void handle(AgentMessage event) throws InterruptedException {
                 System.out.println("Module 1 handle called");
-                // TODO correct message subclass
                 sendMessage(new AgentMessage("1", ModuleType.UDP) {});
                 counter ++;
             }
@@ -64,7 +63,6 @@ public class EventBusTest {
 
     @Test
     @Ignore
-    // TODO correct message subclass
     public void messageModule() throws InterruptedException {
         HashMap<ModuleType, Module> modules = initializeModule();
         HashMap<ModuleType, Executor> executors = Agent.initializeExecutors(modules);
@@ -82,7 +80,6 @@ public class EventBusTest {
 
     @Test
     @Ignore
-    // TODO correct message subclass
     public void messagingBetweenModules() throws InterruptedException {
         HashMap<ModuleType, Module> modules = initializeTwoModules();
         HashMap<ModuleType, Executor> executors = Agent.initializeExecutors(modules);

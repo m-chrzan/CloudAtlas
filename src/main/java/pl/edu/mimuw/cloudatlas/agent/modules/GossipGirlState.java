@@ -312,7 +312,6 @@ public class GossipGirlState {
                 }
                 break;
             case WAIT_FOR_FIRST_INFO:
-                // TODO: use offset to setup GTP
                 offset = message.getOffset();
                 setZonesToSend();
                 setQueriesToSend();
@@ -336,7 +335,6 @@ public class GossipGirlState {
     public void gotQuery(QueryMessage message) {
         switch (state) {
             case WAIT_FOR_FIRST_INFO:
-                // TODO: use offset to setup GTP
                 offset = message.getOffset();
                 setZonesToSend();
                 setQueriesToSend();

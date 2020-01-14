@@ -13,7 +13,6 @@ import java.util.Timer;
  * Handle used to attach tasks to schedule
  * Tasks declared as inherited from TimerTask
  *
- * TODO: add request id and custom time
  */
 public class TimerScheduler extends Module {
     private Timer timer;
@@ -37,7 +36,6 @@ public class TimerScheduler extends Module {
         System.out.println("Task with delay " + msg.getDelay() + " scheduled");
     }
 
-    // TODO
     public void removeTask(String requestId) {}
 
     public void passMessageFromTask(AgentMessage msg) throws InterruptedException {

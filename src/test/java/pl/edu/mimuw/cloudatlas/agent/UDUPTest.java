@@ -18,8 +18,6 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-// TODO add serialization tests that target custom serializers (type collections!)
-
 @Ignore
 public class UDUPTest {
 
