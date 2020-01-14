@@ -38,7 +38,7 @@ public class NewApiImplementation implements Api {
                 StateMessage stateMessage = (StateMessage) response;
                 Set<String> zones = new HashSet<String>();
                 collectZoneNames(stateMessage.getZMI(), zones);
-                return zones;
+                return zones;   
             } else {
                 System.out.println("ERROR: getZoneSet didn't receive a StateMessage");
                 throw new Exception("Failed to retrieve zone set");
@@ -92,8 +92,9 @@ public class NewApiImplementation implements Api {
     }
 
     public void uninstallQuery(String queryName, QueryData query) throws RemoteException {
-        QueryUtils.validateQueryName(queryName);
         try {
+            QueryUtils.validateQueryName(queryName);
+            QuerySignerApiImplementation.validateUninstallQuery(queryName, query, this.publicKey);
             Attribute attributeName = new Attribute(queryName);
             ValueTime timestamp = new ValueTime(System.currentTimeMillis());
             Map<Attribute, Entry<ValueQuery, ValueTime>> queries = new HashMap();

@@ -18,7 +18,7 @@ import java.security.PublicKey;
 public class QuerySignerApiImplementationTest {
 
     @Test
-    public void testQueryVerification() {
+    public void testQueryInstallVerification() {
         QuerySignerApiImplementation queryApi;
 
         try {
@@ -29,21 +29,24 @@ public class QuerySignerApiImplementationTest {
             queryApi = new QuerySignerApiImplementation(publicKey, privateKey);
             QueryData signedQuery = queryApi.signInstallQuery("&a", "SELECT 1 AS ONE");
             QuerySignerApiImplementation.validateInstallQuery("&a", signedQuery, publicKey);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (QuerySigner.InvalidQueryException e) {
+        } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | QuerySigner.InvalidQueryException e) {
             e.printStackTrace();
         }
+    }
 
+    @Test
+    public void testQueryUninstallVerification() {
+        QuerySignerApiImplementation queryApi;
+        try {
+            String publicKeyFile = "build/tmp/query_signer.pub";
+            String privateKeyFile = "build/tmp/query_signer";
+            PublicKey publicKey = KeyUtils.getPublicKey(publicKeyFile);
+            PrivateKey privateKey = KeyUtils.getPrivateKey(privateKeyFile);
+            queryApi = new QuerySignerApiImplementation(publicKey, privateKey);
+            QueryData signedQuery = queryApi.signUninstallQuery("&a");
+            QuerySignerApiImplementation.validateUninstallQuery("&a", signedQuery, publicKey);
+        } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | QuerySigner.InvalidQueryException e) {
+            e.printStackTrace();
+        }
     }
 }

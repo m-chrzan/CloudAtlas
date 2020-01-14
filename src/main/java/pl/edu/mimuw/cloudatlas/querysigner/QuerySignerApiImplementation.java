@@ -75,16 +75,19 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
         return digest;
     }
 
-    private static byte[] serializeQuery(String queryName, String queryCode) {
+    private static byte[] serializeQuery(String queryName, String queryCode, Boolean install) {
         ByteSerializer byteSerializer = new ByteSerializer();
-        return byteSerializer.serialize(queryName + queryCode);
+        if (install) {
+            return byteSerializer.serialize(queryName + queryCode + install.toString());
+        } else {
+            return byteSerializer.serialize(queryName + install.toString());
+        }
     }
 
-    @Override
-    public QueryData signInstallQuery(String queryName, String queryCode) throws RemoteException {
+    private QueryData signQuery(String queryName, String queryCode, Boolean install) throws RemoteException {
         QueryUtils.validateQueryName(queryName);
         try {
-            byte[] serializedQuery = serializeQuery(queryName, queryCode);
+            byte[] serializedQuery = serializeQuery(queryName, queryCode, install);
             byte[] hashedQuery = cryptographicHash(serializedQuery);
             byte[] querySignature = encryptQuery(hashedQuery);
             return new QueryData(queryCode, querySignature);
@@ -94,10 +97,19 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
         }
     }
 
+    @Override
+    public QueryData signInstallQuery(String queryName, String queryCode) throws RemoteException {
+        return signQuery(queryName, queryCode, true);
+    }
+
     public static void validateInstallQuery(String queryName, QueryData query, PublicKey publicKey) throws RemoteException,IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, QuerySigner.InvalidQueryException {
+        validateQuery(queryName, query, publicKey, true);
+    }
+
+    public static void validateQuery(String queryName, QueryData query, PublicKey publicKey, boolean install) throws RemoteException,IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, QuerySigner.InvalidQueryException {
         QueryUtils.validateQueryName(queryName);
         byte[] decryptedQuery = decryptQuery(query.getSignature(), publicKey);
-        byte[] serializedQuery = serializeQuery(queryName, query.getCode());
+        byte[] serializedQuery = serializeQuery(queryName, query.getCode(), install);
         byte[] hashedSerializedQuery = cryptographicHash(serializedQuery);
         String decryptedQueryString = byteArrayToString(decryptedQuery, 0, decryptedQuery.length);
         String hashedSerializedQueryString = byteArrayToString(hashedSerializedQuery, 0, hashedSerializedQuery.length);
@@ -106,14 +118,12 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
         }
     }
 
-    // TODO
     @Override
     public QueryData signUninstallQuery(String queryName) throws RemoteException {
-        return null;
+        return signQuery(queryName, "", false);
     }
 
-    // TODO
-    public static void validateUninstallQuery(String queryName, QueryData query, PublicKey publicKey) throws RemoteException {
-
+    public static void validateUninstallQuery(String queryName, QueryData query, PublicKey publicKey) throws RemoteException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, QuerySigner.InvalidQueryException, NoSuchPaddingException, InvalidKeyException {
+        validateQuery(queryName, query, publicKey, false);
     }
 }
