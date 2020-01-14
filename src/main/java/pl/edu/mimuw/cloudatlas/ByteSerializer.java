@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 /**
  * Serializes classes to and from byte arrays
  */
-// TODO remove udupserializer
 public class ByteSerializer {
     private Kryo kryo;
 

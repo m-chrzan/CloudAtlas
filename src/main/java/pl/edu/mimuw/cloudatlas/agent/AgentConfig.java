@@ -38,7 +38,6 @@ public class AgentConfig {
     }
 
     private HashMap<ModuleType, Module> initializeModules() throws UnknownHostException, SocketException, NullPointerException {
-        // TODO config setup
         Long freshnessPeriod = Long.getLong("freshness_period");
         Integer port = Integer.getInteger("UDUPServer.port");
         Integer timeout = Integer.getInteger("UDUPServer.timeout");

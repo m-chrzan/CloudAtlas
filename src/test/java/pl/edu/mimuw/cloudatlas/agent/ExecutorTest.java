@@ -8,8 +8,6 @@ import pl.edu.mimuw.cloudatlas.agent.messages.ResponseMessage;
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 import pl.edu.mimuw.cloudatlas.agent.modules.ModuleType;
 
-// TODO make agent messages specific subclass
-
 public class ExecutorTest {
     public class MessageCounterModule extends Module {
         public int counter = 0;
