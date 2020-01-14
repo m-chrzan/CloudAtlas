@@ -19,6 +19,13 @@ public class QueryData implements Serializable {
         this.installed = true;
     }
 
+    public QueryData(String code, byte[] signature, long timestamp, boolean installed) {
+        this.code = code;
+        this.signature = signature;
+        this.timestamp = timestamp;
+        this.installed = installed;
+    }
+
     public String getCode() {
         return code;
     }

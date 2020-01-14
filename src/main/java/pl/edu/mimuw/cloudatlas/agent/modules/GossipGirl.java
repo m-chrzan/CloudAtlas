@@ -26,6 +26,7 @@ import pl.edu.mimuw.cloudatlas.model.ValueContact;
 import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 import pl.edu.mimuw.cloudatlas.model.ZMI;
+import pl.edu.mimuw.cloudatlas.querysigner.QuerySignerApiImplementation;
 
 public class GossipGirl extends Module {
     private long nextGossipId = 0;
