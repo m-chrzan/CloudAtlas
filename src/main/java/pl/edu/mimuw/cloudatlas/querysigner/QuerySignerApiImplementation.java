@@ -1,7 +1,6 @@
 package pl.edu.mimuw.cloudatlas.querysigner;
 
 import pl.edu.mimuw.cloudatlas.ByteSerializer;
-import pl.edu.mimuw.cloudatlas.model.ValueQuery;
 import pl.edu.mimuw.cloudatlas.querysignerapi.QuerySignerApi;
 
 import javax.crypto.BadPaddingException;
@@ -20,7 +19,7 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
     private final static String DIGEST_ALGORITHM = "SHA-256";
     private PublicKey publicKey;
     private PrivateKey privateKey;
-    private Map<String, ValueQuery> queries;
+    private Map<String, QueryData> queries;
     private Set<String> attribsSetByQueries;
 
     public QuerySignerApiImplementation(PublicKey publicKey, PrivateKey privateKey) {
@@ -90,7 +89,10 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
             byte[] serializedQuery = serializeQuery(queryName, queryCode, install);
             byte[] hashedQuery = cryptographicHash(serializedQuery);
             byte[] querySignature = encryptQuery(hashedQuery);
-            return new QueryData(queryCode, querySignature);
+            QueryData newQuery = new QueryData(queryCode, querySignature);
+            newQuery.setInstalled(install);
+            this.queries.put(queryName, newQuery);
+            return newQuery;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RemoteException(e.getLocalizedMessage());
@@ -99,7 +101,12 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
 
     @Override
     public QueryData signInstallQuery(String queryName, String queryCode) throws RemoteException {
-        return signQuery(queryName, queryCode, true);
+        QueryUtils.validateQueryName(queryName);
+        if (this.queries.containsKey(queryName) && this.queries.get(queryName).isInstalled()) {
+            throw new RemoteException("Query already installed");
+        } else {
+            return signQuery(queryName, queryCode, true);
+        }
     }
 
     public static void validateInstallQuery(String queryName, QueryData query, PublicKey publicKey) throws RemoteException,IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, QuerySigner.InvalidQueryException {
@@ -120,7 +127,12 @@ public class QuerySignerApiImplementation implements QuerySignerApi {
 
     @Override
     public QueryData signUninstallQuery(String queryName) throws RemoteException {
-        return signQuery(queryName, "", false);
+        QueryUtils.validateQueryName(queryName);
+        if (this.queries.containsKey(queryName) && this.queries.get(queryName).isInstalled()) {
+            return signQuery(queryName, "", false);
+        } else {
+            throw new RemoteException("Query is not installed");
+        }
     }
 
     public static void validateUninstallQuery(String queryName, QueryData query, PublicKey publicKey) throws RemoteException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, QuerySigner.InvalidQueryException, NoSuchPaddingException, InvalidKeyException {

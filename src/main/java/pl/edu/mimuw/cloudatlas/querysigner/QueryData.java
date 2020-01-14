@@ -10,10 +10,13 @@ public class QueryData implements Serializable {
     // Query signing timestamp
     private long timestamp;
 
+    private boolean installed;
+
     public QueryData(String code, byte[] signature) {
         this.code = code;
         this.signature = signature;
-        this.timestamp = System.currentTimeMillis();;
+        this.timestamp = System.currentTimeMillis();
+        this.installed = true;
     }
 
     public String getCode() {
@@ -27,4 +30,8 @@ public class QueryData implements Serializable {
     public long getTimestamp() {
         return timestamp;
     }
+
+    public boolean isInstalled() { return installed; }
+
+    public void setInstalled(boolean installed) { this.installed = installed; }
 }

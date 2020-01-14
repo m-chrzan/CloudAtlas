@@ -66,7 +66,6 @@ public class Qurnik extends Module {
     }
 
     private void executeAllQueries(ZMI zmi, List<ValueQuery> queries, PathName currentPath) throws InterruptedException {
-        System.out.println("INFO: Qurnik executing all queries " + queries);
         if(!zmi.getSons().isEmpty()) {
             for(ZMI son : zmi.getSons()) {
                 Value sonName = son.getAttributes().getOrNull("name");
@@ -81,7 +80,7 @@ public class Qurnik extends Module {
             Interpreter interpreter = new Interpreter(zmi);
             AttributesMap newAttributes = new AttributesMap();
             for (ValueQuery query : queries) {
-                if (query != null) {
+                if (query != null && query.isInstalled()) {
                     try {
                         List<QueryResult> result = interpreter.interpretProgram(query.getQuery());
                         for(QueryResult r : result) {

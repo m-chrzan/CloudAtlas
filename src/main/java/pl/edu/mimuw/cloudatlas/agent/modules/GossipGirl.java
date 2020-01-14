@@ -202,8 +202,6 @@ public class GossipGirl extends Module {
             state.gotQuery(message);
             Map<Attribute, ValueQuery> queries = new HashMap();
             ValueQuery vq = message.getQuery();
-            ValueTime timestamp = state.getTheirQueryTimestamp(message.getName());
-            vq.setTimestamp(timestamp.getValue());
             queries.put(message.getName(), vq);
             UpdateQueriesMessage updateMessage = new UpdateQueriesMessage("", 0, queries);
             System.out.println("INFO: GossipGirl sending UpdateQueriesMessage");

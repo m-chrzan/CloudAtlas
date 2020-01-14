@@ -20,6 +20,8 @@ public class ValueQuery extends Value {
     private byte[] signature;
     // Query signing timestamp
     private long timestamp;
+    // Query installation status
+    private boolean installed;
 
     /**
      * Constructs a new <code>ValueQuery</code> object.
@@ -34,6 +36,7 @@ public class ValueQuery extends Value {
         }
         this.signature = null;
         this.timestamp = System.currentTimeMillis();
+        this.installed = true;
     }
 
     public ValueQuery(String query, byte[] querySignature) throws Exception {
@@ -44,6 +47,7 @@ public class ValueQuery extends Value {
         }
         this.signature = querySignature;
         this.timestamp = System.currentTimeMillis();
+        this.installed = true;
     }
 
     public ValueQuery(QueryData queryData) throws Exception {
@@ -54,6 +58,7 @@ public class ValueQuery extends Value {
         }
         this.signature = queryData.getSignature();
         this.timestamp = System.currentTimeMillis();
+        this.installed = queryData.isInstalled();
     }
 
     public ValueQuery(String query, long timestamp) throws Exception {
@@ -64,6 +69,7 @@ public class ValueQuery extends Value {
         }
         this.signature = null;
         this.timestamp = timestamp;
+        this.installed = true;
     }
 
     private ValueQuery() {
@@ -71,6 +77,7 @@ public class ValueQuery extends Value {
         this.query = null;
         this.signature = null;
         this.timestamp = System.currentTimeMillis();
+        this.installed = true;
     }
 
     public String getCode() { return code; }
@@ -84,6 +91,10 @@ public class ValueQuery extends Value {
     public long getTimestamp() { return timestamp; }
 
     public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+
+    public boolean isInstalled() { return installed; }
+
+    public void setInstalled(boolean installed) { this.installed = installed; }
 
     @Override
     public Type getType() {
