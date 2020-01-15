@@ -7,11 +7,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import com.google.gson.Gson;
+import pl.edu.mimuw.cloudatlas.client.ClientController;
 import pl.edu.mimuw.cloudatlas.model.*;
 
 public class Fetcher {
@@ -98,12 +97,16 @@ public class Fetcher {
         String jsonAttribs;
 
         System.out.println(System.getProperty("user.dir"));
-
+        String fallbackContactsString = System.getProperty("fallback_contacts");
+        System.out.println(fallbackContactsString);
         try {
             initializeApiStub();
             initializePythonProcess();
 
             bufferRead = new BufferedReader( new InputStreamReader(pythonProcess.getInputStream()));
+
+            Set<String> fallbackContacts = new HashSet<String>();
+            api.setFallbackContacts(ClientController.parseContactsString(fallbackContactsString));
 
             while((jsonAttribs = bufferRead.readLine()) != null) {
                 System.out.println(jsonAttribs);

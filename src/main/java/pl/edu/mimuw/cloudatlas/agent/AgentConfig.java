@@ -52,7 +52,7 @@ public class AgentConfig {
         modules.put(ModuleType.QUERY, new Qurnik());
         modules.put(ModuleType.GOSSIP, new GossipGirl());
 
-        UDUPServer server = new UDUPServer(serverAddr, port, bufsize);
+        UDUPServer server = new UDUPServer(serverAddr, port, bufsize, freshnessPeriod);
         modules.put(ModuleType.UDP, new UDUP(port, timeout, bufsize, server));
         return modules;
     }

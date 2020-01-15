@@ -34,7 +34,7 @@ public class UDUPTest {
         try {
             System.out.println("Starting udp1");
 
-            server1 = new UDUPServer(InetAddress.getByName("127.0.0.2"), 5996, 1000);
+            server1 = new UDUPServer(InetAddress.getByName("127.0.0.2"), 5996, 1000, 60 * 1000);
             udp1 = new UDUP(
                     5997,
                     timeout,
@@ -43,7 +43,7 @@ public class UDUPTest {
 
             System.out.println("Starting udp2");
 
-            server2 = new UDUPServer(InetAddress.getByName("127.0.0.3"), 5996, 1000);
+            server2 = new UDUPServer(InetAddress.getByName("127.0.0.3"), 5996, 1000, 60 * 1000);
             udp2 = new UDUP(
                     5997,
                     timeout,
@@ -106,7 +106,7 @@ public class UDUPTest {
         try {
             System.out.println("Starting udp1");
 
-            server1 = new UDUPServer(InetAddress.getByName("127.0.0.2"), 5991, 1000);
+            server1 = new UDUPServer(InetAddress.getByName("127.0.0.2"), 5991, 1000, 60 * 1000);
             udp1 = new UDUP(
                     5997,
                     timeout,
@@ -115,7 +115,7 @@ public class UDUPTest {
 
             System.out.println("Starting udp2");
 
-            server2 = new UDUPServer(InetAddress.getByName("127.0.0.3"), 5991, 1000);
+            server2 = new UDUPServer(InetAddress.getByName("127.0.0.3"), 5991, 1000, 60 * 1000);
             udp2 = new UDUP(
                     5997,
                     timeout,
@@ -181,7 +181,7 @@ public class UDUPTest {
         try {
             System.out.println("Starting udp1");
 
-            server1 = new UDUPServer(InetAddress.getByName("127.0.0.2"), 5997, 1000);
+            server1 = new UDUPServer(InetAddress.getByName("127.0.0.2"), 5997, 1000, 60 * 1000);
             udp1 = new UDUP(
                     5997,
                     timeout,
@@ -190,7 +190,7 @@ public class UDUPTest {
 
             System.out.println("Starting udp2");
 
-            server2 = new UDUPServer(InetAddress.getByName("127.0.0.3"), 5997, 1000);
+            server2 = new UDUPServer(InetAddress.getByName("127.0.0.3"), 5997, 1000, 60 * 1000);
             udp2 = new UDUP(
                     5997,
                     timeout,

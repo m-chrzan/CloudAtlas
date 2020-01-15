@@ -133,9 +133,9 @@ public class ClientController {
         return "contactsForm";
     }
 
-    private Set<ValueContact> parseContactsString(DataStringInput contactsInput) throws Exception {
+    public static Set<ValueContact> parseContactsString(String contactsInput) throws Exception {
         Gson gson = new Gson();
-        Map<String, ArrayList> contactStrings = gson.fromJson(contactsInput.getString(), Map.class);
+        Map<String, ArrayList> contactStrings = gson.fromJson(contactsInput, Map.class);
         Set<ValueContact> contactObjects = new HashSet<ValueContact>();
         ArrayList<Double> cAddr;
         byte[] inetArray = new byte[4];
@@ -160,7 +160,7 @@ public class ClientController {
         Set<ValueContact> contactObjects;
 
         try {
-            contactObjects = parseContactsString(contactsObject);
+            contactObjects = parseContactsString(contactsObject.getString());
             this.agentApi.setFallbackContacts(contactObjects);
         } catch (Exception e) {
             success = false;
@@ -263,7 +263,7 @@ public class ClientController {
             case "Contact":
                 DataStringInput contactsString = new DataStringInput();
                 contactsString.setString(attributeObject.getValueString());
-                attributeValue = parseContactsString(contactsString).iterator().next();
+                attributeValue = parseContactsString(contactsString.getString()).iterator().next();
                 break;
             case "List":
                 List parsedListValue = gson.fromJson(attributeObject.getValueString(), List.class);
