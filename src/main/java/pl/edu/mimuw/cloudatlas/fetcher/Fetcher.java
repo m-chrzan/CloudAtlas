@@ -1,7 +1,11 @@
 package pl.edu.mimuw.cloudatlas.fetcher;
 
+import pl.edu.mimuw.cloudatlas.agent.EventBus;
+import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
 import pl.edu.mimuw.cloudatlas.api.Api;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -98,7 +102,8 @@ public class Fetcher {
 
         System.out.println(System.getProperty("user.dir"));
         String fallbackContactsString = System.getProperty("fallback_contacts");
-        System.out.println(fallbackContactsString);
+        String ownAddr = System.getProperty("own_addr");
+
         try {
             initializeApiStub();
             initializePythonProcess();
@@ -107,6 +112,9 @@ public class Fetcher {
 
             Set<String> fallbackContacts = new HashSet<String>();
             api.setFallbackContacts(ClientController.parseContactsString(fallbackContactsString));
+
+            ValueContact initialContact = new ValueContact(new PathName(zonePath), InetAddress.getByName(ownAddr));
+            api.setAttributeValue(zonePath, "contacts", initialContact);
 
             while((jsonAttribs = bufferRead.readLine()) != null) {
                 System.out.println(jsonAttribs);
