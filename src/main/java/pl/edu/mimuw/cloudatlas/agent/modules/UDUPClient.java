@@ -1,17 +1,19 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
+import pl.edu.mimuw.cloudatlas.ByteSerializer;
 import pl.edu.mimuw.cloudatlas.agent.messages.UDUPMessage;
 import pl.edu.mimuw.cloudatlas.model.ValueTime;
 import pl.edu.mimuw.cloudatlas.model.ValueUtils;
 
 import javax.xml.crypto.Data;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
 
 public class UDUPClient {
     private UDUP udp;
-    private UDUPSerializer serializer;
+    private ByteSerializer serializer;
     private int serverPort;
     private DatagramSocket socket;
     private int bufsize;
@@ -22,7 +24,7 @@ public class UDUPClient {
         this.serverPort = serverPort;
         this.socket = new DatagramSocket();
         this.bufsize = bufferSize;
-        this.serializer = new UDUPSerializer();
+        this.serializer = new ByteSerializer();
         this.lastTransmission = 0;
     }
 
