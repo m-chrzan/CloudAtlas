@@ -58,6 +58,10 @@ ext.fallbackContacts = {
     return System.getProperty("fallbackContacts") ?: "{\"" + zonePath() + "\":[127,0,0,1]}"
 }
 
+ext.ownAddr = {
+    return System.getProperty("ownZone") ?: "localhost"
+}
+
 /*
 Possible options:
 RoundRobinExp
@@ -147,6 +151,7 @@ task runFetcher(type: JavaExec) {
     args(hostname() , 1099)
     systemProperty 'zone_path', zonePath()
     systemProperty 'fallback_contacts', fallbackContacts()
+    systemProperty 'own_addr', ownAddr()
 }
 
 task runInterpreter(type: JavaExec) {

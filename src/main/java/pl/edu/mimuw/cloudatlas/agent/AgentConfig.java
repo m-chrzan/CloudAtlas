@@ -1,9 +1,13 @@
 package pl.edu.mimuw.cloudatlas.agent;
 
+import pl.edu.mimuw.cloudatlas.agent.messages.StateMessage;
+import pl.edu.mimuw.cloudatlas.agent.messages.UpdateAttributesMessage;
 import pl.edu.mimuw.cloudatlas.agent.modules.*;
 import pl.edu.mimuw.cloudatlas.agent.modules.Module;
 import pl.edu.mimuw.cloudatlas.api.Api;
+import pl.edu.mimuw.cloudatlas.model.AttributesMap;
 import pl.edu.mimuw.cloudatlas.model.PathName;
+import pl.edu.mimuw.cloudatlas.model.ValueContact;
 
 import java.net.InetAddress;
 import java.net.SocketException;
