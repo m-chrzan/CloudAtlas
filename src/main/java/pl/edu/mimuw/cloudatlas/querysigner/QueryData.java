@@ -26,6 +26,8 @@ public class QueryData implements Serializable {
         this.installed = installed;
     }
 
+    public QueryData() {}
+
     public String getCode() {
         return code;
     }

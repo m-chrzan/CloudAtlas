@@ -57,7 +57,7 @@ public class ValueQuery extends Value {
             this.query = (new parser(lex)).pProgram();
         }
         this.signature = queryData.getSignature();
-        this.timestamp = System.currentTimeMillis();
+        this.timestamp = queryData.getTimestamp();
         this.installed = queryData.isInstalled();
     }
 

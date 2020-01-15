@@ -1,6 +1,7 @@
 package pl.edu.mimuw.cloudatlas.agent.modules;
 
 import com.google.common.primitives.Bytes;
+import pl.edu.mimuw.cloudatlas.ByteSerializer;
 import pl.edu.mimuw.cloudatlas.agent.messages.UDUPMessage;
 import pl.edu.mimuw.cloudatlas.model.ValueUtils;
 
@@ -15,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UDUPServer implements Runnable {
     private UDUP udp;
-    private UDUPSerializer serializer;
+    private ByteSerializer serializer;
     private DatagramSocket socket;
     private InetAddress address;
     private HashMap<String, ArrayList<byte[]>> partialPackets;
@@ -27,7 +28,7 @@ public class UDUPServer implements Runnable {
         this.address = addr;
         this.bufSize = bufSize;
         this.partialPackets = new HashMap<>();
-        this.serializer = new UDUPSerializer();
+        this.serializer = new ByteSerializer();
         this.running = new AtomicBoolean(false);
     }
 
@@ -58,7 +59,7 @@ public class UDUPServer implements Runnable {
         UDUPMessage msg;
 
         if (packetNo == 1 && packet.getLength() < this.bufSize) {
-            msg = this.serializer.deserialize(packetData);
+            msg = (UDUPMessage) this.serializer.deserialize(packetData, UDUPMessage.class);
             System.out.println("UDP received message " + msg.getContent().getMessageId());
         } else {
             System.out.println("UDP received partial message with transmission id " + transmissionID + " packet no " + packetNo);
@@ -137,7 +138,7 @@ public class UDUPServer implements Runnable {
         if (this.partialPackets.containsKey(transmissionID)) {
             try {
                 byte[] allPacketData = concatPacketData(transmissionID, newPacketNo, packetData);
-                msg = this.serializer.deserialize(allPacketData);
+                msg = (UDUPMessage) this.serializer.deserialize(allPacketData, UDUPMessage.class);
                 this.partialPackets.remove(transmissionID);
                 System.out.println("Kryo put together whole transmission for msg " + msg.getContent().getMessageId());
             } catch (Error | Exception e) {

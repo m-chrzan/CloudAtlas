@@ -56,7 +56,7 @@ public class Stanik extends Module {
 
     private void setDefaultQuery(String name, String query) {
         try {
-            ValueQuery queryValue = new ValueQuery(query);
+            ValueQuery queryValue = new ValueQuery(query, 0);
             queries.put(new Attribute(name), queryValue);
         } catch (Exception e) {
             System.out.println("ERROR: failed to compile default query");
