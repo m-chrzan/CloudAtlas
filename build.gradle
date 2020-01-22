@@ -14,53 +14,53 @@ plugins {
     id 'application'
 }
 
-ext.hostname = {
-    return System.getProperty("hostname") ?: "localhost"
-}
+    ext.hostname = {
+        return System.getProperty("hostname") ?: "localhost"
+    }
 
-ext.freshnessPeriod = {
-    return System.getProperty("freshnessPeriod") ?: 60 * 1000
-}
+    ext.freshnessPeriod = {
+        return System.getProperty("freshnessPeriod") ?: 60 * 1000
+    }
 
-ext.queryPeriod = {
-    return System.getProperty("queryPeriod") ?: 5 * 1000
-}
+    ext.queryPeriod = {
+        return System.getProperty("queryPeriod") ?: 5 * 1000
+    }
 
-ext.gossipPeriod = {
-    return System.getProperty("gossipPeriod") ?: 5 * 1000
-}
+    ext.gossipPeriod = {
+        return System.getProperty("gossipPeriod") ?: 5 * 1000
+    }
 
-ext.UDUPServerHostname = {
-    return System.getProperty("hostname") ?: "localhost"
-}
+    ext.UDUPServerHostname = {
+        return System.getProperty("hostname") ?: "localhost"
+    }
 
-ext.UDUPServerPort = {
-    return System.getProperty("port") ?: 5999;
-}
+    ext.UDUPServerPort = {
+        return System.getProperty("port") ?: 5999;
+    }
 
-ext.UDUPServerTimeout = {
-    return System.getProperty("timeout") ?: 5000;
-}
+    ext.UDUPServerTimeout = {
+        return System.getProperty("timeout") ?: 5000;
+    }
 
-ext.UDUPServerBufsize = {
-    return System.getProperty("bufsize") ?: 512;
-}
+    ext.UDUPServerBufsize = {
+        return System.getProperty("bufsize") ?: 512;
+    }
 
-ext.querySignerHostname = {
-    return System.getProperty("querySignerHostname") ?: "localhost"
-}
+    ext.querySignerHostname = {
+        return System.getProperty("querySignerHostname") ?: "localhost"
+    }
 
 /*
 Example: -DfallbackContacts=\{\"/uw/violet07\":[192,168,0,11]}
 escape at the beginning and before "
  */
-ext.fallbackContacts = {
-    return System.getProperty("fallbackContacts") ?: "{\"" + zonePath() + "\":[127,0,0,1]}"
-}
+    ext.fallbackContacts = {
+        return System.getProperty("fallbackContacts") ?: "{\"" + zonePath() + "\":[127,0,0,1]}"
+    }
 
-ext.ownAddr = {
-    return System.getProperty("ownZone") ?: "localhost"
-}
+    ext.ownAddr = {
+        return System.getProperty("ownZone") ?: "localhost"
+    }
 
 /*
 Possible options:
@@ -69,21 +69,21 @@ RoundRobinUniform
 RandomExp
 RandomUniform
  */
-ext.zoneSelectionStrategy = {
-    return System.getProperty("zoneStrategy") ?: "RandomUniform"
-}
+    ext.zoneSelectionStrategy = {
+        return System.getProperty("zoneStrategy") ?: "RandomUniform"
+    }
 
-ext.zonePath = {
-    return System.getProperty("zonePath") ?: "/uw/violet07"
-}
+    ext.zonePath = {
+        return System.getProperty("zonePath") ?: "/uw/violet07"
+    }
 
-ext.publicKeyFilename = {
-    return System.getProperty("publicKeyFilename") ?: "build/tmp/query_signer.pub"
-}
+    ext.publicKeyFilename = {
+        return System.getProperty("publicKeyFilename") ?: "build/tmp/query_signer.pub"
+    }
 
-ext.privateKeyFilename = {
-    return System.getProperty("privateKeyFilename") ?: "build/tmp/query_signer"
-}
+    ext.privateKeyFilename = {
+        return System.getProperty("privateKeyFilename") ?: "build/tmp/query_signer"
+    }
 
 repositories {
     // Use jcenter for resolving dependencies.
@@ -114,6 +114,8 @@ dependencies {
     implementation files('./lib/cup.jar')
 
     implementation 'com.google.code.gson:gson:2.8.6'
+
+    compile fileTree(dir: 'lib', include: ['*.jar'])
 }
 
 application {
@@ -166,4 +168,49 @@ task runQuerySigner(type: JavaExec) {
     systemProperty 'query_signer_hostname', querySignerHostname()
     systemProperty 'public_key_file', publicKeyFilename()
     systemProperty 'private_key_file', privateKeyFilename()
+}
+
+
+task fatJarAgent(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Agent Jar',
+                'Main-Class': 'pl.edu.mimuw.cloudatlas.agent.Agent'
+    }
+    baseName = project.name + '-agent'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+}
+
+task fatJarClient(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Client Jar',
+                'Main-Class': 'pl.edu.mimuw.cloudatlas.client.Client'
+    }
+    baseName = project.name + '-client'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+}
+
+task fatJarFetcher(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Client Jar',
+                'Main-Class': 'pl.edu.mimuw.cloudatlas.fetcher.Fetcher'
+    }
+    baseName = project.name + '-fetcher'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
+}
+
+task fatJarQuerySigner(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Client Jar',
+                'Main-Class': 'pl.edu.mimuw.cloudatlas.querySigner.QuerySigner'
+    }
+    baseName = project.name + '-client'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }}
+    with jar
 }
