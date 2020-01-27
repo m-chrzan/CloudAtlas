@@ -46,7 +46,7 @@ public class ClientController {
             Registry registry = LocateRegistry.getRegistry(agentHostname);
             this.agentApi = (Api) registry.lookup("Api");
 
-            String querySignerHostname = System.getProperty("querysigner_hostname");
+            String querySignerHostname = System.getProperty("query_signer_hostname");
             Registry querySignerRegistry = LocateRegistry.getRegistry(querySignerHostname);
             this.querySignerApi = (QuerySignerApi) querySignerRegistry.lookup("QuerySignerApi");
         } catch (Exception e) {
