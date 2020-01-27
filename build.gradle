@@ -55,11 +55,11 @@ Example: -DfallbackContacts=\{\"/uw/violet07\":[192,168,0,11]}
 escape at the beginning and before "
  */
 ext.fallbackContacts = {
-    return System.getProperty("fallbackContacts") ?: "{\"" + zonePath() + "\":[127,0,0,1]}"
+    return System.getProperty("fallbackContacts") ?: "{}"
 }
 
 ext.ownAddr = {
-    return System.getProperty("ownZone") ?: "localhost"
+    return System.getProperty("ownAddr") ?: "localhost"
 }
 
 /*

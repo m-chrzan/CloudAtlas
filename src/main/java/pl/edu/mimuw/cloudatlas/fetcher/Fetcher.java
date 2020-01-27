@@ -114,9 +114,12 @@ public class Fetcher {
             api.setFallbackContacts(ClientController.parseContactsString(fallbackContactsString));
 
             ValueContact initialContact = new ValueContact(new PathName(zonePath), InetAddress.getByName(ownAddr));
-            api.setAttributeValue(zonePath, "contacts", initialContact);
+            Set<Value> initialContacts = new HashSet();
+            initialContacts.add(initialContact);
+            ValueSet initialContactsValue = new ValueSet(initialContacts, TypePrimitive.CONTACT);
 
             while((jsonAttribs = bufferRead.readLine()) != null) {
+                api.setAttributeValue(zonePath, "contacts", initialContactsValue);
                 System.out.println(jsonAttribs);
                 System.out.flush();
                 deserializedAttribs = deserializeAttribs(jsonAttribs);

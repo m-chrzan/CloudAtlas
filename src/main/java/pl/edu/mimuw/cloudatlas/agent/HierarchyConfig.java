@@ -14,11 +14,13 @@ public class HierarchyConfig {
     private GossipGirlStrategies gossipGirlStrategies;
     private GossipGirlStrategies.ZoneSelectionStrategy zoneSelectionStrategy;
     private Random random = new Random();
+    private PathName ourPath;
     private EventBus eventBus;
 
     HierarchyConfig(EventBus eventBus, String zonePath, String zoneStrategy) {
         zoneSelectionStrategy = parseStrategy(zoneStrategy);
-        gossipGirlStrategies = new GossipGirlStrategies(new PathName(zonePath));
+        ourPath = new PathName(zonePath);
+        gossipGirlStrategies = new GossipGirlStrategies(ourPath);
         this.eventBus = eventBus;
     }
 
@@ -81,7 +83,23 @@ public class HierarchyConfig {
         ZMI zmi = selectZMI(siblings);
         ValueSet contactsValue = (ValueSet) zmi.getAttributes().getOrNull("contacts");
         Set<Value> valueSet = contactsValue.getValue();
+        filterOurContact(valueSet);
         return selectContactFromSet(valueSet);
+    }
+
+    private void filterOurContact(Set<Value> contacts) {
+        Iterator it = contacts.iterator();
+        while (it.hasNext()) {
+            Value value = (Value) it.next();
+            if (value.getType().getPrimaryType() == Type.PrimaryType.CONTACT) {
+                ValueContact contact = (ValueContact) value;
+                if (!contact.getName().equals(ourPath)) {
+                    it.remove();
+                }
+            } else {
+                System.out.println("WARN: non contact value passed to filterOurContact");
+            }
+        }
     }
 
     private StateMessage getState() throws Exception {
@@ -143,10 +161,25 @@ public class HierarchyConfig {
         while (iterator.hasNext()) {
             ZMI zmi = iterator.next();
             ValueSet contacts = (ValueSet) zmi.getAttributes().getOrNull("contacts");
-            if (contacts == null || contacts.isNull() || contacts.isEmpty()) {
+            if (contacts == null || contacts.isNull() || contacts.isEmpty() || onlyContactIsUs(contacts)) {
                 iterator.remove();
             }
         }
+    }
+
+    private boolean onlyContactIsUs(ValueSet contacts) {
+        for (Value value : contacts) {
+            if (value.getType().getPrimaryType() == Type.PrimaryType.CONTACT) {
+                ValueContact contact = (ValueContact) value;
+                if (!contact.getName().equals(ourPath)) {
+                    return true;
+                }
+            } else {
+                System.out.println("WARN: non contact value passed to onlyContactIsUs");
+            }
+        }
+
+        return false;
     }
 
     public void startQueries(long queriesPeriod) {
