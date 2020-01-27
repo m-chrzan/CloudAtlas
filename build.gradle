@@ -59,7 +59,7 @@ ext.fallbackContacts = {
 }
 
 ext.ownAddr = {
-    return System.getProperty("ownZone") ?: "localhost"
+    return System.getProperty("ownAddr") ?: "localhost"
 }
 
 /*
