@@ -43,8 +43,16 @@ public class HierarchyConfig {
                     public void run() {
                         try {
                             System.out.println("INFO: initiating gossip");
+
+                            StateMessage state = getState();
                             PathName gossipLevel = gossipGirlStrategies.selectStrategy(zoneSelectionStrategy);
-                            ValueContact contact = selectContactFromLevel(gossipLevel);
+                            ValueContact contact;
+                            if (random.nextDouble() < 0.2) {
+                                contact = selectFallbackContact(state.getContacts());
+                            } else {
+                                contact = selectContactFromLevel(gossipLevel, state);
+                            }
+
                             if (contact != null) {
                                 System.out.println("INFO: found a contact " + contact.toString());
                                 InitiateGossipMessage message = new InitiateGossipMessage("", 0, new PathName(zonePath), contact);
@@ -63,20 +71,23 @@ public class HierarchyConfig {
         AgentUtils.startRecursiveTask(taskSupplier, gossipPeriod, eventBus);
     }
 
-    private ValueContact selectContactFromLevel(PathName path) throws Exception {
-        CompletableFuture<ResponseMessage> responseFuture = new CompletableFuture();
-        this.eventBus.addMessage(new RequestStateMessage("", 0, responseFuture));
-        StateMessage response = (StateMessage) responseFuture.get();
-        ZMI root = response.getZMI();
+    private ValueContact selectContactFromLevel(PathName path, StateMessage state) throws Exception {
+        ZMI root = state.getZMI();
         List<ZMI> siblings = getSiblings(root, path);
         filterEmptyContacts(siblings);
         if (siblings.isEmpty()) {
-            return selectFallbackContact(response.getContacts());
+            return selectFallbackContact(state.getContacts());
         }
         ZMI zmi = selectZMI(siblings);
         ValueSet contactsValue = (ValueSet) zmi.getAttributes().getOrNull("contacts");
         Set<Value> valueSet = contactsValue.getValue();
         return selectContactFromSet(valueSet);
+    }
+
+    private StateMessage getState() throws Exception {
+        CompletableFuture<ResponseMessage> responseFuture = new CompletableFuture();
+        this.eventBus.addMessage(new RequestStateMessage("", 0, responseFuture));
+        return (StateMessage) responseFuture.get();
     }
 
     private ValueContact selectFallbackContact(Set<ValueContact> contacts) throws Exception {
