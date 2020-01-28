@@ -131,17 +131,23 @@ public class Stanik extends Module {
 
     private boolean pruneZMI(ZMI zmi, ValueTime time) {
         Value timestamp = zmi.getAttributes().get("timestamp");
+	System.out.println("Checking if we should prune " + zmi.toString());
+	System.out.println("Sons: " + zmi.getSons().toString());
 
         boolean isLeaf = zmi.getSons().isEmpty();
+	System.out.println("We are " + (isLeaf ? "" : "not") + " a leaf");
 
         List<ZMI> sonsToRemove = new LinkedList();
         if (ValueUtils.valueLower(timestamp, time.subtract(new ValueDuration(freshnessPeriod)))) {
+	    System.out.println("our timestamp is too old " + timestamp.toString() + " vs " + time.toString());
             if (zmi.getFather() != null) {
+		System.out.println("we should be pruned 1");
                 return true;
             }
         } else {
             for (ZMI son : zmi.getSons()) {
                 if (pruneZMI(son, time)) {
+		    System.out.println("Removing son " + son.toString());
                     sonsToRemove.add(son);
                 }
             }
@@ -152,9 +158,11 @@ public class Stanik extends Module {
         }
 
         if (!isLeaf && zmi.getSons().isEmpty()) {
+	    System.out.println("we should be pruned 2");
             return true;
         }
 
+        System.out.println("we shouldn't be pruned");
         return false;
     }
 
@@ -178,15 +186,19 @@ public class Stanik extends Module {
      * timestamp provided with the new value.
      */
     public void handleSetAttribte(SetAttributeMessage message) {
+	System.out.println("In handleSetAttribte");
         try {
             PathName descendantPath = new PathName(message.getPathName());
             if (!hierarchy.descendantExists(descendantPath)) {
+		System.out.println("Adding missing zones in handleSetAttribte" + descendantPath.toString());
                 addMissingZones(descendantPath);
             }
             ZMI zmi = hierarchy.findDescendant(descendantPath);
+	    System.out.println("Got zmi: " + zmi.toString());
             ValueTime updateTimestamp = message.getUpdateTimestamp();
             ValueTime currentTimestamp = (ValueTime) zmi.getAttributes().getOrNull("timestamp");
             if (ValueUtils.valueLower(currentTimestamp, updateTimestamp)) {
+		System.out.println("updating timestamp" + updateTimestamp.toString());
                 zmi.getAttributes().addOrChange("timestamp", updateTimestamp);
             }
 
