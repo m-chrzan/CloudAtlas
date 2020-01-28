@@ -48,7 +48,7 @@ public class Stanik extends Module {
 
     private void setDefaultQueries() {
         String cardinalityQuery = "SELECT sum(cardinality) AS cardinality";
-        String contactsQuery = "SELECT random(5, unfold(contacts)) AS contacts";
+        String contactsQuery = "SELECT to_set(random(5, unfold(contacts))) AS contacts";
 
         setDefaultQuery("&cardinality", cardinalityQuery);
         setDefaultQuery("&contacts", contactsQuery);
