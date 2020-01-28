@@ -163,6 +163,7 @@ task runInterpreter(type: JavaExec) {
 task runQuerySigner(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'pl.edu.mimuw.cloudatlas.querysigner.QuerySigner'
+    systemProperty 'java.rmi.server.hostname', hostname()
     systemProperty 'query_signer_hostname', querySignerHostname()
     systemProperty 'public_key_file', publicKeyFilename()
     systemProperty 'private_key_file', privateKeyFilename()
