@@ -2,8 +2,8 @@
 
 ## Running
 
-The agent, fetcher, and interpreter take an optional `-Dhostname=<agent's external hostname`
-argument, which defaults to `localhost`.
+The agent, fetcher, and interpreter take optional `-Dflagname=flagvalue`
+argument. Otherwise those values are set to default ones, as described below.
 
 ### Query Signer
     # start rmiregistry
@@ -13,7 +13,16 @@ argument, which defaults to `localhost`.
     # run Query Signer
     ./gradlew runQuerySigner
     
-### API Agent
+Relies on generation of public and private keys by scripts/generate_keys.sh.
+
+Flags:
+
+* java.rmi.server.hostname - RMI registry hostname, default: localhost
+* querySignerHostname - query signer public RMI API hostname, default: localhost
+* publicKeyFilename - path to public key file, relative to root of project, default: build/tmp/query_signer.pub
+* privateKeyFilename - path to private key file, relative to root of project, default: build/tmp/query_signer
+    
+### Agent
 
     # start rmiregistry
     ./scripts/registry
@@ -22,19 +31,51 @@ argument, which defaults to `localhost`.
 
 Relies on keys generated during query signer setup.
 
+Flags:
+
+* java.rmi.server.hostname - RMI registry hostname, default: localhost
+* freshnessPeriod - data refresh period, default: 60 * 1000
+* queryPeriod - query rerun period, default: 5 * 1000
+* gossipPeriod - gossiping period, default: 5 * 1000
+* hostname - public UDP server hostname, default: hostname
+* port - public UDP port, default: 5999
+* timeout - UDP server timeout, default: 5 * 1000
+* bufsize - UDP message buffer size, default: 512
+* zoneSelectionStrategy - zone selection strategy for gossiping, default: RandomUniform
+    available options: RoundRobinExp, RoundRobinUniform, RandomExp, RandomUniform
+* zonePath - zone pathname of agent, default: /uw/violet07
+* publicKeyFilename - path to public key file, relative to root of project, default: build/tmp/query_signer.pub
+
 ### Client
 
     ./gradlew runClient
 
-Relies on a running agent.
+Exposes a web application on `localhost:8082`.
 
-Exposes a web application on `localhost:8080`.
+Relies on a running agent with fetcher.
+
+Flags:
+
+* hostname - agent RMI API hostname, default: localhost
+* zonePath - zone pathname of agent, default: /uw/violet07
+* querySignerHostname - query signer RMI API hostname, default: localhost
 
 ### Fetcher
 
     ./gradlew runFetcher
 
 Sends system information to an agent.
+
+Relies on a running agent.
+
+Flags:
+
+* hostname - agent RMI API hostname, default: localhost
+* zonePath - zone pathname of agent, default: /uw/violet07
+* ownAddr - public IP address or domain name of agent/fetcher machine
+* fallbackContacts - initialize fallback contacts, default: {}, example:
+
+    -DfallbackContacts=\{\"/uw/violet07\":[192,168,0,11]}
 
 ### Interpreter
 
