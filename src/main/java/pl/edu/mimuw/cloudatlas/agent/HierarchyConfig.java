@@ -131,9 +131,9 @@ public class HierarchyConfig {
     }
 
     private <T> ValueContact selectContactFromSet(Set<T> contacts) throws Exception {
-    if (contacts.size() == 0) {
-        return null;
-    }
+        if (contacts.size() == 0) {
+            return null;
+        }
         int i = random.nextInt(contacts.size());
         for (T contact : contacts) {
             if (i == 0) {
