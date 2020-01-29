@@ -41,10 +41,11 @@ Flags:
 * port - public UDP port, default: 5999
 * timeout - UDP server timeout, default: 5 * 1000
 * bufsize - UDP message buffer size, default: 512
-* zoneSelectionStrategy - zone selection strategy for gossiping, default: RandomUniform
+* zoneSelectionStrategy - zone selection strategy for gossiping, default: RandomUniform,
     available options: RoundRobinExp, RoundRobinUniform, RandomExp, RandomUniform
 * zonePath - zone pathname of agent, default: /uw/violet07
-* publicKeyFilename - path to public key file, relative to root of project, default: build/tmp/query_signer.pub
+* publicKeyFilename - path to public key file, relative to root of project,
+    default: build/tmp/query_signer.pub
 
 ### Client
 
@@ -75,6 +76,7 @@ Flags:
 * ownAddr - public IP address or domain name of agent/fetcher machine
 * fallbackContacts - initialize fallback contacts, default: {}, example:
 
+    
     -DfallbackContacts=\{\"/uw/violet07\":[192,168,0,11]}
 
 ### Interpreter
