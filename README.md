@@ -74,10 +74,7 @@ Flags:
 * hostname - agent RMI API hostname, default: localhost
 * zonePath - zone pathname of agent, default: /uw/violet07
 * ownAddr - public IP address or domain name of agent/fetcher machine
-* fallbackContacts - initialize fallback contacts, default: {}, example:
-
-    
-    -DfallbackContacts=\{\"/uw/violet07\":[192,168,0,11]}
+* fallbackContacts - initialize fallback contacts, default: {}, example: \{\"/uw/violet07\":[192,168,0,11]}
 
 ### Interpreter
 
