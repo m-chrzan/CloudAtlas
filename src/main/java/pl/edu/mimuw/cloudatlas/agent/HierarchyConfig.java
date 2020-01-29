@@ -66,7 +66,7 @@ public class HierarchyConfig {
                             System.out.println("Interrupted while initiating gossip");
                         } catch (Exception e) {
                             System.out.println("ERROR: something happened " + e.toString());
-                e.printStackTrace();
+                            e.printStackTrace();
                         }
                     }
                 };
@@ -131,9 +131,9 @@ public class HierarchyConfig {
     }
 
     private <T> ValueContact selectContactFromSet(Set<T> contacts) throws Exception {
-    if (contacts.size() == 0) {
-        return null;
-    }
+        if (contacts.size() == 0) {
+            return null;
+        }
         int i = random.nextInt(contacts.size());
         for (T contact : contacts) {
             if (i == 0) {
@@ -150,7 +150,7 @@ public class HierarchyConfig {
             List<ZMI> siblingsImm = root.findDescendant(path).getFather().getSons();
             List<ZMI> siblings = new ArrayList();
             for (ZMI siblingOrI : siblingsImm) {
-            siblings.add(siblingOrI);
+                siblings.add(siblingOrI);
             }
             return siblings;
         } catch (ZMI.NoSuchZoneException e) {
@@ -166,8 +166,7 @@ public class HierarchyConfig {
             ValueSet contacts = (ValueSet) zmi.getAttributes().getOrNull("contacts");
             if (contacts == null || contacts.isNull() || contacts.isEmpty() || onlyContactIsUs(contacts)) {
                 iterator.remove();
-            } else {
-        }
+            }
         }
     }
 
