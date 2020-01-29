@@ -79,10 +79,12 @@ Each node should have an RMI registry running, started with
 
 ### Query signer
 
-The scripts assume that the query signer runs on `rainbow01`. Before starting
-it, run
+The scripts assume that the query signer runs on `rainbow01`. Before first
+starting it, run
 
     ./scripts/generate_keys.sh
+
+to generate keys.
 
 If `rainbow01` has ssh access to the other machines, the public key can then be
 distributed with
