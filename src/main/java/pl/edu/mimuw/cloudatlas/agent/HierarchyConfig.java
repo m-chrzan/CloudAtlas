@@ -50,10 +50,8 @@ public class HierarchyConfig {
                             PathName gossipLevel = gossipGirlStrategies.selectStrategy(zoneSelectionStrategy);
                             ValueContact contact;
                             if (random.nextDouble() < 0.2) {
-				System.out.println("FORCING FALLBACK");
                                 contact = selectFallbackContact(state.getContacts());
                             } else {
-				System.out.println("LOOKING FOR CONTACT");
                                 contact = selectContactFromLevel(gossipLevel, state);
                             }
 
@@ -68,7 +66,7 @@ public class HierarchyConfig {
                             System.out.println("Interrupted while initiating gossip");
                         } catch (Exception e) {
                             System.out.println("ERROR: something happened " + e.toString());
-			    e.printStackTrace();
+                e.printStackTrace();
                         }
                     }
                 };
@@ -80,21 +78,14 @@ public class HierarchyConfig {
         ZMI root = state.getZMI();
         List<ZMI> siblings = getSiblings(root, path);
         filterEmptyContacts(siblings);
-	System.out.println("filtered siblings: " + siblings.toString());
         if (siblings.isEmpty()) {
-	    System.out.println("SIBLINGS IS EMPTY!!!");
             return selectFallbackContact(state.getContacts());
         }
         ZMI zmi = selectZMI(siblings);
-	System.out.println("SELECTED: " + zmi.toString());
         ValueSet contactsValue = (ValueSet) zmi.getAttributes().getOrNull("contacts");
-	System.out.println("ITS CONTACTS: " + contactsValue.toString());
         Set<Value> valueSetOrig = contactsValue.getValue();
-	System.out.println("valueSetOrig: " + valueSetOrig.toString());
-	Set<Value> valueSet = new HashSet(valueSetOrig);
-	System.out.println("valueSet: " + valueSet.toString());
+        Set<Value> valueSet = new HashSet(valueSetOrig);
         filterOurContact(valueSet);
-	System.out.println("FILTERED VALUE SET: " + valueSet.toString());
         return selectContactFromSet(valueSet);
     }
 
@@ -140,12 +131,10 @@ public class HierarchyConfig {
     }
 
     private <T> ValueContact selectContactFromSet(Set<T> contacts) throws Exception {
-	if (contacts.size() == 0) {
-		System.out.println("GOT EMPTY SET FOR SELECTION");
-		return null;
-	}
+    if (contacts.size() == 0) {
+        return null;
+    }
         int i = random.nextInt(contacts.size());
-	System.out.println("ROLLED RANDOM: " + Integer.toString(i));
         for (T contact : contacts) {
             if (i == 0) {
                 return (ValueContact) contact;
@@ -158,14 +147,11 @@ public class HierarchyConfig {
 
     private List<ZMI> getSiblings(ZMI root, PathName path) {
         try {
-	    System.out.println("DEBUG: path in getSiblings: " + path.toString());
             List<ZMI> siblingsImm = root.findDescendant(path).getFather().getSons();
-	    System.out.println("DEBUG: siblingsImm: " + siblingsImm.toString());
             List<ZMI> siblings = new ArrayList();
             for (ZMI siblingOrI : siblingsImm) {
-	    	siblings.add(siblingOrI);
+            siblings.add(siblingOrI);
             }
-	    System.out.println("found siblings: " + siblings.toString());
             return siblings;
         } catch (ZMI.NoSuchZoneException e) {
             System.out.println("ERROR: didn't find path when looking for siblings");
@@ -178,14 +164,10 @@ public class HierarchyConfig {
         while (iterator.hasNext()) {
             ZMI zmi = iterator.next();
             ValueSet contacts = (ValueSet) zmi.getAttributes().getOrNull("contacts");
-	    System.out.println("checking zmi " + zmi.toString());
-	    System.out.println("its contacts: " + contacts.toString());
             if (contacts == null || contacts.isNull() || contacts.isEmpty() || onlyContactIsUs(contacts)) {
-		System.out.println("Let's remove it!");
                 iterator.remove();
             } else {
-		System.out.println("Let's keep it!");
-	    }
+        }
         }
     }
 
