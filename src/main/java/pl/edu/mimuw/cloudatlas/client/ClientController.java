@@ -45,21 +45,9 @@ public class ClientController {
             String agentHostname = System.getProperty("agent_hostname");
             Registry registry = LocateRegistry.getRegistry(agentHostname);
             this.agentApi = (Api) registry.lookup("Api");
-	    System.out.println("agent api:");
-	    System.out.println(this.agentApi);
-
             String querySignerHostname = System.getProperty("query_signer_hostname");
             Registry querySignerRegistry = LocateRegistry.getRegistry(querySignerHostname);
-	    System.out.println("querySignerHostname: " + querySignerHostname);
-	    System.out.println(InetAddress.getByName("localhost"));
-	    System.out.println(InetAddress.getByName(querySignerHostname));
-	    System.out.println("LIST:");
-	    System.out.println(querySignerRegistry.list());
-	    System.out.println("registry:");
-	    System.out.println(querySignerRegistry);
             this.querySignerApi = (QuerySignerApi) querySignerRegistry.lookup("QuerySignerApi");
-	    System.out.println("api:");
-	    System.out.println(this.querySignerApi);
         } catch (Exception e) {
             System.err.println("Client exception:");
             e.printStackTrace();
